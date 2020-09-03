@@ -7,7 +7,8 @@ Ethan Rodriguez (Systems engineer, secondary software engineer)
 Jiahui Zhu (Software, secondary hardware engineer)  
 Andrew Gan (Hardware, secondary systems engineer)  
   
-Tools used:  
+Tools used: 
+USB URT module
 ESP32  
 Fingerprint reader  
 SD card  
