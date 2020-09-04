@@ -8,11 +8,12 @@
 ## Software prerequisites
 [FatFs - Generic FAT Filesystem Module](http://elm-chan.org/fsw/ff/00index_e.html)  
 [ESP toolchain](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/get-started/index.html)  
+![](asset/esp32-sd-card-wiring.png)  
   
-## SD card initialization 
-![SD card init](asset/Sdinit.jpg)  
+## SD card initialization
+![](asset/Sdinit.jpg)  
   
-References:  
+## References 
 [Insight Into ESP32 Sleep Modes & Their Power Consumption](https://lastminuteengineers.com/esp32-sleep-modes-power-consumption/)  
 [SPI and SD cards](http://www.dejazzer.com/ee379/lecture_notes/lec12_sd_card.pdf)  
- 
+[Connect a microSD card to the ESP8266 or ESP32 using a microSD to SD adapter](https://alexlubbock.com/micro-sd-adapter-esp8266-esp32) 
