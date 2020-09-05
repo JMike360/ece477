@@ -1,81 +1,44 @@
-/* SD card and FAT filesystem example.
-   This example code is in the Public Domain (or CC0 licensed, at your option.)
-
-   Unless required by applicable law or agreed to in writing, this
-   software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-   CONDITIONS OF ANY KIND, either express or implied.
-*/
-
+/**************************************************
+* To do list:
+* i. replace every logging function with OLED display
+* ii. add function documentation
+*
+**************************************************/
 #include <stdio.h>
 #include <string.h>
 #include <sys/unistd.h>
 #include <sys/stat.h>
 #include "esp_err.h"
 #include "esp_log.h"
-#include "esp_vfs_fat.h"
-#include "driver/sdspi_host.h"
-#include "driver/spi_common.h"
-#include "sdmmc_cmd.h"
 #include "sdkconfig.h"
+#include "esp_vfs_fat.h"
+#include "sdmmc_cmd.h"
 #include "driver/sdmmc_host.h"
 
 static const char *TAG = "sd-card";
-
 #define MOUNT_POINT "/sdcard"
-#define SPI_DMA_CHANNEL 1
 
-// Pin mapping when using SPI mode.
-#define PIN_NUM_MISO 12
-#define PIN_NUM_MOSI 13
-#define PIN_NUM_CLK  14
-#define PIN_NUM_CS   32
-
-void app_main(void)
-{
-    esp_err_t ret;
-    // Options for mounting the filesystem.
+esp_err_t mount_fs(void) {
     esp_vfs_fat_sdmmc_mount_config_t mount_config = {
         .format_if_mount_failed = false,
         .max_files = 5,
         .allocation_unit_size = 16 * 1024
     };
     sdmmc_card_t* card;
-    const char* mount_point = MOUNT_POINT;
-
-    // add to OLED display
-    ESP_LOGI(TAG, "Initializing SD card in SPI mode...");
-
-    sdmmc_host_t host = SDSPI_HOST_DEFAULT();
-    spi_bus_config_t bus_cfg = {
-        .mosi_io_num = PIN_NUM_MOSI,
-        .miso_io_num = PIN_NUM_MISO,
-        .sclk_io_num = PIN_NUM_CLK,
-        .quadwp_io_num = -1,
-        .quadhd_io_num = -1,
-        .max_transfer_sz = 4000,
-    };
-    ret = spi_bus_initialize(host.slot, &bus_cfg, SPI_DMA_CHANNEL);
-    if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "Failed to initialize SPI bus.");
-        return;
-    }
-
-    // This initializes the slot without card detect (CD) and write protect (WP) signals.
-    // Modify slot_config.gpio_cd and slot_config.gpio_wp if your board has these signals.
     sdspi_device_config_t slot_config = SDSPI_DEVICE_CONFIG_DEFAULT();
-    slot_config.gpio_cs = PIN_NUM_CS;
+    slot_config.gpio_cs = PIN_NUM_CS1;
     slot_config.host_id = host.slot;
-
-    ret = esp_vfs_fat_sdspi_mount(mount_point, &host, &slot_config, &mount_config, &card);
-
-    if (ret != ESP_OK) {
-        if (ret == ESP_FAIL) {
-            ESP_LOGE(TAG, "Failed to mount filesystem.");
-        } else {
-            ESP_LOGE(TAG, "Failed to initialize the card (%s).", esp_err_to_name(ret));
-        }
-        return;
+    esp_err_t err = esp_vfs_fat_sdspi_mount(MOUNT_POINT, &host, &slot_config, &mount_config, &card);
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to mount filesystem (%s).", esp_err_to_name(err));
     }
+    return err;
+}
+
+void app_main(void)
+{
+    if ( (spi_init() != ESP_OK) || (mount_fs() != ESP_OK) )
+        return;
 
     // Card has been initialized, print its properties
     sdmmc_card_print_info(stdout, card);
