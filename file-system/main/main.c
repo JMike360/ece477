@@ -25,10 +25,10 @@ static const char *TAG = "sd-card";
 #define SPI_DMA_CHANNEL 1
 
 // Pin mapping when using SPI mode.
-#define PIN_NUM_MISO 2
-#define PIN_NUM_MOSI 15
+#define PIN_NUM_MISO 12
+#define PIN_NUM_MOSI 13
 #define PIN_NUM_CLK  14
-#define PIN_NUM_CS   13
+#define PIN_NUM_CS   32
 
 void app_main(void)
 {
