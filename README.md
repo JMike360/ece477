@@ -4,8 +4,8 @@ Purdue ECE senior design project of team 8 for Fall 2020
 ## Team members
 John Michael Bolinder (Team leader)  
 Ethan Rodriguez (Systems engineer, secondary software engineer)  
-Jiahui Zhu (Software, secondary hardware engineer)  
-Andrew Gan (Hardware, secondary systems engineer)  
+Jiahui Zhu (Software engineer, secondary hardware engineer)  
+Andrew Gan (Hardware engineer, secondary systems engineer)  
   
 ## Tools used
 USB URT module  
@@ -16,13 +16,13 @@ SD card reader
 LCD module  
   
 ## GPIO table
-| PIN | Function  | Endpoint   |
-|-----|-----------|------------|
-| 12  | HSPI_MISO | OLED 13, MicroSD Dout |
-| 13  | HSPI_MOSI | OLED 14, MicroSD Din  |
-| 14  | HSPI_CLK  | OLED 12, MIcroSD CLK  |
-| 15  | HSPI_CS0  | OLED 16    |
-| 32  | HSPI_CS1  | MicroSD CS |
+| PIN (not GPIO)| Name      | Function  | Endpoint              |
+|---------------|-----------|-----------|-----------------------|
+| 18            | MTDI      | HSPI_MISO | OLED 13, MicroSD Dout |
+| 20            | MTCK      | HSPI_MOSI | OLED 14, MicroSD Din  |
+| 17            | MTMS      | HSPI_CLK  | OLED 12, MicroSD CLK  |
+| 21            | MTDO      | HSPI_CS0  | OLED 16               |
+| 32            | SD_DATA_0 | HSPI_CS1  | MicroSD CS            |
   
 GPIO 6-11 - SPI flash  
 GPIO 34-39 - input mode only    
