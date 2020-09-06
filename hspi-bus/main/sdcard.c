@@ -26,7 +26,7 @@ esp_err_t mount_fs(void) {
     };
     sdmmc_card_t* card;
     sdspi_device_config_t slot_config = SDSPI_DEVICE_CONFIG_DEFAULT();
-    slot_config.gpio_cs = PIN_NUM_CS1;
+    slot_config.gpio_cs = PIN_NUM_CS_SD;
     slot_config.host_id = host.slot;
     esp_err_t err = esp_vfs_fat_sdspi_mount(MOUNT_POINT, &host, &slot_config, &mount_config, &card);
     if (err != ESP_OK) {

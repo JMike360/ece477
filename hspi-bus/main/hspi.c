@@ -1,6 +1,14 @@
 #include "hspi.h"
+#include "esp_err.h"
+#include "esp_log.h"
 
 esp_err_t hspi_init(void) {
+    // ensure module init once
+    static int isInit = 0;
+    if(isInit == 1)
+        return;
+
+    // default config for SD interface
     sdmmc_host_t host = SDSPI_HOST_DEFAULT();
     spi_bus_config_t bus_cfg = {
         .mosi_io_num = PIN_NUM_MOSI,
@@ -10,12 +18,13 @@ esp_err_t hspi_init(void) {
         .quadhd_io_num = -1,
         .max_transfer_sz = 4000,
     };
-    display_lower("");
-    display_upper("Initializing SD card in SPI mode...");
-    esp_err_t err = spi_bus_initialize(host.slot, &bus_cfg, SPI_DMA_CHANNEL);
+
+    // initialize HSPI bus
+    esp_err_t err = spi_bus_initialize(HSPI_HOST, &bus_cfg, SPI_DMA_CHANNEL);
     if (err == ESP_OK)
-        display_upper("SPI bus init success");
+        isInit = 1;
     else
-        display_upper("SPI bus init failed (%s).", esp_err_to_name(err));
+        ESP_LOGE("Failed to init SPI bus (%s).", esp_err_to_name(err));
+    
     return err;
 }
