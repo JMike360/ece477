@@ -1,6 +1,9 @@
 #ifndef __OLED_H__
 #define __OLED_H__
 
+#include "esp_err.h"
+#include "esp_log.h"
+
 // determine how trasmitted bits are processed
 #define OLED_CMD    0x0
 #define OLED_DATA   0x200
@@ -24,7 +27,7 @@
 #define OLED_WRITE_DATA       0x200 // OR with to write data
 #define OLED_READ_DATA        0x300 // OR with to read data
 
-void oled_init();
+esp_err_t oled_init();
 void clear_all();
 void display_upper(const char* str);
 void display_lower(const char* str);

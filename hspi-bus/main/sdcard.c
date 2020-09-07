@@ -8,9 +8,8 @@
 #include <string.h>
 #include <sys/unistd.h>
 #include <sys/stat.h>
-#include "esp_err.h"
-#include "esp_log.h"
 #include "sdkconfig.h"
+#include "include/hspi.h"
 #include "esp_vfs_fat.h"
 #include "sdmmc_cmd.h"
 #include "driver/sdmmc_host.h"
@@ -19,6 +18,7 @@ static const char *TAG = "sd-card";
 #define MOUNT_POINT "/sdcard"
 
 esp_err_t mount_fs(void) {
+    sdmmc_host_t host = SDSPI_HOST_DEFAULT();
     esp_vfs_fat_sdmmc_mount_config_t mount_config = {
         .format_if_mount_failed = false,
         .max_files = 5,
@@ -35,9 +35,9 @@ esp_err_t mount_fs(void) {
     return err;
 }
 
-void app_main(void)
+/*void example(void)
 {
-    if ( (spi_init() != ESP_OK) || (mount_fs() != ESP_OK) )
+    if ( (hspi_init() != ESP_OK) || (mount_fs() != ESP_OK) )
         return;
 
     // Card has been initialized, print its properties
@@ -92,4 +92,4 @@ void app_main(void)
 
     //deinitialize the bus after all devices are removed
     spi_bus_free(host.slot);
-}
+}*/

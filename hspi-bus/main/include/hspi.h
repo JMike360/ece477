@@ -4,6 +4,8 @@
 #include "driver/sdspi_host.h"
 #include "driver/spi_common.h"
 #include <unistd.h>
+#include "esp_err.h"
+#include "esp_log.h"
 
 // Pin mapping when using HSPI.
 #define PIN_NUM_MISO        12
@@ -17,6 +19,6 @@
 
 #define SPI_DMA_CHANNEL 1
 
-esp_err_t hspi_init(void);
+esp_err_t hspi_init();
 
 #endif

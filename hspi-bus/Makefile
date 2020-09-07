@@ -12,15 +12,20 @@ include $(IDF_PATH)/make/project.mk
 build:
 	idf.py build
 
+# replace '/dev/ttyUSB0' with ESP32 port name
+
 flash:
-	idf.py -p PORT flash
+	idf.py -p /dev/ttyUSB0 flash;
 
 monitor:
-	idf.py -p /dev/ttyUSB0 monitor
+	idf.py -p /dev/ttyUSB0 monitor;
 
 conf:
 	idf.py set-target esp32; \
 	idf.py menuconfig;
+
+clean:
+	idf.py fullclean;
 
 push:
 	git pull; \                                                                 
