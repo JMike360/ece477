@@ -3,7 +3,7 @@
 
 #include "driver/sdspi_host.h"
 #include "driver/spi_common.h"
-#include <unistd.h>
+#include <stdint.h>
 #include "esp_err.h"
 #include "esp_log.h"
 
@@ -20,5 +20,6 @@
 #define SPI_DMA_CHANNEL 1
 
 esp_err_t hspi_init();
+esp_err_t hspi_transmit(spi_device_handle_t dev, uint32_t msg, int len);
 
 #endif

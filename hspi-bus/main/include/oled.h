@@ -9,6 +9,7 @@
 #define OLED_DATA   0x200
 
 #define TAG "OLED"
+#define OLED_NUM_BITS 10
 
 // instruction code
 // ref: https://jcinfotr.com/Utilitaires/1602LCD.pdf
@@ -28,8 +29,8 @@
 #define OLED_READ_DATA        0x300 // OR with to read data
 
 esp_err_t oled_init();
-void clear_all();
-void display_upper(const char* str);
-void display_lower(const char* str);
+esp_err_t clear_all();
+esp_err_t display_upper(const char* str);
+esp_err_t display_lower(const char* str);
 
 #endif

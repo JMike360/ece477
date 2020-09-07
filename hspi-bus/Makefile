@@ -9,6 +9,10 @@ PROJECT_NAME := sd_card
 
 include $(IDF_PATH)/make/project.mk
 
+conf:
+	idf.py set-target esp32; \
+	idf.py menuconfig;
+
 build:
 	idf.py build
 
@@ -19,10 +23,6 @@ flash:
 
 monitor:
 	idf.py -p /dev/ttyUSB0 monitor;
-
-conf:
-	idf.py set-target esp32; \
-	idf.py menuconfig;
 
 clean:
 	idf.py fullclean;
