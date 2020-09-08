@@ -15,7 +15,8 @@ esp_err_t oled_init() {
     // config OLED communication
     spi_device_interface_config_t dev_cfg = {
         .mode = 0,
-        .clock_speed_hz = 10*1000*1000,
+        .command_bits = 16,
+        .clock_speed_hz = 24*100*1000,
         .queue_size = 4,
         .spics_io_num = PIN_NUM_CS_OLED,
     };
@@ -32,25 +33,19 @@ esp_err_t oled_init() {
     return err;
 }
 
-esp_err_t clear_all() {
-    return hspi_transmit(oled_handle, OLED_CMD | OLED_CLEAR_DISP, OLED_NUM_BITS);
-}
-
-esp_err_t display_upper(const char* str) {
+esp_err_t oled_display(const char* upper_str, const char* lower_str) {
     int i = 0;
     esp_err_t err = ESP_OK;
 
-    hspi_transmit(oled_handle, OLED_CMD | OLED_CURSOR_RET, OLED_NUM_BITS);
-    while( (str[i] != '\0') && (i < 16) && (err == ESP_OK)) {
-        err = hspi_transmit(oled_handle, OLED_DATA | str[i++], OLED_NUM_BITS);
+    hspi_transmit(oled_handle, OLED_CMD | OLED_CLEAR_DISP, OLED_NUM_BITS);
+    while( (upper_str[i] != '\0') && (i < 16) && (err == ESP_OK) ) {
+        err = hspi_transmit(oled_handle, OLED_DATA | upper_str[i++], OLED_NUM_BITS);
     }
-    hspi_transmit(oled_handle, OLED_CMD | OLED_CURSOR_RET, OLED_NUM_BITS);
-
+    i = 0;
+    while( (lower_str[i] != '\0') && (i < 16) && (err == ESP_OK) ) {
+        err = hspi_transmit(oled_handle, OLED_DATA | lower_str[i++], OLED_NUM_BITS);
+    }
     return err;
-}
-
-esp_err_t display_lower(const char* str) {
-    return ESP_OK;
 }
 
 void app_main() {
@@ -58,7 +53,7 @@ void app_main() {
     sleep(1);
     oled_init();
     sleep(1);
-    clear_all();
-    sleep(1);
-    display_upper("this is a test");
+    oled_display("This is a test", "Hello world");
+
+    while(1);
 }
