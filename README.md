@@ -28,4 +28,6 @@ GPIO 6-11 - SPI flash
 GPIO 34-39 - input mode only    
 [Full layout](https://microcontrollerslab.com/wp-content/uploads/2019/02/ESP32-pinout-mapping.png)  
 ESP32 tech ref manual page 57-58  
-
+  
+## References
+[ESP32 SPI MASTER API](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/spi_master.html)  
