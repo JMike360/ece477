@@ -24,6 +24,8 @@ LCD module
 | 21            | MTDO      | HSPI_CS0  | OLED 16               |
 | 32            | SD_DATA_0 | HSPI_CS1  | MicroSD CS            |
   
+Fingerprint Scanner needs 17 TX and 16 RX
+
 GPIO 6-11 - SPI flash  
 GPIO 34-39 - input mode only    
 [Full layout](https://microcontrollerslab.com/wp-content/uploads/2019/02/ESP32-pinout-mapping.png)  
