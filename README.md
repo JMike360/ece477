@@ -16,13 +16,14 @@ SD card reader
 LCD module  
   
 ## GPIO table
-| PIN (not GPIO)| Name      | Function  | Endpoint              |
-|---------------|-----------|-----------|-----------------------|
-| 18            | MTDI      | HSPI_MISO | OLED 13, MicroSD Dout |
-| 20            | MTCK      | HSPI_MOSI | OLED 14, MicroSD Din  |
-| 17            | MTMS      | HSPI_CLK  | OLED 12, MicroSD CLK  |
-| 21            | MTDO      | HSPI_CS0  | OLED 16               |
-| 32            | SD_DATA_0 | HSPI_CS1  | MicroSD CS            |
+| GPIO PIN      | Function  | Endpoint     |
+|---------------|-----------|--------------|
+| 12            | HSPI_MISO | MicroSD Dout |
+| 13            | HSPI_MOSI | MicroSD Din  |
+| 14            | HSPI_CLK  | MicroSD CLK  |
+| 15            | HSPI_CS0  | MicroSD CS   |
+| 16            | U2RXD     | Fingerprint Scanner TX |
+| 17            | U2TXD     | Fingerprint Scanner RX |
   
 Fingerprint Scanner needs 17 TX and 16 RX
 
