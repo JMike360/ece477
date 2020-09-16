@@ -1,0 +1,5 @@
+source "D:/JMike/Documents/GitHub_Repositories/ece477/esp-idf/components/app_update/Kconfig.projbuild"
+source "D:/JMike/Documents/GitHub_Repositories/ece477/esp-idf/components/bootloader/Kconfig.projbuild"
+source "D:/JMike/Documents/GitHub_Repositories/ece477/esp-idf/components/esptool_py/Kconfig.projbuild"
+source "D:/JMike/Documents/GitHub_Repositories/ece477/esp-idf/components/partition_table/Kconfig.projbuild"
+source "D:/JMike/Documents/GitHub_Repositories/ece477/team/ece477/hspi-bus/main/Kconfig.projbuild"
