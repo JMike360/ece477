@@ -1,0 +1,12 @@
+C:\Users\TheSi\source\repos\SkeletonKeyGUIFinal\SkeletonKeyGUIFinal\bin\Debug\SkeletonKeyGUIFinal.exe.config
+C:\Users\TheSi\source\repos\SkeletonKeyGUIFinal\SkeletonKeyGUIFinal\bin\Debug\SkeletonKeyGUIFinal.exe
+C:\Users\TheSi\source\repos\SkeletonKeyGUIFinal\SkeletonKeyGUIFinal\bin\Debug\SkeletonKeyGUIFinal.pdb
+C:\Users\TheSi\source\repos\SkeletonKeyGUIFinal\SkeletonKeyGUIFinal\obj\Debug\SkeletonKeyGUIFinal.csprojAssemblyReference.cache
+C:\Users\TheSi\source\repos\SkeletonKeyGUIFinal\SkeletonKeyGUIFinal\obj\Debug\SkeletonKeyGUIFinal.Form1.resources
+C:\Users\TheSi\source\repos\SkeletonKeyGUIFinal\SkeletonKeyGUIFinal\obj\Debug\SkeletonKeyGUIFinal.Properties.Resources.resources
+C:\Users\TheSi\source\repos\SkeletonKeyGUIFinal\SkeletonKeyGUIFinal\obj\Debug\SkeletonKeyGUIFinal.csproj.GenerateResource.cache
+C:\Users\TheSi\source\repos\SkeletonKeyGUIFinal\SkeletonKeyGUIFinal\obj\Debug\SkeletonKeyGUIFinal.csproj.CoreCompileInputs.cache
+C:\Users\TheSi\source\repos\SkeletonKeyGUIFinal\SkeletonKeyGUIFinal\obj\Debug\SkeletonKeyGUIFinal.exe
+C:\Users\TheSi\source\repos\SkeletonKeyGUIFinal\SkeletonKeyGUIFinal\obj\Debug\SkeletonKeyGUIFinal.pdb
+C:\Users\TheSi\source\repos\SkeletonKeyGUIFinal\SkeletonKeyGUIFinal\obj\Debug\SkeletonKeyGUIFinal.Form2.resources
+C:\Users\TheSi\source\repos\SkeletonKeyGUIFinal\SkeletonKeyGUIFinal\obj\Debug\SkeletonKeyGUIFinal.Form3.resources
