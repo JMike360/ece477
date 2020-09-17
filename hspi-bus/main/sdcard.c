@@ -6,33 +6,59 @@
 **************************************************/
 #include <stdio.h>
 #include <string.h>
-#include <sys/unistd.h>
+#include <unistd.h>
 #include <sys/stat.h>
 #include "sdkconfig.h"
-#include "include/hspi.h"
+#include "include/spi_init.h"
+#include "include/sdcard.h"
+#include "driver/gpio.h"
 #include "esp_vfs_fat.h"
 #include "sdmmc_cmd.h"
 #include "driver/sdmmc_host.h"
 
-static const char *TAG = "sd-card";
+static const char *TAG = "SD-CARD";
 #define MOUNT_POINT "/sdcard"
+static sdmmc_card_t* sdcard;
 
 esp_err_t mount_fs(void) {
-    sdmmc_host_t host = SDSPI_HOST_DEFAULT();
-    esp_vfs_fat_sdmmc_mount_config_t mount_config = {
+    esp_vfs_fat_mount_config_t mount_config = {
         .format_if_mount_failed = false,
-        .max_files = 5,
-        .allocation_unit_size = 16 * 1024
+        .max_files = 4,
+        .allocation_unit_size = 8 * 1024,
     };
-    sdmmc_card_t* card;
-    sdspi_device_config_t slot_config = SDSPI_DEVICE_CONFIG_DEFAULT();
-    slot_config.gpio_cs = PIN_NUM_CS_SD;
-    slot_config.host_id = host.slot;
-    esp_err_t err = esp_vfs_fat_sdspi_mount(MOUNT_POINT, &host, &slot_config, &mount_config, &card);
-    if (err != ESP_OK) {
-        ESP_LOGE(TAG, "Failed to mount filesystem (%s).", esp_err_to_name(err));
+
+    sdmmc_host_t host = SDSPI_HOST_DEFAULT();
+    sdspi_device_config_t dev_config = SDSPI_DEVICE_CONFIG_DEFAULT();
+    dev_config.gpio_cs = PIN_NUM_CS_SD;
+    dev_config.host_id = host.slot;
+
+    sleep(3);
+
+    esp_err_t ret = esp_vfs_fat_sdspi_mount(MOUNT_POINT, &host, &dev_config,
+        &mount_config, &sdcard);
+    if (ret == ESP_OK) {
+        ESP_LOGI(TAG, "Successfully mounted SD card.");
+        sdmmc_card_print_info(stdout, sdcard);
     }
-    return err;
+    else
+        ESP_LOGE(TAG, "Failed to mount SD card (%s).", esp_err_to_name(ret));
+    
+    return ret;
+}
+
+void app_main() {
+    spi_init(SPI2_HOST);
+    mount_fs();
+
+    ESP_LOGI(TAG, "Opening file");
+    FILE* f = fopen(MOUNT_POINT"/hello.txt", "w");
+    if (f == NULL) {
+        ESP_LOGE(TAG, "Failed to open file for writing");
+        return;
+    }
+    fprintf(f, "Hello %s!\n", sdcard->cid.name);
+    fclose(f);
+    ESP_LOGI(TAG, "File written");
 }
 
 /*void example(void)
