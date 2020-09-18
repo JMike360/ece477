@@ -191,4 +191,12 @@ Wire Wire Line
 	7100 5300 7100 5500
 Wire Wire Line
 	7100 5500 5800 5500
+Text Notes 7400 7500 0    50   ~ 0
+Senior Design Skeleton Key
+Text Notes 8150 7650 0    50   ~ 0
+Sep 6, 2020
+Text Notes 10650 7650 0    50   ~ 0
+0.1
+Text Notes 7250 7350 0    50   ~ 0
+pcb/ece477.sch
 $EndSCHEMATC

@@ -16,9 +16,11 @@
 #include "sdmmc_cmd.h"
 #include "driver/sdmmc_host.h"
 
-static const char *TAG = "SD-CARD";
 #define MOUNT_POINT "/sdcard"
+
+static const char *TAG = "SD-CARD";
 static sdmmc_card_t* sdcard;
+static is_mounted = false;
 
 esp_err_t mount_fs(void) {
     esp_vfs_fat_mount_config_t mount_config = {
@@ -39,11 +41,28 @@ esp_err_t mount_fs(void) {
     if (ret == ESP_OK) {
         ESP_LOGI(TAG, "Successfully mounted SD card.");
         sdmmc_card_print_info(stdout, sdcard);
+        is_mounted = true;
     }
     else
         ESP_LOGE(TAG, "Failed to mount SD card (%s).", esp_err_to_name(ret));
     
     return ret;
+}
+
+void retrieve_file(const char* filename, size_t size, char* dest) {
+    if (!is_mounted) {
+        ESP_LOGE(TAG, "Attempting to retrieve file before mounting file system.");
+        return;
+    }
+
+    FILE* fp = fopen(filename, "r");
+    char curr = '\0';
+    int i = 0;
+    do {
+        fread(&(dest[i++]), sizeof(char), 1, fp);
+    } while( !feof(fp) && (i < size) );
+
+    return;
 }
 
 void app_main() {
