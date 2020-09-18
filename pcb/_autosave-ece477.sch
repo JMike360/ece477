@@ -13,86 +13,6 @@ Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
-$Comp
-L Connector:Micro_SD_Card J?
-U 1 1 5F55F02A
-P 8050 5000
-F 0 "J?" H 8000 5717 50  0000 C CNN
-F 1 "Micro_SD_Card" H 8000 5626 50  0000 C CNN
-F 2 "" H 9200 5300 50  0001 C CNN
-F 3 "http://katalog.we-online.de/em/datasheet/693072010801.pdf" H 8050 5000 50  0001 C CNN
-	1    8050 5000
-	1    0    0    -1  
-$EndComp
-$Comp
-L RF_Module:ESP32-PICO-D4 U?
-U 1 1 5F5657D7
-P 4500 4050
-F 0 "U?" H 4500 2361 50  0000 C CNN
-F 1 "ESP32-PICO-D4" H 4500 2270 50  0000 C CNN
-F 2 "Package_DFN_QFN:QFN-48-1EP_7x7mm_P0.5mm_EP5.3x5.3mm" H 4500 2350 50  0001 C CNN
-F 3 "https://www.espressif.com/sites/default/files/documentation/esp32-pico-d4_datasheet_en.pdf" H 4750 3050 50  0001 C CNN
-	1    4500 4050
-	1    0    0    -1  
-$EndComp
-Wire Bus Line
-	5300 3650 5800 3650
-Wire Bus Line
-	5800 3650 5800 5600
-Wire Bus Line
-	5300 3750 6150 3750
-Wire Bus Line
-	6150 3750 6150 5600
-Wire Bus Line
-	5300 3850 6500 3850
-Wire Bus Line
-	6500 3850 6500 5600
-Wire Wire Line
-	7150 4900 6150 4900
-Wire Wire Line
-	5450 4800 5450 4850
-Wire Wire Line
-	5450 4850 5300 4850
-Wire Wire Line
-	5450 4800 7150 4800
-Wire Wire Line
-	7150 5100 6500 5100
-$Comp
-L power:GND #PWR?
-U 1 1 5F5864AA
-P 7000 5200
-F 0 "#PWR?" H 7000 4950 50  0001 C CNN
-F 1 "GND" H 7005 5027 50  0000 C CNN
-F 2 "" H 7000 5200 50  0001 C CNN
-F 3 "" H 7000 5200 50  0001 C CNN
-	1    7000 5200
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	7150 5000 6950 5000
-Wire Bus Line
-	10150 1450 2800 1450
-$Comp
-L power:+3.3V #PWR?
-U 1 1 5F59BC5A
-P 2800 1450
-F 0 "#PWR?" H 2800 1300 50  0001 C CNN
-F 1 "+3.3V" H 2815 1623 50  0000 C CNN
-F 2 "" H 2800 1450 50  0001 C CNN
-F 3 "" H 2800 1450 50  0001 C CNN
-	1    2800 1450
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	4300 2450 4300 1450
-Wire Wire Line
-	7000 5200 7150 5200
-Wire Wire Line
-	7150 5300 7100 5300
-Wire Wire Line
-	7100 5300 7100 5500
-Wire Wire Line
-	7100 5500 5800 5500
 Text Notes 7400 7500 0    50   ~ 0
 Senior Design Skeleton Key
 Text Notes 8150 7650 0    50   ~ 0
@@ -101,4 +21,223 @@ Text Notes 10650 7650 0    50   ~ 0
 0.1
 Text Notes 7250 7350 0    50   ~ 0
 pcb/ece477.sch
+$Comp
+L Device:ADA751 U?
+U 1 1 5F6473B1
+P 6850 4850
+F 0 "U?" H 7228 5276 50  0000 L CNN
+F 1 "ADA751" H 7228 5185 50  0000 L CNN
+F 2 "" H 6850 4850 50  0001 C CNN
+F 3 "" H 6850 4850 50  0001 C CNN
+	1    6850 4850
+	1    0    0    -1  
+$EndComp
+$Comp
+L RF_Module:ESP32-WROOM-32 U?
+U 1 1 5F648477
+P 4300 3850
+F 0 "U?" H 4300 5431 50  0000 C CNN
+F 1 "ESP32-WROOM-32" H 4300 5340 50  0000 C CNN
+F 2 "RF_Module:ESP32-WROOM-32" H 4300 2350 50  0001 C CNN
+F 3 "https://www.espressif.com/sites/default/files/documentation/esp32-wroom-32_datasheet_en.pdf" H 4000 3900 50  0001 C CNN
+	1    4300 3850
+	1    0    0    -1  
+$EndComp
+$Comp
+L Connector:Micro_SD_Card J?
+U 1 1 5F55F02A
+P 7400 3350
+F 0 "J?" H 7350 4067 50  0000 C CNN
+F 1 "Micro_SD_Card" H 7350 3976 50  0000 C CNN
+F 2 "" H 8550 3650 50  0001 C CNN
+F 3 "http://katalog.we-online.de/em/datasheet/693072010801.pdf" H 7400 3350 50  0001 C CNN
+	1    7400 3350
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 5F653272
+P 5100 5350
+F 0 "#PWR?" H 5100 5100 50  0001 C CNN
+F 1 "GND" H 5105 5177 50  0000 C CNN
+F 2 "" H 5100 5350 50  0001 C CNN
+F 3 "" H 5100 5350 50  0001 C CNN
+	1    5100 5350
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4300 5250 4300 5350
+Wire Wire Line
+	4300 5350 5100 5350
+Connection ~ 5100 5350
+$Comp
+L Device:Battery_Cell BT?
+U 1 1 5F6552A0
+P 4950 1700
+F 0 "BT?" V 4695 1750 50  0000 C CNN
+F 1 "3.7V" V 4786 1750 50  0000 C CNN
+F 2 "" V 4950 1760 50  0001 C CNN
+F 3 "~" V 4950 1760 50  0001 C CNN
+	1    4950 1700
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:R 10kΩ
+U 1 1 5F659738
+P 5450 1700
+F 0 "10kΩ" V 5243 1700 50  0000 C CNN
+F 1 "R" V 5334 1700 50  0000 C CNN
+F 2 "" V 5380 1700 50  0001 C CNN
+F 3 "~" H 5450 1700 50  0001 C CNN
+	1    5450 1700
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	5150 1700 5250 1700
+Wire Wire Line
+	6050 1700 6300 1700
+Wire Wire Line
+	6300 1700 6300 1300
+Wire Wire Line
+	6300 1300 4850 1300
+Wire Wire Line
+	4850 1300 4850 1500
+Wire Wire Line
+	4850 1500 4650 1500
+Wire Wire Line
+	4350 1500 4350 1650
+Connection ~ 4850 1500
+Wire Wire Line
+	4850 1500 4850 1700
+$Comp
+L power:GND #PWR?
+U 1 1 5F661FFA
+P 4350 1650
+F 0 "#PWR?" H 4350 1400 50  0001 C CNN
+F 1 "GND" H 4355 1477 50  0000 C CNN
+F 2 "" H 4350 1650 50  0001 C CNN
+F 3 "" H 4350 1650 50  0001 C CNN
+	1    4350 1650
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6400 4300 5900 4300
+Wire Wire Line
+	5900 4300 5900 3650
+Wire Wire Line
+	5900 3650 4900 3650
+Wire Wire Line
+	6400 4450 5500 4450
+Wire Wire Line
+	5500 4450 5500 3750
+Wire Wire Line
+	5500 3750 4900 3750
+Wire Wire Line
+	6400 4600 6150 4600
+Wire Wire Line
+	6150 4600 6150 5350
+Wire Wire Line
+	5250 1700 5250 2050
+Wire Wire Line
+	5250 3550 6000 3550
+Wire Wire Line
+	6000 3550 6000 4150
+Wire Wire Line
+	6000 4150 6400 4150
+Connection ~ 5250 1700
+Wire Wire Line
+	5250 1700 5300 1700
+Wire Wire Line
+	5600 1700 5700 1700
+Wire Wire Line
+	6500 3650 6100 3650
+Wire Wire Line
+	6100 3650 6100 3250
+Wire Wire Line
+	6100 3250 4900 3250
+Wire Wire Line
+	6500 3250 6150 3250
+Wire Wire Line
+	6150 3350 5600 3350
+Wire Wire Line
+	6150 3250 6150 3350
+Wire Wire Line
+	6500 3350 6350 3350
+Wire Wire Line
+	6350 3350 6350 2500
+Wire Wire Line
+	6350 2500 5700 2500
+Wire Wire Line
+	5700 2500 5700 1700
+Connection ~ 5700 1700
+Wire Wire Line
+	5700 1700 5750 1700
+Wire Wire Line
+	6500 3450 4900 3450
+Wire Wire Line
+	6500 3150 5100 3150
+Wire Wire Line
+	5100 3150 5100 3550
+Wire Wire Line
+	5100 3550 4900 3550
+Wire Wire Line
+	6500 3550 6150 3550
+Wire Wire Line
+	6150 3550 6150 4600
+Connection ~ 6150 4600
+Wire Wire Line
+	5100 5350 6150 5350
+$Comp
+L Device:R 10kΩ
+U 1 1 5F685A63
+P 5600 2800
+F 0 "10kΩ" H 5530 2754 50  0000 R CNN
+F 1 "R" H 5530 2845 50  0000 R CNN
+F 2 "" V 5530 2800 50  0001 C CNN
+F 3 "~" H 5600 2800 50  0001 C CNN
+	1    5600 2800
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	5600 2950 5600 3350
+Connection ~ 5600 3350
+Wire Wire Line
+	5600 3350 4900 3350
+Wire Wire Line
+	5600 2650 5600 2500
+Wire Wire Line
+	5600 2500 5700 2500
+Connection ~ 5700 2500
+$Comp
+L Device:R 90kΩ
+U 1 1 5F65B86C
+P 5900 1700
+F 0 "90kΩ" V 5693 1700 50  0000 C CNN
+F 1 "R" V 5784 1700 50  0000 C CNN
+F 2 "" V 5830 1700 50  0001 C CNN
+F 3 "~" H 5900 1700 50  0001 C CNN
+	1    5900 1700
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:C 1µF
+U 1 1 5F6903A5
+P 4800 2050
+F 0 "1µF" V 5052 2050 50  0000 C CNN
+F 1 "C" V 4961 2050 50  0000 C CNN
+F 2 "" H 4838 1900 50  0001 C CNN
+F 3 "~" H 4800 2050 50  0001 C CNN
+	1    4800 2050
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	4950 2050 5250 2050
+Connection ~ 5250 2050
+Wire Wire Line
+	5250 2050 5250 3550
+Wire Wire Line
+	4650 2050 4650 1500
+Connection ~ 4650 1500
+Wire Wire Line
+	4650 1500 4350 1500
 $EndSCHEMATC
