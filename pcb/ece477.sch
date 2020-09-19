@@ -22,17 +22,6 @@ Text Notes 10650 7650 0    50   ~ 0
 Text Notes 7250 7350 0    50   ~ 0
 pcb/ece477.sch
 $Comp
-L Device:ADA751 U2
-U 1 1 5F6473B1
-P 6850 4850
-F 0 "U2" H 7228 5276 50  0000 L CNN
-F 1 "ADA751" H 7228 5185 50  0000 L CNN
-F 2 "" H 6850 4850 50  0001 C CNN
-F 3 "" H 6850 4850 50  0001 C CNN
-	1    6850 4850
-	1    0    0    -1  
-$EndComp
-$Comp
 L RF_Module:ESP32-WROOM-32 U1
 U 1 1 5F648477
 P 4300 3850
@@ -41,17 +30,6 @@ F 1 "ESP32-WROOM-32" H 4300 5340 50  0000 C CNN
 F 2 "Package_DFN_QFN:QFN-48-1EP_5x5mm_P0.35mm_EP3.7x3.7mm" H 4300 2350 50  0001 C CNN
 F 3 "https://www.espressif.com/sites/default/files/documentation/esp32-wroom-32_datasheet_en.pdf" H 4000 3900 50  0001 C CNN
 	1    4300 3850
-	1    0    0    -1  
-$EndComp
-$Comp
-L Connector:Micro_SD_Card J1
-U 1 1 5F55F02A
-P 7400 3350
-F 0 "J1" H 7350 4067 50  0000 C CNN
-F 1 "Micro_SD_Card" H 7350 3976 50  0000 C CNN
-F 2 "Connector_Card:microSD_HC_Hirose_DM3BT-DSF-PEJS" H 8550 3650 50  0001 C CNN
-F 3 "http://katalog.we-online.de/em/datasheet/693072010801.pdf" H 7400 3350 50  0001 C CNN
-	1    7400 3350
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -108,79 +86,28 @@ F 3 "" H 3950 1650 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	6400 4300 5900 4300
-Wire Wire Line
 	5900 4300 5900 3650
 Wire Wire Line
 	5900 3650 4900 3650
 Wire Wire Line
-	6400 4450 5500 4450
-Wire Wire Line
-	5500 4450 5500 3750
-Wire Wire Line
 	5500 3750 4900 3750
 Wire Wire Line
-	6400 4600 6150 4600
-Wire Wire Line
-	6150 4600 6150 5350
-Wire Wire Line
 	5250 3550 6000 3550
-Wire Wire Line
-	6000 3550 6000 4150
-Wire Wire Line
-	6000 4150 6400 4150
 Wire Wire Line
 	5250 1700 5300 1700
 Wire Wire Line
 	5600 1700 5700 1700
-Wire Wire Line
-	6500 3650 6100 3650
-Wire Wire Line
-	6100 3650 6100 3250
-Wire Wire Line
-	6100 3250 4900 3250
-Wire Wire Line
-	6500 3250 6150 3250
-Wire Wire Line
-	6150 3350 5600 3350
-Wire Wire Line
-	6150 3250 6150 3350
-Wire Wire Line
-	6500 3350 6350 3350
-Wire Wire Line
-	6350 3350 6350 2500
-Wire Wire Line
-	6350 2500 5700 2500
 Wire Wire Line
 	5700 2500 5700 1700
 Connection ~ 5700 1700
 Wire Wire Line
 	5700 1700 5750 1700
 Wire Wire Line
-	6500 3450 4900 3450
-Wire Wire Line
-	6500 3150 5100 3150
-Wire Wire Line
-	5100 3150 5100 3550
-Wire Wire Line
-	5100 3550 4900 3550
-Wire Wire Line
-	6500 3550 6150 3550
-Wire Wire Line
-	6150 3550 6150 4600
-Connection ~ 6150 4600
-Wire Wire Line
 	5100 5350 6150 5350
-Wire Wire Line
-	5600 2950 5600 3350
-Connection ~ 5600 3350
-Wire Wire Line
-	5600 3350 4900 3350
 Wire Wire Line
 	5600 2650 5600 2500
 Wire Wire Line
 	5600 2500 5700 2500
-Connection ~ 5700 2500
 $Comp
 L Device:C C1
 U 1 1 5F6903A5
@@ -248,4 +175,77 @@ Wire Wire Line
 Connection ~ 5250 1700
 Wire Wire Line
 	4450 1300 6300 1300
+$Comp
+L Connector:Conn_01x08_Male J2
+U 1 1 5F66F62E
+P 6700 3350
+F 0 "J2" H 6672 3232 50  0000 R CNN
+F 1 "ADA254" H 6672 3323 50  0000 R CNN
+F 2 "Connector_PinHeader_2.00mm:PinHeader_1x08_P2.00mm_Vertical" H 6700 3350 50  0001 C CNN
+F 3 "~" H 6700 3350 50  0001 C CNN
+	1    6700 3350
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	4900 3250 6500 3250
+Wire Wire Line
+	4900 3350 5600 3350
+Wire Wire Line
+	5600 3350 5600 3150
+Wire Wire Line
+	5600 3150 6500 3150
+Wire Wire Line
+	4900 3450 5950 3450
+Wire Wire Line
+	5950 3450 5950 3350
+Wire Wire Line
+	5950 3350 6500 3350
+Wire Wire Line
+	4900 3550 5150 3550
+Wire Wire Line
+	5150 3550 5150 3050
+Wire Wire Line
+	5150 3050 6500 3050
+Wire Wire Line
+	6500 3450 6150 3450
+Wire Wire Line
+	5600 2950 5600 3150
+Connection ~ 5600 3150
+Wire Wire Line
+	6000 3550 6500 3550
+Connection ~ 6000 3550
+Wire Wire Line
+	6150 3450 6150 4500
+$Comp
+L Connector_Generic:Conn_01x05 J1
+U 1 1 5F679D6C
+P 6650 4400
+F 0 "J1" H 6730 4442 50  0000 L CNN
+F 1 "ADA751" H 6730 4351 50  0000 L CNN
+F 2 "Connector_PinHeader_2.00mm:PinHeader_1x05_P2.00mm_Vertical" H 6650 4400 50  0001 C CNN
+F 3 "~" H 6650 4400 50  0001 C CNN
+	1    6650 4400
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6000 4200 6450 4200
+Wire Wire Line
+	6000 3550 6000 4200
+Wire Wire Line
+	5900 4300 6450 4300
+Wire Wire Line
+	5500 3750 5500 4400
+Wire Wire Line
+	5500 4400 6450 4400
+Wire Wire Line
+	6450 4500 6150 4500
+Connection ~ 6150 4500
+Wire Wire Line
+	6150 4500 6150 5350
+NoConn ~ 6450 4600
+NoConn ~ 6500 2950
+NoConn ~ 6500 3650
+Wire Wire Line
+	4850 2050 4850 1700
+Connection ~ 4850 1700
 $EndSCHEMATC
