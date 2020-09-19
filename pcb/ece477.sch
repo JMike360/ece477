@@ -1,4 +1,251 @@
-EESchema Schematic File Version 2
-EELAYER 25 0
+EESchema Schematic File Version 4
+EELAYER 30 0
 EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 1
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+Text Notes 7400 7500 0    50   ~ 0
+Senior Design Skeleton Key
+Text Notes 8150 7650 0    50   ~ 0
+Sep 6, 2020
+Text Notes 10650 7650 0    50   ~ 0
+0.1
+Text Notes 7250 7350 0    50   ~ 0
+pcb/ece477.sch
+$Comp
+L Device:ADA751 U2
+U 1 1 5F6473B1
+P 6850 4850
+F 0 "U2" H 7228 5276 50  0000 L CNN
+F 1 "ADA751" H 7228 5185 50  0000 L CNN
+F 2 "" H 6850 4850 50  0001 C CNN
+F 3 "" H 6850 4850 50  0001 C CNN
+	1    6850 4850
+	1    0    0    -1  
+$EndComp
+$Comp
+L RF_Module:ESP32-WROOM-32 U1
+U 1 1 5F648477
+P 4300 3850
+F 0 "U1" H 4300 5431 50  0000 C CNN
+F 1 "ESP32-WROOM-32" H 4300 5340 50  0000 C CNN
+F 2 "Package_DFN_QFN:QFN-48-1EP_5x5mm_P0.35mm_EP3.7x3.7mm" H 4300 2350 50  0001 C CNN
+F 3 "https://www.espressif.com/sites/default/files/documentation/esp32-wroom-32_datasheet_en.pdf" H 4000 3900 50  0001 C CNN
+	1    4300 3850
+	1    0    0    -1  
+$EndComp
+$Comp
+L Connector:Micro_SD_Card J1
+U 1 1 5F55F02A
+P 7400 3350
+F 0 "J1" H 7350 4067 50  0000 C CNN
+F 1 "Micro_SD_Card" H 7350 3976 50  0000 C CNN
+F 2 "Connector_Card:microSD_HC_Hirose_DM3BT-DSF-PEJS" H 8550 3650 50  0001 C CNN
+F 3 "http://katalog.we-online.de/em/datasheet/693072010801.pdf" H 7400 3350 50  0001 C CNN
+	1    7400 3350
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR0101
+U 1 1 5F653272
+P 5100 5350
+F 0 "#PWR0101" H 5100 5100 50  0001 C CNN
+F 1 "GND" H 5105 5177 50  0000 C CNN
+F 2 "" H 5100 5350 50  0001 C CNN
+F 3 "" H 5100 5350 50  0001 C CNN
+	1    5100 5350
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4300 5250 4300 5350
+Wire Wire Line
+	4300 5350 5100 5350
+Connection ~ 5100 5350
+$Comp
+L Device:Battery_Cell BT1
+U 1 1 5F6552A0
+P 4550 1700
+F 0 "BT1" V 4295 1750 50  0000 C CNN
+F 1 "3.7V" V 4386 1750 50  0000 C CNN
+F 2 "Battery:Battery_Panasonic_CR1025-VSK_Vertical_CircularHoles" V 4550 1760 50  0001 C CNN
+F 3 "~" V 4550 1760 50  0001 C CNN
+	1    4550 1700
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	4750 1700 4850 1700
+Wire Wire Line
+	6050 1700 6300 1700
+Wire Wire Line
+	6300 1700 6300 1300
+Wire Wire Line
+	4450 1300 4450 1500
+Wire Wire Line
+	4450 1500 4250 1500
+Wire Wire Line
+	3950 1500 3950 1650
+Connection ~ 4450 1500
+Wire Wire Line
+	4450 1500 4450 1700
+$Comp
+L power:GND #PWR0102
+U 1 1 5F661FFA
+P 3950 1650
+F 0 "#PWR0102" H 3950 1400 50  0001 C CNN
+F 1 "GND" H 3955 1477 50  0000 C CNN
+F 2 "" H 3950 1650 50  0001 C CNN
+F 3 "" H 3950 1650 50  0001 C CNN
+	1    3950 1650
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6400 4300 5900 4300
+Wire Wire Line
+	5900 4300 5900 3650
+Wire Wire Line
+	5900 3650 4900 3650
+Wire Wire Line
+	6400 4450 5500 4450
+Wire Wire Line
+	5500 4450 5500 3750
+Wire Wire Line
+	5500 3750 4900 3750
+Wire Wire Line
+	6400 4600 6150 4600
+Wire Wire Line
+	6150 4600 6150 5350
+Wire Wire Line
+	5250 3550 6000 3550
+Wire Wire Line
+	6000 3550 6000 4150
+Wire Wire Line
+	6000 4150 6400 4150
+Wire Wire Line
+	5250 1700 5300 1700
+Wire Wire Line
+	5600 1700 5700 1700
+Wire Wire Line
+	6500 3650 6100 3650
+Wire Wire Line
+	6100 3650 6100 3250
+Wire Wire Line
+	6100 3250 4900 3250
+Wire Wire Line
+	6500 3250 6150 3250
+Wire Wire Line
+	6150 3350 5600 3350
+Wire Wire Line
+	6150 3250 6150 3350
+Wire Wire Line
+	6500 3350 6350 3350
+Wire Wire Line
+	6350 3350 6350 2500
+Wire Wire Line
+	6350 2500 5700 2500
+Wire Wire Line
+	5700 2500 5700 1700
+Connection ~ 5700 1700
+Wire Wire Line
+	5700 1700 5750 1700
+Wire Wire Line
+	6500 3450 4900 3450
+Wire Wire Line
+	6500 3150 5100 3150
+Wire Wire Line
+	5100 3150 5100 3550
+Wire Wire Line
+	5100 3550 4900 3550
+Wire Wire Line
+	6500 3550 6150 3550
+Wire Wire Line
+	6150 3550 6150 4600
+Connection ~ 6150 4600
+Wire Wire Line
+	5100 5350 6150 5350
+Wire Wire Line
+	5600 2950 5600 3350
+Connection ~ 5600 3350
+Wire Wire Line
+	5600 3350 4900 3350
+Wire Wire Line
+	5600 2650 5600 2500
+Wire Wire Line
+	5600 2500 5700 2500
+Connection ~ 5700 2500
+$Comp
+L Device:C C1
+U 1 1 5F6903A5
+P 4400 2050
+F 0 "C1" V 4652 2050 50  0000 C CNN
+F 1 "1µF" V 4561 2050 50  0000 C CNN
+F 2 "Capacitor_SMD:CP_Elec_3x5.3" H 4438 1900 50  0001 C CNN
+F 3 "~" H 4400 2050 50  0001 C CNN
+	1    4400 2050
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	4550 2050 4850 2050
+Wire Wire Line
+	4250 2050 4250 1500
+Connection ~ 4250 1500
+Wire Wire Line
+	4250 1500 3950 1500
+$Comp
+L Device:R R2
+U 1 1 5F685A63
+P 5600 2800
+F 0 "R2" H 5530 2754 50  0000 R CNN
+F 1 "10kΩ" H 5530 2845 50  0000 R CNN
+F 2 "Resistor_SMD:R_0201_0603Metric" V 5530 2800 50  0001 C CNN
+F 3 "~" H 5600 2800 50  0001 C CNN
+	1    5600 2800
+	-1   0    0    1   
+$EndComp
+$Comp
+L Device:R R3
+U 1 1 5F65B86C
+P 5900 1700
+F 0 "R3" V 5693 1700 50  0000 C CNN
+F 1 "90kΩ" V 5784 1700 50  0000 C CNN
+F 2 "Resistor_SMD:R_0201_0603Metric" V 5830 1700 50  0001 C CNN
+F 3 "~" H 5900 1700 50  0001 C CNN
+	1    5900 1700
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:R R1
+U 1 1 5F659738
+P 5450 1700
+F 0 "R1" V 5243 1700 50  0000 C CNN
+F 1 "10kΩ" V 5334 1700 50  0000 C CNN
+F 2 "Resistor_SMD:R_0201_0603Metric" V 5380 1700 50  0001 C CNN
+F 3 "~" H 5450 1700 50  0001 C CNN
+	1    5450 1700
+	0    1    1    0   
+$EndComp
+$Comp
+L Switch:SW_Push SW1
+U 1 1 5F656E30
+P 5050 1700
+F 0 "SW1" H 5050 1985 50  0000 C CNN
+F 1 "SW_Push" H 5050 1894 50  0000 C CNN
+F 2 "Button_Switch_SMD:SW_DIP_SPSTx01_Slide_6.7x4.1mm_W6.73mm_P2.54mm_LowProfile_JPin" H 5050 1900 50  0001 C CNN
+F 3 "~" H 5050 1900 50  0001 C CNN
+	1    5050 1700
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5250 1700 5250 3550
+Connection ~ 5250 1700
+Wire Wire Line
+	4450 1300 6300 1300
 $EndSCHEMATC
