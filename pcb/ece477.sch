@@ -54,7 +54,7 @@ U 1 1 5F6552A0
 P 4550 1700
 F 0 "BT1" V 4295 1750 50  0000 C CNN
 F 1 "3.7V" V 4386 1750 50  0000 C CNN
-F 2 "Battery:Battery_Panasonic_CR1025-VSK_Vertical_CircularHoles" V 4550 1760 50  0001 C CNN
+F 2 "Connector_PinHeader_2.00mm:PinHeader_1x02_P2.00mm_Vertical" V 4550 1760 50  0001 C CNN
 F 3 "~" V 4550 1760 50  0001 C CNN
 	1    4550 1700
 	0    1    1    0   
@@ -92,13 +92,11 @@ Wire Wire Line
 Wire Wire Line
 	5500 3750 4900 3750
 Wire Wire Line
-	5250 3550 6000 3550
-Wire Wire Line
 	5250 1700 5300 1700
 Wire Wire Line
 	5600 1700 5700 1700
 Wire Wire Line
-	5700 2500 5700 1700
+	5700 2500 5700 2200
 Connection ~ 5700 1700
 Wire Wire Line
 	5700 1700 5750 1700
@@ -212,9 +210,6 @@ Wire Wire Line
 	5600 2950 5600 3150
 Connection ~ 5600 3150
 Wire Wire Line
-	6000 3550 6500 3550
-Connection ~ 6000 3550
-Wire Wire Line
 	6150 3450 6150 4500
 $Comp
 L Connector_Generic:Conn_01x05 J1
@@ -229,8 +224,6 @@ F 3 "~" H 6650 4400 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	6000 4200 6450 4200
-Wire Wire Line
-	6000 3550 6000 4200
 Wire Wire Line
 	5900 4300 6450 4300
 Wire Wire Line
@@ -248,4 +241,46 @@ NoConn ~ 6500 3650
 Wire Wire Line
 	4850 2050 4850 1700
 Connection ~ 4850 1700
+$Comp
+L Connector:Conn_01x02_Male J3
+U 1 1 5F664963
+P 6300 2550
+F 0 "J3" H 6272 2432 50  0000 R CNN
+F 1 "ESP_UART" H 6272 2523 50  0000 R CNN
+F 2 "Connector_PinHeader_2.00mm:PinHeader_1x02_P2.00mm_Vertical" H 6300 2550 50  0001 C CNN
+F 3 "~" H 6300 2550 50  0001 C CNN
+	1    6300 2550
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	5150 2450 6100 2450
+Wire Wire Line
+	4300 2450 4850 2450
+Wire Wire Line
+	4850 2450 4850 2200
+Connection ~ 5700 2200
+Wire Wire Line
+	5700 2200 5700 1700
+Wire Wire Line
+	5250 3550 6000 3550
+Wire Wire Line
+	6000 3550 6000 4200
+Wire Wire Line
+	4850 2200 5700 2200
+Wire Wire Line
+	5700 2200 6050 2200
+Wire Wire Line
+	6050 2200 6050 3550
+Wire Wire Line
+	6050 3550 6500 3550
+Wire Wire Line
+	4900 2950 5150 2950
+Wire Wire Line
+	5150 2450 5150 2950
+Wire Wire Line
+	5050 2550 5050 2750
+Wire Wire Line
+	5050 2750 4900 2750
+Wire Wire Line
+	5050 2550 6100 2550
 $EndSCHEMATC
