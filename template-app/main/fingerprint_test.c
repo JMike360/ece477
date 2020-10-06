@@ -13,7 +13,7 @@
 //RX/TX pins on the feather board are labelled as 16RX - GPIO3 / 17TX - GPIO1 for the UART0 port
 #define PIN_TX 17
 #define PIN_RX 16
-#define BAUD_RATE 115200
+#define BAUD_RATE 57600
 #define PORT_NUM 2
 #define STACK_SIZE 2048
 #define BUF_SIZE 1024
@@ -62,7 +62,7 @@ int sendHandshake(){
     ESP_ERROR_CHECK(uart_param_config(PORT_NUM, &config));
     ESP_ERROR_CHECK(uart_set_pin(PORT_NUM, PIN_TX, PIN_RX, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE));
 
-    uint8_t* data = (uint8_t*) malloc(BUF_SIZE);
+    uint8_t* data = (uint8_t*) malloc(13);
 
     typedef struct handshake_packet {
         uint16_t header;
@@ -99,9 +99,39 @@ int sendHandshake(){
     data[10]= hs_pkt->ctrl;
     data[11]= (uint8_t)(hs_pkt->checksum >> 8);
     data[12]= (uint8_t)(hs_pkt->checksum & 0xFF);
-    free(hs_pkt);
+    
+    /*data[1] = 0x41;
+    data[2] = 0x42;
+    data[3] = 0x43;
+    data[4] = 0x44;
+    data[5] = 0x45;//addr[0] is same as all others, fix later
+    data[6] = 0x46;
+    data[7] = 0x47;
+    data[8] = 0x48;
+    data[9] = 0x49;
+    data[10]= 0x4A;
+    data[11]= 0x4B;
+    data[12]= 0x4C;
+    */
+    //free(hs_pkt);
+    uint8_t* recv = (uint8_t*)malloc(BUF_SIZE);
+    for(int i = 0; i < BUF_SIZE; i++){
+        recv[i] = 0x00;
+    }
     printf("Testing fingerprint sensor handshake\n"); 
-    printf("Sent: %x\n", (unsigned int)data);
+    printf("Sent: 0x%02x\n", (unsigned int)data[0]);
+    printf("Sent: 0x%02x\n", (unsigned int)data[1]);
+    printf("Sent: 0x%02x\n", (unsigned int)data[2]);
+    printf("Sent: 0x%02x\n", (unsigned int)data[3]);
+    printf("Sent: 0x%02x\n", (unsigned int)data[4]);
+    printf("Sent: 0x%02x\n", (unsigned int)data[5]);
+    printf("Sent: 0x%02x\n", (unsigned int)data[6]);
+    printf("Sent: 0x%02x\n", (unsigned int)data[7]);
+    printf("Sent: 0x%02x\n", (unsigned int)data[8]);
+    printf("Sent: 0x%02x\n", (unsigned int)data[9]);
+    printf("Sent: 0x%02x\n", (unsigned int)data[10]);
+    printf("Sent: 0x%02x\n", (unsigned int)data[11]);
+    printf("Sent: 0x%02x\n", (unsigned int)data[12]);
     uart_write_bytes(PORT_NUM, (const char *)data, 13);
     uart_wait_tx_done(PORT_NUM, 100);
     int buflen;
@@ -110,7 +140,20 @@ int sendHandshake(){
         uart_get_buffered_data_len(PORT_NUM, (size_t*)&buflen);
         printf("%d\n", buflen);
     }
-    uart_read_bytes(PORT_NUM, data, BUF_SIZE, 20/portTICK_RATE_MS);
-    printf("Received: %x\n", (unsigned int)data);
+    uart_read_bytes(PORT_NUM, recv, BUF_SIZE, 20/portTICK_RATE_MS);
+    printf("Received:\n");
+    printf("Recv: 0x%02x\n", (unsigned int)recv[0]);
+    printf("Recv: 0x%02x\n", (unsigned int)recv[1]);
+    printf("Recv: 0x%02x\n", (unsigned int)recv[2]);
+    printf("Recv: 0x%02x\n", (unsigned int)recv[3]);
+    printf("Recv: 0x%02x\n", (unsigned int)recv[4]);
+    printf("Recv: 0x%02x\n", (unsigned int)recv[5]);
+    printf("Recv: 0x%02x\n", (unsigned int)recv[6]);
+    printf("Recv: 0x%02x\n", (unsigned int)recv[7]);
+    printf("Recv: 0x%02x\n", (unsigned int)recv[8]);
+    printf("Recv: 0x%02x\n", (unsigned int)recv[9]);
+    printf("Recv: 0x%02x\n", (unsigned int)recv[10]);
+    printf("Recv: 0x%02x\n", (unsigned int)recv[11]);
+    printf("Recv: 0x%02x\n", (unsigned int)recv[12]);
     return 0;
 }

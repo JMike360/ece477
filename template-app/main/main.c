@@ -13,6 +13,7 @@
 #include "esp_spi_flash.h"
 #include "crypto_test.h"
 #include "fingerprint_test.h"
+#include "fingerprint_driver.h"
 
 
 void app_main(void)
@@ -40,7 +41,8 @@ void app_main(void)
     encodetest();
 
     printf("Running uart test\n");
-    sendHandshake(); 
+    //sendHandshake(); 
+    uartEchoTest();
     //printf("Restarting now.\n");
     //fflush(stdout);
     //esp_restart();
