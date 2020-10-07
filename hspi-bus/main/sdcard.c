@@ -20,7 +20,7 @@
 
 static const char *TAG = "SD-CARD";
 static sdmmc_card_t* sdcard;
-static is_mounted = false;
+static int is_mounted = 0;
 
 esp_err_t mount_fs(void) {
     esp_vfs_fat_mount_config_t mount_config = {
@@ -41,7 +41,7 @@ esp_err_t mount_fs(void) {
     if (ret == ESP_OK) {
         ESP_LOGI(TAG, "Successfully mounted SD card.");
         sdmmc_card_print_info(stdout, sdcard);
-        is_mounted = true;
+        is_mounted = 1;
     }
     else
         ESP_LOGE(TAG, "Failed to mount SD card (%s).", esp_err_to_name(ret));
@@ -50,13 +50,12 @@ esp_err_t mount_fs(void) {
 }
 
 void retrieve_file(const char* filename, size_t size, char* dest) {
-    if (!is_mounted) {
+    if (is_mounted == 0) {
         ESP_LOGE(TAG, "Attempting to retrieve file before mounting file system.");
         return;
     }
 
     FILE* fp = fopen(filename, "r");
-    char curr = '\0';
     int i = 0;
     do {
         fread(&(dest[i++]), sizeof(char), 1, fp);
@@ -78,6 +77,8 @@ void app_main() {
     fprintf(f, "Hello %s!\n", sdcard->cid.name);
     fclose(f);
     ESP_LOGI(TAG, "File written");
+    sleep(3);
+    esp_vfs_fat_sdcard_unmount(MOUNT_POINT, sdcard);
 }
 
 /*void example(void)

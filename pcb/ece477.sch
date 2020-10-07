@@ -16,271 +16,441 @@ $EndDescr
 Text Notes 7400 7500 0    50   ~ 0
 Senior Design Skeleton Key
 Text Notes 8150 7650 0    50   ~ 0
-Sep 6, 2020
+Oct 1, 2020
 Text Notes 10650 7650 0    50   ~ 0
 0.1
-Text Notes 7250 7350 0    50   ~ 0
-pcb/ece477.sch
+Wire Wire Line
+	6600 2600 6600 3550
+Wire Wire Line
+	6600 3550 7300 3550
+Connection ~ 4200 1950
+Wire Wire Line
+	4100 1950 4200 1950
+Wire Wire Line
+	4200 2300 4200 1950
 $Comp
-L RF_Module:ESP32-WROOM-32 U1
-U 1 1 5F648477
-P 4300 3850
-F 0 "U1" H 4300 5431 50  0000 C CNN
-F 1 "ESP32-WROOM-32" H 4300 5340 50  0000 C CNN
-F 2 "Package_DFN_QFN:QFN-48-1EP_5x5mm_P0.35mm_EP3.7x3.7mm" H 4300 2350 50  0001 C CNN
-F 3 "https://www.espressif.com/sites/default/files/documentation/esp32-wroom-32_datasheet_en.pdf" H 4000 3900 50  0001 C CNN
-	1    4300 3850
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:GND #PWR0101
-U 1 1 5F653272
-P 5100 5350
-F 0 "#PWR0101" H 5100 5100 50  0001 C CNN
-F 1 "GND" H 5105 5177 50  0000 C CNN
-F 2 "" H 5100 5350 50  0001 C CNN
-F 3 "" H 5100 5350 50  0001 C CNN
-	1    5100 5350
+L Switch:SW_DIP_x01 SW1
+U 1 1 5F7611A6
+P 4500 1950
+F 0 "SW1" H 4500 2217 50  0000 C CNN
+F 1 "SW_DIP_x01" H 4500 2126 50  0000 C CNN
+F 2 "Button_Switch_SMD:SW_DIP_SPSTx01_Slide_6.7x4.1mm_W6.73mm_P2.54mm_LowProfile_JPin" H 4500 1950 50  0001 C CNN
+F 3 "~" H 4500 1950 50  0001 C CNN
+	1    4500 1950
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	4300 5250 4300 5350
+	3600 1750 3300 1750
+Connection ~ 3600 1750
 Wire Wire Line
-	4300 5350 5100 5350
-Connection ~ 5100 5350
-$Comp
-L Device:Battery_Cell BT1
-U 1 1 5F6552A0
-P 4550 1700
-F 0 "BT1" V 4295 1750 50  0000 C CNN
-F 1 "3.7V" V 4386 1750 50  0000 C CNN
-F 2 "Connector_PinHeader_2.00mm:PinHeader_1x02_P2.00mm_Vertical" V 4550 1760 50  0001 C CNN
-F 3 "~" V 4550 1760 50  0001 C CNN
-	1    4550 1700
-	0    1    1    0   
-$EndComp
+	3600 2300 3600 1750
 Wire Wire Line
-	4750 1700 4850 1700
-Wire Wire Line
-	6050 1700 6300 1700
-Wire Wire Line
-	6300 1700 6300 1300
-Wire Wire Line
-	4450 1300 4450 1500
-Wire Wire Line
-	4450 1500 4250 1500
-Wire Wire Line
-	3950 1500 3950 1650
-Connection ~ 4450 1500
-Wire Wire Line
-	4450 1500 4450 1700
-$Comp
-L power:GND #PWR0102
-U 1 1 5F661FFA
-P 3950 1650
-F 0 "#PWR0102" H 3950 1400 50  0001 C CNN
-F 1 "GND" H 3955 1477 50  0000 C CNN
-F 2 "" H 3950 1650 50  0001 C CNN
-F 3 "" H 3950 1650 50  0001 C CNN
-	1    3950 1650
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	5900 4300 5900 3650
-Wire Wire Line
-	5900 3650 4900 3650
-Wire Wire Line
-	5500 3750 4900 3750
-Wire Wire Line
-	5250 1700 5300 1700
-Wire Wire Line
-	5600 1700 5700 1700
-Wire Wire Line
-	5700 2500 5700 2200
-Connection ~ 5700 1700
-Wire Wire Line
-	5700 1700 5750 1700
-Wire Wire Line
-	5100 5350 6150 5350
-Wire Wire Line
-	5600 2650 5600 2500
-Wire Wire Line
-	5600 2500 5700 2500
+	3900 2300 4200 2300
 $Comp
 L Device:C C1
 U 1 1 5F6903A5
-P 4400 2050
-F 0 "C1" V 4652 2050 50  0000 C CNN
-F 1 "1µF" V 4561 2050 50  0000 C CNN
-F 2 "Capacitor_SMD:CP_Elec_3x5.3" H 4438 1900 50  0001 C CNN
-F 3 "~" H 4400 2050 50  0001 C CNN
-	1    4400 2050
+P 3750 2300
+F 0 "C1" V 4002 2300 50  0000 C CNN
+F 1 "4.7µF" V 3911 2300 50  0000 C CNN
+F 2 "Capacitor_SMD:CP_Elec_3x5.3" H 3788 2150 50  0001 C CNN
+F 3 "~" H 3750 2300 50  0001 C CNN
+	1    3750 2300
 	0    -1   -1   0   
 $EndComp
-Wire Wire Line
-	4550 2050 4850 2050
-Wire Wire Line
-	4250 2050 4250 1500
-Connection ~ 4250 1500
-Wire Wire Line
-	4250 1500 3950 1500
 $Comp
-L Device:R R2
-U 1 1 5F685A63
-P 5600 2800
-F 0 "R2" H 5530 2754 50  0000 R CNN
-F 1 "10kΩ" H 5530 2845 50  0000 R CNN
-F 2 "Resistor_SMD:R_0201_0603Metric" V 5530 2800 50  0001 C CNN
-F 3 "~" H 5600 2800 50  0001 C CNN
-	1    5600 2800
-	-1   0    0    1   
+L power:GND #PWR0102
+U 1 1 5F661FFA
+P 3300 1900
+F 0 "#PWR0102" H 3300 1650 50  0001 C CNN
+F 1 "GND" H 3305 1727 50  0000 C CNN
+F 2 "" H 3300 1900 50  0001 C CNN
+F 3 "" H 3300 1900 50  0001 C CNN
+	1    3300 1900
+	1    0    0    -1  
 $EndComp
+Wire Wire Line
+	3800 1750 3800 1950
+Wire Wire Line
+	3300 1750 3300 1900
+Wire Wire Line
+	3800 1750 3600 1750
 $Comp
-L Device:R R3
-U 1 1 5F65B86C
-P 5900 1700
-F 0 "R3" V 5693 1700 50  0000 C CNN
-F 1 "90kΩ" V 5784 1700 50  0000 C CNN
-F 2 "Resistor_SMD:R_0201_0603Metric" V 5830 1700 50  0001 C CNN
-F 3 "~" H 5900 1700 50  0001 C CNN
-	1    5900 1700
+L Device:Battery_Cell BT1
+U 1 1 5F6552A0
+P 3900 1950
+F 0 "BT1" V 3645 2000 50  0000 C CNN
+F 1 "3.7V" V 3736 2000 50  0000 C CNN
+F 2 "Button_Switch_SMD:SW_DIP_SPSTx01_Slide_6.7x4.1mm_W6.73mm_P2.54mm_LowProfile_JPin" V 3900 2010 50  0001 C CNN
+F 3 "~" V 3900 2010 50  0001 C CNN
+	1    3900 1950
 	0    1    1    0   
 $EndComp
+Wire Wire Line
+	3600 1550 3600 1750
+$Comp
+L Device:ADA751 U5
+U 1 1 5F7697FE
+P 6850 5800
+F 0 "U5" H 7000 6100 50  0000 L CNN
+F 1 "ADA751" H 7000 6000 50  0000 L CNN
+F 2 "Connector_PinHeader_2.00mm:PinHeader_1x05_P2.00mm_Vertical" H 6850 5800 50  0001 C CNN
+F 3 "" H 6850 5800 50  0001 C CNN
+	1    6850 5800
+	1    0    0    -1  
+$EndComp
+NoConn ~ 7150 4650
+NoConn ~ 6550 4350
+$Comp
+L Device:ADA254 U4
+U 1 1 5F790B4B
+P 6850 4800
+F 0 "U4" H 6850 5475 50  0000 C CNN
+F 1 "ADA254" H 6850 5384 50  0000 C CNN
+F 2 "Connector_PinSocket_2.00mm:PinSocket_1x08_P2.00mm_Vertical" H 6850 4800 50  0001 C CNN
+F 3 "" H 6850 4800 50  0001 C CNN
+	1    6850 4800
+	1    0    0    -1  
+$EndComp
+$Comp
+L RF_Module:ESP32-WROOM-32 U1
+U 1 1 5F648477
+P 4650 4700
+F 0 "U1" H 4650 6281 50  0000 C CNN
+F 1 "ESP32-WROOM-32" H 4650 6190 50  0000 C CNN
+F 2 "digikey-footprints:ESP32-WROOM-32D" H 4650 3200 50  0001 C CNN
+F 3 "https://www.espressif.com/sites/default/files/documentation/esp32-wroom-32_datasheet_en.pdf" H 4350 4750 50  0001 C CNN
+	1    4650 4700
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4800 1950 5050 1950
+Wire Wire Line
+	6550 4450 5700 4450
+Wire Wire Line
+	5700 4450 5700 4400
+Wire Wire Line
+	5700 4400 5250 4400
+Wire Wire Line
+	6550 4550 5950 4550
+Wire Wire Line
+	5950 4550 5950 4200
+Wire Wire Line
+	5950 4200 5250 4200
 $Comp
 L Device:R R1
-U 1 1 5F659738
-P 5450 1700
-F 0 "R1" V 5243 1700 50  0000 C CNN
-F 1 "10kΩ" V 5334 1700 50  0000 C CNN
-F 2 "Resistor_SMD:R_0201_0603Metric" V 5380 1700 50  0001 C CNN
-F 3 "~" H 5450 1700 50  0001 C CNN
-	1    5450 1700
-	0    1    1    0   
-$EndComp
-$Comp
-L Switch:SW_Push SW1
-U 1 1 5F656E30
-P 5050 1700
-F 0 "SW1" H 5050 1985 50  0000 C CNN
-F 1 "SW_Push" H 5050 1894 50  0000 C CNN
-F 2 "Button_Switch_SMD:SW_DIP_SPSTx01_Slide_6.7x4.1mm_W6.73mm_P2.54mm_LowProfile_JPin" H 5050 1900 50  0001 C CNN
-F 3 "~" H 5050 1900 50  0001 C CNN
-	1    5050 1700
+U 1 1 5F7A3070
+P 5950 3400
+F 0 "R1" H 6020 3446 50  0000 L CNN
+F 1 "10kΩ" H 6020 3355 50  0000 L CNN
+F 2 "Resistor_SMD:R_0201_0603Metric" V 5880 3400 50  0001 C CNN
+F 3 "~" H 5950 3400 50  0001 C CNN
+	1    5950 3400
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	5250 1700 5250 3550
-Connection ~ 5250 1700
+	5950 3250 5950 2600
+Connection ~ 5950 2600
 Wire Wire Line
-	4450 1300 6300 1300
+	5950 2600 6600 2600
+Wire Wire Line
+	5950 3550 5950 4200
+Connection ~ 5950 4200
+Wire Wire Line
+	6550 4650 6200 4650
+Wire Wire Line
+	6200 4650 6200 4100
+Wire Wire Line
+	6200 4100 5250 4100
+Wire Wire Line
+	7150 4350 7150 4050
+Wire Wire Line
+	7150 4050 6300 4050
+Wire Wire Line
+	6300 4050 6300 4300
+Wire Wire Line
+	6300 4300 5250 4300
+Wire Wire Line
+	7300 3550 7300 4550
+Wire Wire Line
+	7300 4550 7150 4550
+Connection ~ 7300 3550
 $Comp
-L Connector:Conn_01x08_Male J2
-U 1 1 5F66F62E
-P 6700 3350
-F 0 "J2" H 6672 3232 50  0000 R CNN
-F 1 "ADA254" H 6672 3323 50  0000 R CNN
-F 2 "Connector_PinHeader_2.00mm:PinHeader_1x08_P2.00mm_Vertical" H 6700 3350 50  0001 C CNN
-F 3 "~" H 6700 3350 50  0001 C CNN
-	1    6700 3350
-	-1   0    0    1   
-$EndComp
-Wire Wire Line
-	4900 3250 6500 3250
-Wire Wire Line
-	4900 3350 5600 3350
-Wire Wire Line
-	5600 3350 5600 3150
-Wire Wire Line
-	5600 3150 6500 3150
-Wire Wire Line
-	4900 3450 5950 3450
-Wire Wire Line
-	5950 3450 5950 3350
-Wire Wire Line
-	5950 3350 6500 3350
-Wire Wire Line
-	4900 3550 5150 3550
-Wire Wire Line
-	5150 3550 5150 3050
-Wire Wire Line
-	5150 3050 6500 3050
-Wire Wire Line
-	6500 3450 6150 3450
-Wire Wire Line
-	5600 2950 5600 3150
-Connection ~ 5600 3150
-Wire Wire Line
-	6150 3450 6150 4500
-$Comp
-L Connector_Generic:Conn_01x05 J1
-U 1 1 5F679D6C
-P 6650 4400
-F 0 "J1" H 6730 4442 50  0000 L CNN
-F 1 "ADA751" H 6730 4351 50  0000 L CNN
-F 2 "Connector_PinHeader_2.00mm:PinHeader_1x05_P2.00mm_Vertical" H 6650 4400 50  0001 C CNN
-F 3 "~" H 6650 4400 50  0001 C CNN
-	1    6650 4400
+L power:GND #PWR0101
+U 1 1 5F7A71DE
+P 6050 6050
+F 0 "#PWR0101" H 6050 5800 50  0001 C CNN
+F 1 "GND" H 6055 5877 50  0000 C CNN
+F 2 "" H 6050 6050 50  0001 C CNN
+F 3 "" H 6050 6050 50  0001 C CNN
+	1    6050 6050
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	6000 4200 6450 4200
+	7150 4450 7400 4450
 Wire Wire Line
-	5900 4300 6450 4300
+	7400 4450 7400 6050
 Wire Wire Line
-	5500 3750 5500 4400
+	7400 6050 6050 6050
 Wire Wire Line
-	5500 4400 6450 4400
+	4650 3300 5300 3300
 Wire Wire Line
-	6450 4500 6150 4500
-Connection ~ 6150 4500
+	6650 5350 5600 5350
 Wire Wire Line
-	6150 4500 6150 5350
-NoConn ~ 6450 4600
-NoConn ~ 6500 2950
-NoConn ~ 6500 3650
+	5600 5350 5600 2850
 Wire Wire Line
-	4850 2050 4850 1700
-Connection ~ 4850 1700
+	5600 2850 5050 2850
+Wire Wire Line
+	5050 2850 5050 2450
+Wire Wire Line
+	6650 5450 5750 5450
+Wire Wire Line
+	5750 5450 5750 4500
+Wire Wire Line
+	5750 4500 5250 4500
+Wire Wire Line
+	6650 5550 5850 5550
+Wire Wire Line
+	5850 5550 5850 4600
+Wire Wire Line
+	5850 4600 5250 4600
+Wire Wire Line
+	6650 5650 6050 5650
+Wire Wire Line
+	6050 5650 6050 6050
+Connection ~ 6050 6050
+Wire Wire Line
+	5250 3600 5750 3600
+Wire Wire Line
+	5250 3800 6800 3800
+Wire Wire Line
+	5300 2600 5950 2600
 $Comp
-L Connector:Conn_01x02_Male J3
-U 1 1 5F664963
-P 6300 2550
-F 0 "J3" H 6272 2432 50  0000 R CNN
-F 1 "ESP_UART" H 6272 2523 50  0000 R CNN
-F 2 "Connector_PinHeader_2.00mm:PinHeader_1x02_P2.00mm_Vertical" H 6300 2550 50  0001 C CNN
-F 3 "~" H 6300 2550 50  0001 C CNN
-	1    6300 2550
+L Device:C C2
+U 1 1 5F7C4AC4
+P 5400 1700
+F 0 "C2" V 5652 1700 50  0000 C CNN
+F 1 "10µF" V 5561 1700 50  0000 C CNN
+F 2 "Capacitor_SMD:CP_Elec_3x5.3" H 5438 1550 50  0001 C CNN
+F 3 "~" H 5400 1700 50  0001 C CNN
+	1    5400 1700
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5300 3300 5300 2600
+Connection ~ 5400 1850
+Wire Wire Line
+	5400 1850 5300 1850
+Wire Wire Line
+	5650 1850 5650 1950
+Wire Wire Line
+	5400 1850 5650 1850
+Wire Wire Line
+	5400 2150 5650 2150
+$Comp
+L Device:L L1
+U 1 1 5F7BB426
+P 5400 2000
+F 0 "L1" H 5452 2046 50  0000 L CNN
+F 1 "2.2µH" H 5452 1955 50  0000 L CNN
+F 2 "Inductor_SMD:L_7.3x7.3_H4.5" H 5400 2000 50  0001 C CNN
+F 3 "~" H 5400 2000 50  0001 C CNN
+	1    5400 2000
+	1    0    0    -1  
+$EndComp
+$Comp
+L Regulator_Switching:LM3670MF U3
+U 1 1 5F7B6A74
+P 5950 2050
+F 0 "U3" H 5950 2283 50  0000 C CNN
+F 1 "LM3671" H 5950 2374 50  0000 C CNN
+F 2 "Package_TO_SOT_SMD:TSOT-23-5" H 6000 1800 50  0001 L CNN
+F 3 "http://www.ti.com/lit/ds/symlink/lm3670.pdf" H 5700 1700 50  0001 C CNN
+	1    5950 2050
 	-1   0    0    1   
 $EndComp
 Wire Wire Line
-	5150 2450 6100 2450
+	3600 1550 5400 1550
+Connection ~ 5400 1550
 Wire Wire Line
-	4300 2450 4850 2450
+	5400 1550 5950 1550
 Wire Wire Line
-	4850 2450 4850 2200
-Connection ~ 5700 2200
+	5300 1850 5300 2600
+Connection ~ 5300 2600
 Wire Wire Line
-	5700 2200 5700 1700
+	5950 1750 5950 1550
+Connection ~ 5950 1550
 Wire Wire Line
-	5250 3550 6000 3550
+	5050 2450 6350 2450
 Wire Wire Line
-	6000 3550 6000 4200
+	6350 2450 6350 2150
 Wire Wire Line
-	4850 2200 5700 2200
+	6350 2150 6250 2150
+Connection ~ 5050 2450
 Wire Wire Line
-	5700 2200 6050 2200
+	5050 2450 5050 1950
 Wire Wire Line
-	6050 2200 6050 3550
+	6250 2050 6350 2050
 Wire Wire Line
-	6050 3550 6500 3550
+	6350 2050 6350 2150
+Connection ~ 6350 2150
+$Comp
+L Device:C C3
+U 1 1 5F7E8D8A
+P 6350 1700
+F 0 "C3" V 6602 1700 50  0000 C CNN
+F 1 "4.7µF" V 6511 1700 50  0000 C CNN
+F 2 "Capacitor_SMD:CP_Elec_3x5.3" H 6388 1550 50  0001 C CNN
+F 3 "~" H 6350 1700 50  0001 C CNN
+	1    6350 1700
+	1    0    0    -1  
+$EndComp
 Wire Wire Line
-	4900 2950 5150 2950
+	6350 1850 6350 2050
+Connection ~ 6350 2050
+$Comp
+L Device:C C4
+U 1 1 5F7A38A5
+P 7100 3000
+F 0 "C4" H 7215 3046 50  0000 L CNN
+F 1 "100nF" H 7215 2955 50  0000 L CNN
+F 2 "Capacitor_SMD:CP_Elec_3x5.3" H 7138 2850 50  0001 C CNN
+F 3 "~" H 7100 3000 50  0001 C CNN
+	1    7100 3000
+	-1   0    0    1   
+$EndComp
+$Comp
+L power:GND #PWR0103
+U 1 1 5F7A3D3E
+P 7100 3150
+F 0 "#PWR0103" H 7100 2900 50  0001 C CNN
+F 1 "GND" H 7105 2977 50  0000 C CNN
+F 2 "" H 7100 3150 50  0001 C CNN
+F 3 "" H 7100 3150 50  0001 C CNN
+	1    7100 3150
+	1    0    0    -1  
+$EndComp
+$Comp
+L Connector:USB_A J1
+U 1 1 5F7A6664
+P 9000 1950
+F 0 "J1" H 8770 1847 50  0000 R CNN
+F 1 "USB_A" H 8770 1938 50  0000 R CNN
+F 2 "digikey-footprints:USB_Male_A_UP2-AH-1-TH" H 9150 1900 50  0001 C CNN
+F 3 " ~" H 9150 1900 50  0001 C CNN
+	1    9000 1950
+	-1   0    0    1   
+$EndComp
 Wire Wire Line
-	5150 2450 5150 2950
+	8600 1950 8700 1950
+$Comp
+L Device:C C5
+U 1 1 5F7B7975
+P 9000 1400
+F 0 "C5" H 9115 1446 50  0000 L CNN
+F 1 "10nF" H 9115 1355 50  0000 L CNN
+F 2 "Capacitor_SMD:CP_Elec_3x5.3" H 9038 1250 50  0001 C CNN
+F 3 "~" H 9000 1400 50  0001 C CNN
+	1    9000 1400
+	1    0    0    -1  
+$EndComp
+Connection ~ 9000 1550
 Wire Wire Line
-	5050 2550 5050 2750
+	9000 1250 9500 1250
 Wire Wire Line
-	5050 2750 4900 2750
+	9500 1250 9500 2350
 Wire Wire Line
-	5050 2550 6100 2550
+	9500 2350 8950 2350
+Wire Wire Line
+	8700 2350 8700 2150
+$Comp
+L Device:Ferrite_Bead FB1
+U 1 1 5F7C0CC2
+P 8950 2500
+F 0 "FB1" H 9087 2546 50  0000 L CNN
+F 1 "Ferrite_Bead" H 9087 2455 50  0000 L CNN
+F 2 "Ferrite_THT:LairdTech_28C0236-0JW-10" V 8880 2500 50  0001 C CNN
+F 3 "~" H 8950 2500 50  0001 C CNN
+	1    8950 2500
+	1    0    0    -1  
+$EndComp
+Connection ~ 8950 2350
+Wire Wire Line
+	8950 2350 8700 2350
+Wire Wire Line
+	7700 3550 7700 3850
+Wire Wire Line
+	7700 3850 8950 3850
+Wire Wire Line
+	8950 3850 8950 2650
+Wire Wire Line
+	5950 1550 6350 1550
+Connection ~ 6350 1550
+$Comp
+L dk_Interface-Controllers:FT232RL-REEL U2
+U 1 1 5F7DF2B6
+P 7500 2750
+F 0 "U2" H 7350 3347 60  0000 C CNN
+F 1 "FT232RL-REEL" H 7350 3453 60  0000 C CNN
+F 2 "digikey-footprints:SSOP-28_W5.30mm" H 7700 2950 60  0001 L CNN
+F 3 "https://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT232R.pdf" H 7700 3050 60  0001 L CNN
+F 4 "768-1007-1-ND" H 7700 3150 60  0001 L CNN "Digi-Key_PN"
+F 5 "FT232RL-REEL" H 7700 3250 60  0001 L CNN "MPN"
+F 6 "Integrated Circuits (ICs)" H 7700 3350 60  0001 L CNN "Category"
+F 7 "Interface - Controllers" H 7700 3450 60  0001 L CNN "Family"
+F 8 "https://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT232R.pdf" H 7700 3550 60  0001 L CNN "DK_Datasheet_Link"
+F 9 "/product-detail/en/ftdi-future-technology-devices-international-ltd/FT232RL-REEL/768-1007-1-ND/1836402" H 7700 3650 60  0001 L CNN "DK_Detail_Page"
+F 10 "IC USB FS SERIAL UART 28-SSOP" H 7700 3750 60  0001 L CNN "Description"
+F 11 "FTDI, Future Technology Devices International Ltd" H 7700 3850 60  0001 L CNN "Manufacturer"
+F 12 "Active" H 7700 3950 60  0001 L CNN "Status"
+	1    7500 2750
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	7300 3550 7700 3550
+Wire Wire Line
+	6350 1550 7300 1550
+Wire Wire Line
+	7700 1550 9000 1550
+Wire Wire Line
+	5750 3950 5750 3600
+Wire Wire Line
+	8300 3950 8300 2650
+Wire Wire Line
+	8300 2650 8200 2650
+Wire Wire Line
+	5750 3950 8300 3950
+Wire Wire Line
+	7100 2650 6800 2650
+Wire Wire Line
+	6800 2650 6800 3800
+Wire Wire Line
+	7600 3250 7700 3250
+Wire Wire Line
+	7600 3250 7300 3250
+Wire Wire Line
+	7300 3250 7300 3550
+Connection ~ 7600 3250
+Wire Wire Line
+	8200 2950 8350 2950
+Wire Wire Line
+	8350 2950 8350 1850
+Wire Wire Line
+	8350 1850 8700 1850
+Wire Wire Line
+	8200 3050 8600 3050
+Wire Wire Line
+	8600 1950 8600 3050
+Wire Wire Line
+	7600 1550 7700 1550
+Connection ~ 7700 1550
+Wire Wire Line
+	7600 1550 7500 1550
+Connection ~ 7600 1550
+Wire Wire Line
+	7400 1550 7300 1550
+Connection ~ 7300 1550
+Wire Wire Line
+	7400 1550 7500 1550
+Connection ~ 7400 1550
+Connection ~ 7500 1550
 $EndSCHEMATC
