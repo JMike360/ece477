@@ -1,7 +1,7 @@
 (export (version D)
   (design
     (source /home/andrew-gan/Documents/git/ece477/pcb/ece477.sch)
-    (date "Wed 07 Oct 2020 05:31:04 PM EDT")
+    (date "Wed 07 Oct 2020 11:00:53 PM EDT")
     (tool "Eeschema 5.1.5+dfsg1-2build2")
     (sheet (number 1) (name /) (tstamps /)
       (title_block
@@ -98,8 +98,8 @@
       (sheetpath (names /) (tstamps /))
       (tstamp 5F7A38A5))
     (comp (ref J1)
-      (value USB_A)
-      (footprint digikey-footprints:USB_Mini_B_Female_690-005-299-043)
+      (value USB_B)
+      (footprint Connector_USB:USB_Micro-B_Molex_47346-0001)
       (datasheet " ~")
       (libsource (lib Connector) (part USB_A) (description "USB Type A connector"))
       (sheetpath (names /) (tstamps /))
