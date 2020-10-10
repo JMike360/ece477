@@ -423,8 +423,6 @@ Wire Wire Line
 Connection ~ 7500 1550
 Wire Wire Line
 	7600 1550 7700 1550
-Wire Wire Line
-	7700 1550 8700 1550
 Connection ~ 7700 1550
 $Comp
 L dk_Interface-Controllers:FT232RL-REEL U2
@@ -464,20 +462,6 @@ Wire Wire Line
 Wire Wire Line
 	7300 3400 7300 3550
 Connection ~ 7300 3550
-$Comp
-L Device:CP C6
-U 1 1 5F892FD8
-P 8700 1400
-F 0 "C6" H 8500 1450 50  0000 L CNN
-F 1 "10uF" H 8400 1350 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 8738 1250 50  0001 C CNN
-F 3 "~" H 8700 1400 50  0001 C CNN
-	1    8700 1400
-	1    0    0    -1  
-$EndComp
-Connection ~ 8700 1550
-Wire Wire Line
-	8700 1550 9000 1550
 Wire Wire Line
 	9000 1250 8700 1250
 Connection ~ 9000 1250
@@ -540,4 +524,20 @@ Wire Wire Line
 Wire Wire Line
 	9000 800  9000 1250
 Connection ~ 8300 800 
+Wire Wire Line
+	7700 1550 8700 1550
+$Comp
+L Device:C C6
+U 1 1 5F8242E5
+P 8700 1400
+F 0 "C6" H 8500 1400 50  0000 L CNN
+F 1 "10uF" H 8500 1300 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 8738 1250 50  0001 C CNN
+F 3 "~" H 8700 1400 50  0001 C CNN
+	1    8700 1400
+	1    0    0    -1  
+$EndComp
+Connection ~ 8700 1550
+Wire Wire Line
+	8700 1550 9000 1550
 $EndSCHEMATC
