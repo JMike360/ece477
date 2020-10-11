@@ -123,8 +123,6 @@ F 3 "https://www.espressif.com/sites/default/files/documentation/esp32-wroom-32_
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	3850 2400 4100 2400
-Wire Wire Line
 	5600 4900 4750 4900
 Wire Wire Line
 	4750 4900 4750 4850
@@ -278,9 +276,6 @@ Wire Wire Line
 	4100 2900 5400 2900
 Wire Wire Line
 	5400 2600 5300 2600
-Connection ~ 4100 2900
-Wire Wire Line
-	4100 2900 4100 2400
 $Comp
 L Device:C C3
 U 1 1 5F7E8D8A
@@ -319,8 +314,6 @@ Wire Wire Line
 	7350 3100 7250 3100
 Wire Wire Line
 	5850 3100 5850 4250
-Wire Wire Line
-	2650 2000 4450 2000
 Wire Wire Line
 	5100 6500 3900 6500
 Wire Wire Line
@@ -540,4 +533,41 @@ $EndComp
 Connection ~ 7750 2000
 Wire Wire Line
 	7750 2000 8050 2000
+Connection ~ 4100 2900
+Connection ~ 4100 2000
+Wire Wire Line
+	4100 2000 4450 2000
+Wire Wire Line
+	2650 2000 4100 2000
+Wire Wire Line
+	3850 2400 3850 2600
+Wire Wire Line
+	3850 2600 4100 2600
+Wire Wire Line
+	4100 2900 4100 2600
+Connection ~ 4100 2600
+Wire Wire Line
+	4100 2000 4100 2200
+$Comp
+L Device:R R5
+U 1 1 5F83C3DE
+P 4100 2450
+F 0 "R5" H 4170 2496 50  0000 L CNN
+F 1 "1kΩ" H 4170 2405 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 4030 2450 50  0001 C CNN
+F 3 "~" H 4100 2450 50  0001 C CNN
+	1    4100 2450
+	-1   0    0    1   
+$EndComp
+$Comp
+L Device:LED D3
+U 1 1 5F83C3D8
+P 4100 2150
+F 0 "D3" V 4139 2033 50  0000 R CNN
+F 1 "LED" V 4048 2033 50  0000 R CNN
+F 2 "LED_SMD:LED_0805_2012Metric" H 4100 2150 50  0001 C CNN
+F 3 "~" H 4100 2150 50  0001 C CNN
+	1    4100 2150
+	0    1    1    0   
+$EndComp
 $EndSCHEMATC
