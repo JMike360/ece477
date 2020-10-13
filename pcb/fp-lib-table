@@ -1,3 +1,4 @@
 (fp_lib_table
   (lib (name digikey-footprints)(type KiCad)(uri /home/andrew-gan/Downloads/digikey-kicad-library-master/digikey-footprints.pretty)(options "")(descr ""))
+  (lib (name LQH3NPN2R2MMEL)(type KiCad)(uri /home/andrew-gan/Downloads/LQH3NPN2R2MMEL)(options "")(descr ""))
 )
