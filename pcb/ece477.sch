@@ -80,7 +80,7 @@ U 1 1 5F6552A0
 P 2950 2400
 F 0 "BT1" V 2695 2450 50  0000 C CNN
 F 1 "3.7V" V 2786 2450 50  0000 C CNN
-F 2 "Connector_PinHeader_2.00mm:PinHeader_1x02_P2.00mm_Vertical" V 2950 2460 50  0001 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" V 2950 2460 50  0001 C CNN
 F 3 "~" V 2950 2460 50  0001 C CNN
 	1    2950 2400
 	0    1    1    0   
@@ -93,7 +93,7 @@ U 1 1 5F7697FE
 P 5900 6250
 F 0 "U5" H 6050 6550 50  0000 L CNN
 F 1 "ADA751" H 6050 6450 50  0000 L CNN
-F 2 "Connector_PinHeader_2.00mm:PinHeader_1x05_P2.00mm_Vertical" H 5900 6250 50  0001 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x05_P2.54mm_Vertical" H 5900 6250 50  0001 C CNN
 F 3 "" H 5900 6250 50  0001 C CNN
 	1    5900 6250
 	1    0    0    -1  
@@ -106,7 +106,7 @@ U 1 1 5F790B4B
 P 5900 5250
 F 0 "U4" H 5900 5925 50  0000 C CNN
 F 1 "ADA254" H 5900 5834 50  0000 C CNN
-F 2 "Connector_PinSocket_2.00mm:PinSocket_1x08_P2.00mm_Vertical" H 5900 5250 50  0001 C CNN
+F 2 "Connector_PinSocket_2.54mm:PinSocket_1x08_P2.54mm_Vertical" H 5900 5250 50  0001 C CNN
 F 3 "" H 5900 5250 50  0001 C CNN
 	1    5900 5250
 	1    0    0    -1  
@@ -570,4 +570,22 @@ F 3 "~" H 4100 2150 50  0001 C CNN
 	1    4100 2150
 	0    1    1    0   
 $EndComp
+$Comp
+L power:GND #PWR0104
+U 1 1 5F864B89
+P 4500 3950
+F 0 "#PWR0104" H 4500 3700 50  0001 C CNN
+F 1 "GND" H 4505 3777 50  0000 C CNN
+F 2 "" H 4500 3950 50  0001 C CNN
+F 3 "" H 4500 3950 50  0001 C CNN
+	1    4500 3950
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4300 3950 4500 3950
+Wire Wire Line
+	3100 3950 3100 3750
+Wire Wire Line
+	3100 3750 3700 3750
+Connection ~ 3700 3750
 $EndSCHEMATC
