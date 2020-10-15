@@ -269,3 +269,4 @@ sdcard.o: /home/andrew-gan/Documents/git/ece477/hspi-bus/main/sdcard.c \
 /home/andrew-gan/esp-idf/components/driver/include/driver/sdmmc_host.h:
 
 /home/andrew-gan/esp-idf/components/soc/soc/esp32/include/soc/soc_caps.h:
+/home/andrew-gan/Documents/git/ece477/hspi-bus/main/./sdcard.c:

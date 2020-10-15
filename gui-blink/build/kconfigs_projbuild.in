@@ -1,0 +1,5 @@
+source "/home/andrew-gan/esp-idf/components/app_update/Kconfig.projbuild"
+source "/home/andrew-gan/esp-idf/components/bootloader/Kconfig.projbuild"
+source "/home/andrew-gan/esp-idf/components/esptool_py/Kconfig.projbuild"
+source "/home/andrew-gan/esp-idf/components/partition_table/Kconfig.projbuild"
+source "/home/andrew-gan/Documents/git/ece477/gui-blink/main/Kconfig.projbuild"
