@@ -22,7 +22,7 @@ static const char *TAG = "SD-CARD";
 static sdmmc_card_t* sdcard;
 static int is_mounted = 0;
 
-esp_err_t mount_fs(void) {
+esp_err_t mount_fs(const char* mount_point, sdmmc_card_t* sdcard) {
     esp_vfs_fat_mount_config_t mount_config = {
         .format_if_mount_failed = false,
         .max_files = 4,
