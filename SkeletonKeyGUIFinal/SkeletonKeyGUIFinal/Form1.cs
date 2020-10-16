@@ -85,6 +85,7 @@ namespace SkeletonKeyGUIFinal
         private void button4_Click(object sender, EventArgs e)
         {
             //...Insert Code
+            openChildForm(new Form6());
             HideSubMenu();
         }
 #endregion
@@ -99,12 +100,12 @@ namespace SkeletonKeyGUIFinal
         //Subuttons Under Password Manager Button
         private void button8_Click(object sender, EventArgs e)
         {
-            //...Insert Code
+            openChildForm(new Form5());
             HideSubMenu();
         }
         private void button7_Click(object sender, EventArgs e)
         {
-            //...Insert Code
+            openChildForm(new Form4());
             HideSubMenu();
         }
 
@@ -114,7 +115,7 @@ namespace SkeletonKeyGUIFinal
         //Project Website Button
         private void buttonProjectWebsite_Click(object sender, EventArgs e)
         {
-            //...Insert Code
+            System.Diagnostics.Process.Start("https://engineering.purdue.edu/477grp8/");
             HideSubMenu();
         }
         #endregion
@@ -123,7 +124,7 @@ namespace SkeletonKeyGUIFinal
         //Help Button 
         private void buttonHelp_Click(object sender, EventArgs e)
         {
-            //...Insert Code
+            System.Diagnostics.Process.Start("https://engineering.purdue.edu/477grp8/Files/docs/12_UserManual.docx");
             HideSubMenu();
         }
         #endregion

@@ -10,3 +10,6 @@ C:\Users\TheSi\source\repos\SkeletonKeyGUIFinal\SkeletonKeyGUIFinal\obj\Debug\Sk
 C:\Users\TheSi\source\repos\SkeletonKeyGUIFinal\SkeletonKeyGUIFinal\obj\Debug\SkeletonKeyGUIFinal.pdb
 C:\Users\TheSi\source\repos\SkeletonKeyGUIFinal\SkeletonKeyGUIFinal\obj\Debug\SkeletonKeyGUIFinal.Form2.resources
 C:\Users\TheSi\source\repos\SkeletonKeyGUIFinal\SkeletonKeyGUIFinal\obj\Debug\SkeletonKeyGUIFinal.Form3.resources
+C:\Users\TheSi\source\repos\SkeletonKeyGUIFinal\SkeletonKeyGUIFinal\obj\Debug\SkeletonKeyGUIFinal.Form4.resources
+C:\Users\TheSi\source\repos\SkeletonKeyGUIFinal\SkeletonKeyGUIFinal\obj\Debug\SkeletonKeyGUIFinal.Form5.resources
+C:\Users\TheSi\source\repos\SkeletonKeyGUIFinal\SkeletonKeyGUIFinal\obj\Debug\SkeletonKeyGUIFinal.Form6.resources
