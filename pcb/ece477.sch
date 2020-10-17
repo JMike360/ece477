@@ -571,21 +571,111 @@ F 3 "~" H 4100 2150 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L power:GND #PWR0104
-U 1 1 5F864B89
-P 4500 3950
-F 0 "#PWR0104" H 4500 3700 50  0001 C CNN
-F 1 "GND" H 4505 3777 50  0000 C CNN
-F 2 "" H 4500 3950 50  0001 C CNN
-F 3 "" H 4500 3950 50  0001 C CNN
-	1    4500 3950
+L dk_Transistors-Bipolar-BJT-Single:MMBT2222A-7-F Q1
+U 1 1 5F8B6765
+P 2200 3600
+F 0 "Q1" H 2388 3653 60  0000 L CNN
+F 1 "MMBT2222" H 2388 3547 60  0000 L CNN
+F 2 "digikey-footprints:SOT-23-3" H 2400 3800 60  0001 L CNN
+F 3 "https://www.diodes.com/assets/Datasheets/ds30041.pdf" H 2400 3900 60  0001 L CNN
+F 4 "MMBT2222A-FDICT-ND" H 2400 4000 60  0001 L CNN "Digi-Key_PN"
+F 5 "MMBT2222A-7-F" H 2400 4100 60  0001 L CNN "MPN"
+F 6 "Discrete Semiconductor Products" H 2400 4200 60  0001 L CNN "Category"
+F 7 "Transistors - Bipolar (BJT) - Single" H 2400 4300 60  0001 L CNN "Family"
+F 8 "https://www.diodes.com/assets/Datasheets/ds30041.pdf" H 2400 4400 60  0001 L CNN "DK_Datasheet_Link"
+F 9 "/product-detail/en/diodes-incorporated/MMBT2222A-7-F/MMBT2222A-FDICT-ND/815723" H 2400 4500 60  0001 L CNN "DK_Detail_Page"
+F 10 "TRANS NPN 40V 0.6A SMD SOT23-3" H 2400 4600 60  0001 L CNN "Description"
+F 11 "Diodes Incorporated" H 2400 4700 60  0001 L CNN "Manufacturer"
+F 12 "Active" H 2400 4800 60  0001 L CNN "Status"
+	1    2200 3600
 	1    0    0    -1  
 $EndComp
+$Comp
+L dk_Transistors-Bipolar-BJT-Single:MMBT2222A-7-F Q2
+U 1 1 5F8C782C
+P 2200 4100
+F 0 "Q2" H 2388 4153 60  0000 L CNN
+F 1 "MMBT2222" H 2388 4047 60  0000 L CNN
+F 2 "digikey-footprints:SOT-23-3" H 2400 4300 60  0001 L CNN
+F 3 "https://www.diodes.com/assets/Datasheets/ds30041.pdf" H 2400 4400 60  0001 L CNN
+F 4 "MMBT2222A-FDICT-ND" H 2400 4500 60  0001 L CNN "Digi-Key_PN"
+F 5 "MMBT2222A-7-F" H 2400 4600 60  0001 L CNN "MPN"
+F 6 "Discrete Semiconductor Products" H 2400 4700 60  0001 L CNN "Category"
+F 7 "Transistors - Bipolar (BJT) - Single" H 2400 4800 60  0001 L CNN "Family"
+F 8 "https://www.diodes.com/assets/Datasheets/ds30041.pdf" H 2400 4900 60  0001 L CNN "DK_Datasheet_Link"
+F 9 "/product-detail/en/diodes-incorporated/MMBT2222A-7-F/MMBT2222A-FDICT-ND/815723" H 2400 5000 60  0001 L CNN "DK_Detail_Page"
+F 10 "TRANS NPN 40V 0.6A SMD SOT23-3" H 2400 5100 60  0001 L CNN "Description"
+F 11 "Diodes Incorporated" H 2400 5200 60  0001 L CNN "Manufacturer"
+F 12 "Active" H 2400 5300 60  0001 L CNN "Status"
+	1    2200 4100
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R6
+U 1 1 5F8F8ACB
+P 1850 3600
+F 0 "R6" V 1643 3600 50  0000 C CNN
+F 1 "1kΩ" V 1734 3600 50  0000 C CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 1780 3600 50  0001 C CNN
+F 3 "~" H 1850 3600 50  0001 C CNN
+	1    1850 3600
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:R R7
+U 1 1 5F8F9118
+P 1850 4100
+F 0 "R7" V 1643 4100 50  0000 C CNN
+F 1 "1kΩ" V 1734 4100 50  0000 C CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 1780 4100 50  0001 C CNN
+F 3 "~" H 1850 4100 50  0001 C CNN
+	1    1850 4100
+	0    1    1    0   
+$EndComp
 Wire Wire Line
-	4300 3950 4500 3950
+	2300 3800 1700 3800
 Wire Wire Line
-	3100 3950 3100 3750
+	1700 3800 1700 4100
 Wire Wire Line
-	3100 3750 3700 3750
-Connection ~ 3700 3750
+	1700 3600 1600 3600
+Wire Wire Line
+	1600 3600 1600 4300
+Wire Wire Line
+	1600 4300 2300 4300
+Wire Wire Line
+	2300 3400 4500 3400
+Wire Wire Line
+	4500 3400 4500 3950
+Wire Wire Line
+	4500 3950 4300 3950
+Wire Wire Line
+	1600 3600 1600 3000
+Wire Wire Line
+	1600 3000 5900 3000
+Wire Wire Line
+	5900 3000 5900 2900
+Wire Wire Line
+	5900 2900 6150 2900
+Connection ~ 1600 3600
+Wire Wire Line
+	2300 3900 2750 3900
+Wire Wire Line
+	2750 3900 2750 3950
+Wire Wire Line
+	2750 3950 3100 3950
+Wire Wire Line
+	2300 3800 3100 3800
+Wire Wire Line
+	3100 3800 3100 3250
+Wire Wire Line
+	3100 3250 5750 3250
+Wire Wire Line
+	5750 3250 5750 3050
+Wire Wire Line
+	5750 3050 6000 3050
+Wire Wire Line
+	6000 3050 6000 3000
+Connection ~ 2300 3800
+Wire Wire Line
+	6000 3000 6150 3000
 $EndSCHEMATC
