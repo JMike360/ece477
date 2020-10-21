@@ -543,6 +543,11 @@
       (net 64 "Net-(Q1-Pad3)"))
     (pad 39 smd rect (at -1 -1.755 90) (size 5 5) (layers F.Cu F.Paste F.Mask)
       (net 1 GND))
+    (model /home/andrew-gan/Downloads/KiCAD/ESP32/ESP32-WROOM-32.STEP
+      (offset (xyz 0 3 0))
+      (scale (xyz 1 1 1))
+      (rotate (xyz -90 0 0))
+    )
   )
 
   (module Connector_USB:USB_Micro-B_Molex_47346-0001 (layer F.Cu) (tedit 5D8620A7) (tstamp 5F8523DE)
@@ -689,6 +694,11 @@
       (net 65 "Net-(Q1-Pad2)"))
     (pad 1 smd rect (at -4.225 3.6) (size 0.45 1.75) (layers F.Cu F.Paste F.Mask)
       (net 40 "Net-(U1-Pad34)"))
+    (model /home/andrew-gan/Downloads/KiCAD/FT232RL/FT232RL-REEL--3DModel-STEP-56544.STEP
+      (at (xyz 0 0 0))
+      (scale (xyz 1 1 1))
+      (rotate (xyz -90 0 0))
+    )
   )
 
   (module Capacitor_SMD:C_0805_2012Metric (layer F.Cu) (tedit 5B36C52B) (tstamp 5F8B46A8)
