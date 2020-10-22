@@ -28,7 +28,7 @@
 esp_err_t cmd_led_red(int status);
 esp_err_t cmd_led_green(int status);
 esp_err_t cmd_request_entries();
-esp_err_t cmd_request_credential(uint8_t* filename);
-esp_err_t cmd_store_credential(uint8_t* filename, uint8_t* url, uint8_t* username, uint8_t* pw);
+esp_err_t cmd_request_credential(char* filename);
+esp_err_t cmd_store_credential(char* filename, char* url, char* username, char* pw);
 
 #endif

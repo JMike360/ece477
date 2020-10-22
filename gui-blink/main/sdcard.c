@@ -9,8 +9,8 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include "sdkconfig.h"
-#include "include/spi_init.h"
-#include "include/sdcard.h"
+#include "../include/spi_init.h"
+#include "../include/sdcard.h"
 #include "driver/gpio.h"
 #include "esp_vfs_fat.h"
 #include "sdmmc_cmd.h"
@@ -98,21 +98,6 @@ esp_err_t mount_fs(const char* mount_point, sdmmc_card_t* sdcard) {
         ESP_LOGE(TAG, "Failed to mount SD card (%s).", esp_err_to_name(ret));
     
     return ret;
-}
-
-void retrieve_file(const char* filename, size_t size, char* dest) {
-    if (is_mounted == 0) {
-        ESP_LOGE(TAG, "Attempting to retrieve file before mounting file system.");
-        return;
-    }
-
-    FILE* fp = fopen(filename, "r");
-    int i = 0;
-    do {
-        fread(&(dest[i++]), sizeof(char), 1, fp);
-    } while( !feof(fp) && (i < size) );
-
-    return;
 }
 
 // void app_main() {

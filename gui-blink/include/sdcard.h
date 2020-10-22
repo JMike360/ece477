@@ -7,6 +7,8 @@
 #define SD_CMD_LEN          40
 #define SD_START            ((long)0x1 << 38)
 
+#define MOUNT_POINT "/sdcard"
+
 // SD command index
 #define SD_INDEX_POS        32 // shift left by this many bits
 #define GO_IDLE_STATE       0x0
@@ -23,5 +25,9 @@
 #define WRITE_MULTIPLE_BLOCK 0x19
 #define APP_CMD             0x37
 #define READ_OCR            0x3a
+
+
+esp_err_t spi_init(spi_host_device_t spi_host);
+esp_err_t mount_fs(const char* mount_point, sdmmc_card_t* sdcard);
 
 #endif

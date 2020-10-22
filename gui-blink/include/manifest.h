@@ -6,24 +6,24 @@
 
 #define MAX_ENTRY 256
 
-typedef struct {
-    uint8_t displayName[32];
-    uint8_t username[32];
-    uint8_t url[2048];
+typedef struct _ManifestEntry {
+    char displayName[32];
+    char username[32];
+    char url[2048];
+    struct _ManifestEntry* next;
 } ManifestEntry;
 
 typedef struct {
     int numEntry;
-    ManifestEntry entryArray[MAX_ENTRY];
+    ManifestEntry* head;
+    ManifestEntry* tail;
 } ManifestContent;
 
-ManifestContent* content = NULL;
-
 void parseManifest();
-int manifestEntryExist(uint8_t* displayname);
-esp_err_t writeManifestToFile();
-void addManifestEntry(uint8_t* displayName, uint8_t* login, uint8_t* url);
-void getManifestEntry();
-esp_err_t removeManifestEntry();
+int manifestEntryExist(char* displayname);
+int writeManifestToFile();
+void addManifestEntry(char* displayName, char* login, char* url);
+ManifestEntry* getManifestEntry(char* displayName);
+int removeManifestEntry();
 
 #endif
