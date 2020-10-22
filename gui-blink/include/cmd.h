@@ -6,8 +6,6 @@
 #define GPIO_GREEN     (GPIO_NUM_32)
 #define GPIO_RED       (GPIO_NUM_33)
 
-#define MOUNT_POINT "/sdcard"
-
 #define CMD_LED_RED                     0x0
 #define CMD_LED_GREEN                   0x1
 #define CMD_REQUEST_ENTRIES             0x2

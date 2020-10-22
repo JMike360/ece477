@@ -1,8 +1,10 @@
 #ifndef __MANIFEST_H__
 #define __MANIFEST_H__
 
+#include <stdio.h>
 #include <stdint.h>
-#include "driver/sdspi_host.h"
+
+#define MAX_ENTRY 256
 
 typedef struct {
     uint8_t displayName[32];
@@ -12,9 +14,16 @@ typedef struct {
 
 typedef struct {
     int numEntry;
-    ManifestEntry* entryArray;
+    ManifestEntry entryArray[MAX_ENTRY];
 } ManifestContent;
 
-int parseManifest(char* filepath);
+ManifestContent* content = NULL;
+
+void parseManifest();
+int manifestEntryExist(uint8_t* displayname);
+esp_err_t writeManifestToFile();
+void addManifestEntry(uint8_t* displayName, uint8_t* login, uint8_t* url);
+void getManifestEntry();
+esp_err_t removeManifestEntry();
 
 #endif
