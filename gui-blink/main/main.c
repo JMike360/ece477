@@ -8,7 +8,7 @@
 */
 #include <stdio.h>
 #include <stdbool.h>
-#include "include/cmd.h"
+#include "../include/cmd.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "driver/uart.h"
@@ -16,20 +16,10 @@
 #include "sdkconfig.h"
 #include "esp_log.h"
 
-#include "../../hspi-bus/main/include/spi_init.h"
-#include "../../hspi-bus/main/include/sdcard.h"
+#include "../include/spi_init.h"
+#include "../include/sdcard.h"
 
-/**
- * This is an example which echos any data it receives on UART1 back to the sender,
- * with hardware flow control turned off. It does not use UART driver event queue.
- *
- * - Port: UART1
- * - Receive (Rx) buffer: on
- * - Transmit (Tx) buffer: off
- * - Flow control: off
- * - Event queue: off
- * - Pin assignment: see defines below
- */
+static sdmmc_card_t* sdcard;
 
 #define ECHO_TEST_RTS  (UART_PIN_NO_CHANGE)
 #define ECHO_TEST_CTS  (UART_PIN_NO_CHANGE)
@@ -57,15 +47,8 @@ void _clearBuffer(uint8_t* data, int len) {
 
 void gpioInit(void)
 {
-    /* Configure the IOMUX register for pad BLINK_GPIO (some pads are
-       muxed to GPIO on reset already, but some default to other
-       functions and need to be switched to GPIO. Consult the
-       Technical Reference for a list of pads and their default
-       functions.)
-    */
     gpio_pad_select_gpio(GPIO_GREEN);
     gpio_pad_select_gpio(GPIO_RED);
-    /* Set the GPIO as a push/pull output */
     gpio_set_direction(GPIO_GREEN, GPIO_MODE_OUTPUT);
     gpio_set_direction(GPIO_RED, GPIO_MODE_OUTPUT);
 }
@@ -110,27 +93,22 @@ void readCMD()
         ESP_LOGI("UART-CMD", "data: %s\n", data);
         // uart_write_bytes(UART_NUM_1, (const char *) data, len);
         switch (data[0]) {
-            case CMD_LED_RED: 
-        }
-        if(_mystrcmp(data, "LEDR", 1, 4) == STRCMP_EQUAL) {
-            if(_mystrcmp(data, "ON", 5, 6) == STRCMP_EQUAL) {
-                gpio_set_level(GPIO_RED, 1);
-                ESP_LOGI("UART-CMD", "turning red on\n");
-            }
-            else if(_mystrcmp(data, "OF", 5, 6) == STRCMP_EQUAL) {
-                gpio_set_level(GPIO_RED, 0);
-                ESP_LOGI("UART-CMD", "turning red off\n");
-            }
-        }
-        if(_mystrcmp(data, "LEDG", 1, 4) == STRCMP_EQUAL) {
-            if(_mystrcmp(data, "ON", 5, 6) == STRCMP_EQUAL) {
-                gpio_set_level(GPIO_GREEN, 1);
-                ESP_LOGI("UART-CMD", "turning green on\n");
-            }
-            else if(_mystrcmp(data, "OF", 5, 6) == STRCMP_EQUAL) {
-                gpio_set_level(GPIO_GREEN, 0);
-                ESP_LOGI("UART-CMD", "turning green off\n");
-            }
+            case CMD_LED_RED:
+                cmd_led_red(data[1]);
+                break;
+            case CMD_LED_GREEN:
+                cmd_led_green(data[1]);
+                break;
+            case CMD_REQUEST_ENTRIES:
+                cmd_request_entries();
+                break;
+            case CMD_REQUEST_CREDENTIAL:
+                cmd_request_credential(&data[1]);
+                break;
+            case CMD_STORE_CREDENTIAL:
+                cmd_store_credential(sdcard, );
+                break;
+            default:
         }
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
@@ -139,7 +117,7 @@ void readCMD()
 void app_main(void)
 {
     spi_init(SPI2_HOST);
-    mount_fs();
+    mount_fs(MOUNT_POINT, sdcard);
     sleep(3);
 
     gpioInit();

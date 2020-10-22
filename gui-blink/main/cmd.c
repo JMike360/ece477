@@ -1,5 +1,9 @@
+#include <string.h>
 #include "../include/cmd.h"
 #include "esp_err.h"
+
+#include "../include/spi_init.h"
+#include "../include/sdcard.h"
 
 // one function per command
 
@@ -37,6 +41,14 @@ esp_err_t cmd_request_credential(uint8_t* filename) {
 
 }
 
-esp_err_t cmd_store_credential(uint8_t* filename, uint8_t* url, uint8_t* username, uint8_t* pw) {
-
+esp_err_t cmd_store_credential(sdmmc_card_t* sdcard, char* filename, uint8_t* url, uint8_t* username, uint8_t* pw) {
+    char path[256] = {'\0'};
+    strcat(path, MOUNT_POINT);
+    strcat(path, "/");
+    strcat(path, filename);
+    FILE* fp = fopen(path, "w");
+    if (fp == NULL)
+        return ESP_FAIL;
+    fprintf(fp, pw, sdcard->cid.name);
+    fclose(f);
 }

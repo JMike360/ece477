@@ -6,6 +6,8 @@
 #define GPIO_GREEN     (GPIO_NUM_32)
 #define GPIO_RED       (GPIO_NUM_33)
 
+#define MOUNT_POINT "/sdcard"
+
 #define CMD_LED_RED                     0x0
 #define CMD_LED_GREEN                   0x1
 #define CMD_REQUEST_ENTRIES             0x2
@@ -24,5 +26,11 @@
 #define CMD_RESP_DELETE_FINGERPRINT     0xf
 #define CMD_ERR_INCORRECT_PACKET_FORMAT 0x10
 #define CMD_ERR_UNRECOGNIZED_COMMAND    0x11
+
+esp_err_t cmd_led_red(int status);
+esp_err_t cmd_led_green(int status);
+esp_err_t cmd_request_entries();
+esp_err_t cmd_request_credential(uint8_t* filename);
+esp_err_t cmd_store_credential(uint8_t* filename, uint8_t* url, uint8_t* username, uint8_t* pw);
 
 #endif
