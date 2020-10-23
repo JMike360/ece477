@@ -8,31 +8,17 @@
 */
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 #include "../include/cmd.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "driver/uart.h"
-#include "driver/gpio.h"
 #include "sdkconfig.h"
+#include "esp_vfs_fat.h"
 #include "esp_log.h"
+#include <unistd.h>
 
-#include "../include/spi_init.h"
 #include "../include/sdcard.h"
 #include "../include/manifest.h"
-
-// cleanup later
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include "sdkconfig.h"
-#include "../include/spi_init.h"
-#include "../include/sdcard.h"
-#include "driver/gpio.h"
-#include "esp_vfs_fat.h"
-#include "sdmmc_cmd.h"
-#include "driver/sdmmc_host.h"
-#include <string.h>
 
 static sdmmc_card_t* sdcard;
 
@@ -41,10 +27,11 @@ static sdmmc_card_t* sdcard;
 
 #define BUF_SIZE (1024)
 
+#define TAG "UART-CMD"
+
 #define PIN_TX 1
 #define PIN_RX 3
 #define BAUD_RATE 115200
-#define PORT_NUM 0
 #define STACK_SIZE 2048
 
 bool _mystrcmp(uint8_t* uart_input, const char* cmd, int start, int end) {
@@ -60,8 +47,7 @@ void _clearDataBuffer(uint8_t* data, int len) {
         data[i] = '\0';
 }
 
-void gpioInit(void)
-{
+void gpioInit(void) {
     gpio_pad_select_gpio(GPIO_GREEN);
     gpio_pad_select_gpio(GPIO_RED);
     gpio_set_direction(GPIO_GREEN, GPIO_MODE_OUTPUT);
@@ -84,22 +70,18 @@ void uartInit () {
     ESP_ERROR_CHECK(uart_set_pin(PORT_NUM, PIN_TX, PIN_RX, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE));
 }
 
-void readCMD()
-{
-    // uart_driver_install(UART_NUM, BUF_SIZE * 2, 0, 0, NULL, 0);
-    // uart_param_config(UART_NUM, &uart_config);
-    // uart_set_pin(UART_NUM, ECHO_TEST_TXD, ECHO_TEST_RXD, ECHO_TEST_RTS, ECHO_TEST_CTS);
-
+void readCMD() {
     // Configure a temporary buffer for the incoming data
     uint8_t *data = (uint8_t *) malloc(BUF_SIZE);
-    int buflen = 0;
+    char *displayName, *username, *url, *pw;
 
     while (1) {
         int i = 0;
         do {
             i += uart_read_bytes(PORT_NUM, &data[i], BUF_SIZE, 20 / portTICK_RATE_MS);
+            ESP_LOGI(TAG, "len = %d, str = %s\n", i, data);
         } while(data[i-1] != '\n');
-        ESP_LOGI("UART-CMD", "data: %s\n", data);
+        ESP_LOGI(TAG, "reading from UART: %s\n", data);
 
         // uart_write_bytes(UART_NUM_1, (const char *) data, len);
         switch (data[1]) {
@@ -109,34 +91,43 @@ void readCMD()
             case CMD_LED_GREEN:
                 cmd_led_green(data[3]);
                 break;
-            // case CMD_REQUEST_ENTRIES:
-            //     cmd_request_entries();
-            //     break;
-            // case CMD_REQUEST_CREDENTIAL:
-            //     cmd_request_credential(&data[1]);
-            //     break;
-            // case CMD_STORE_CREDENTIAL:
-            //     cmd_store_credential(sdcard, );
-            //     break;
+            case CMD_REQUEST_ENTRIES:
+                cmd_request_entries();
+                break;
+            case CMD_REQUEST_CREDENTIAL:
+                cmd_request_credential((char*) &data[1]);
+                break;
+            case CMD_STORE_CREDENTIAL:
+                displayName = strtok((char*) &data[3], ",");
+                username = strtok(NULL, ",");
+                url = strtok(NULL, ",");
+                pw = strtok(NULL, ",");
+                cmd_store_credential(displayName, username, url, pw);
+                break;
         }
     }
+
+    free(data);
 }
 
-void app_main(void)
-{
+void app_main(void) {
     spi_init(SPI2_HOST);
     mount_fs(MOUNT_POINT, sdcard);
-    sleep(3);
+
+    sleep(2);
 
     gpioInit();
     uartInit();
 
+    if (readManifestToMemory() == MANIFEST_FAILURE)
+        return;
+    
+    sleep(2);
     readCMD();
-    // cmd_store_credential("facebook", "facebook.com", "gan35", "123456");
 
     writeManifestToFile();
+    deallocateManifest();
+    esp_vfs_fat_sdcard_unmount(MOUNT_POINT, sdcard);
 
     while(1) {}
-
-    esp_vfs_fat_sdcard_unmount(MOUNT_POINT, sdcard);
 }

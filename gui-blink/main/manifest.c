@@ -2,6 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "esp_log.h"
+
+#define TAG "MANIFEST"
+
 static ManifestContent* content = NULL;
 
 void _clearBuffer(char* buff, int size) {
@@ -9,8 +13,20 @@ void _clearBuffer(char* buff, int size) {
         buff[i] = '\0';
 }
 
-void parseManifest() {
+int readManifestToMemory() {
     FILE* fp = fopen("/sdcard/manifest", "r");
+    if (fp == NULL) {
+        fp = fopen("/sdcard/manifest", "w");
+        if (fp == NULL) {
+            ESP_LOGE(TAG, "Unable to open manifest file for reading");
+            return MANIFEST_FAILURE;
+        }
+    }
+
+    if (content != NULL) {
+        ESP_LOGE(TAG, "Manifest already read to memory. Deallocate before reading again");
+        return MANIFEST_FAILURE;
+    }
 
     // allocate data structure to store info
     content = malloc(sizeof(ManifestContent));
@@ -18,15 +34,12 @@ void parseManifest() {
     content->head = NULL;
     content->tail = NULL;
 
-    if (fp == NULL)
-        return;
-
     // store manifest info to structure
     char displayName_buffer[32];
     char userName_buffer[32];
     char url_buffer[2048];
     int r = 0;
-    while (feof(fp) && r < MAX_ENTRY) {
+    while (feof(fp)) {
         ManifestEntry* newEntry = calloc(1, sizeof(ManifestEntry));
 
         // assign as head
@@ -63,23 +76,29 @@ void parseManifest() {
         addManifestEntry(displayName_buffer, userName_buffer, url_buffer);
         r++;
     }
+
+    ESP_LOGI(TAG, "Successfully read manifest to memory");
+    return MANIFEST_SUCCESS;
 }
 
 int manifestEntryExist(char* displayName) {
     if (content == NULL)
-        parseManifest();
+        return MANIFEST_FAILURE;
     ManifestEntry* currEntry = content->head;
     while (currEntry != NULL) {
         if (strcmp(currEntry->next->displayName, displayName) == 0)
-            return 1;
+            return MANIFEST_SUCCESS;
     }
-    return 0;
+    return MANIFEST_FAILURE;
 }
 
 int writeManifestToFile() {
     FILE* fp = fopen("/sdcard/manifest", "w");
-    if (fp == NULL)
-        return 0;
+    if (fp == NULL) {
+        ESP_LOGE(TAG, "Unable to open manifest file for writing");
+        return MANIFEST_FAILURE;
+    }
+
     ManifestEntry* currEntry = content->head;
     while (currEntry != NULL) {
         fprintf(fp, currEntry->displayName);
@@ -92,12 +111,33 @@ int writeManifestToFile() {
         currEntry = currEntry->next;
     }
     fclose(fp);
-    return 1;
+
+    ESP_LOGI(TAG, "Successfully written manifest to file");
+    return MANIFEST_SUCCESS;
 }
 
-void addManifestEntry(char* displayName, char* username, char* url) {
+int deallocateManifest() {
+    if (content == NULL) {
+        ESP_LOGE(TAG, "Attempting to deallocate manifest that was previously deallocated");
+        return MANIFEST_FAILURE;
+    }
+
+    ManifestEntry* currEntry = content->head;
+    while(currEntry != NULL) {
+        ManifestEntry* nextEntry = currEntry->next;
+        free(currEntry);
+        currEntry = nextEntry;
+    }
+    free(content);
+    content = NULL;
+
+    ESP_LOGI(TAG, "Successfully deallocated manifest on memory");
+    return MANIFEST_SUCCESS;
+}
+
+int addManifestEntry(char* displayName, char* username, char* url) {
     if (content == NULL)
-        parseManifest();
+        return MANIFEST_FAILURE;
     ManifestEntry* newEntry = calloc(1, sizeof(ManifestEntry));
     strcpy(newEntry->displayName, displayName);
     strcpy(newEntry->username, username);
@@ -112,32 +152,41 @@ void addManifestEntry(char* displayName, char* username, char* url) {
     content->tail = newEntry;
     newEntry->next = NULL;
     content->numEntry += 1;
+
+    ESP_LOGI(TAG, "Successfully added manifest entry");
+    return MANIFEST_SUCCESS;
 }
 
-ManifestEntry* getManifestEntry(char* displayName) {
+ManifestEntry* getManifestEntry(char* displayName, char* userName) {
     if (content == NULL)
-        parseManifest();
+        return NULL;
     ManifestEntry* currEntry = content->head;
     while(currEntry != NULL) {
-        if (strcmp(currEntry->displayName, displayName) == 0)
+        if ( (strcmp(currEntry->displayName, displayName) == 0) && (strcmp(currEntry->username, userName) == 0) )
             break;
         currEntry = currEntry->next;
     };
+    if (currEntry != NULL)
+        ESP_LOGI(TAG, "Successfully retrieved manifest entry");
+    else
+        ESP_LOGE(TAG, "Failed to retrieve manifest entry");
+    
     return currEntry;
 }
 
 int removeManifestEntry(char* displayName) {
     if (content == NULL)
-        parseManifest();
+        NULL;
+
     ManifestEntry* currEntry = content->head;
     if (currEntry == NULL)
-        return 0;
+        return MANIFEST_FAILURE;
 
     if (strcmp(currEntry->displayName, displayName) == 0) {
         content->head = currEntry->next;
         free(currEntry);
         content->numEntry -= 1;
-        return 1;
+        return MANIFEST_SUCCESS;
     }
     
     while (currEntry->next != NULL) {
@@ -149,11 +198,13 @@ int removeManifestEntry(char* displayName) {
                 content->tail = prevEntry;
             free(currEntry);
             content->numEntry -= 1;
-            return 1;
+            ESP_LOGI(TAG, "Successfully removed manifest entry");
+            return MANIFEST_SUCCESS;
         }
     };
 
-    return 0;
+    ESP_LOGI(TAG, "Failed to remove manifest entry");
+    return MANIFEST_FAILURE;
 }
 
 //     mount_fs();

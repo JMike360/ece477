@@ -1,31 +1,23 @@
 #ifndef __SDCARD_H__
 #define __SDCARD_H__
 
+#include "driver/sdspi_host.h"
+#include "driver/spi_common.h"
 #include "esp_err.h"
 #include "esp_log.h"
+
+// Pin mapping when using HSPI.
+#define PIN_NUM_MISO        GPIO_NUM_12
+#define PIN_NUM_MOSI        GPIO_NUM_13
+#define PIN_NUM_CLK         GPIO_NUM_14
+#define PIN_NUM_CS_SD       GPIO_NUM_15
+
+#define SPI_DMA_CHANNEL 1
 
 #define SD_CMD_LEN          40
 #define SD_START            ((long)0x1 << 38)
 
 #define MOUNT_POINT "/sdcard"
-
-// SD command index
-#define SD_INDEX_POS        32 // shift left by this many bits
-#define GO_IDLE_STATE       0x0
-#define SEND_OP_COND        0x1
-#define SEND_IF_COND        0x8
-#define SEND_CSD            0x9
-#define SEND_CID            0xa
-#define STOP_TRANSMISSION   0xc
-#define SET_BLOCKLEN        0x10
-#define READ_SINGLE_BLOCK   0x11
-#define READ_MULTIPLE_BLOCK 0x12
-#define SET_BLOCK_COUNT     0x17
-#define WRITE_BLOCK         0x18
-#define WRITE_MULTIPLE_BLOCK 0x19
-#define APP_CMD             0x37
-#define READ_OCR            0x3a
-
 
 esp_err_t spi_init(spi_host_device_t spi_host);
 esp_err_t mount_fs(const char* mount_point, sdmmc_card_t* sdcard);

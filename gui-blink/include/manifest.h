@@ -5,6 +5,8 @@
 #include <stdint.h>
 
 #define MAX_ENTRY 256
+#define MANIFEST_SUCCESS 1
+#define MANIFEST_FAILURE 0
 
 typedef struct _ManifestEntry {
     char displayName[32];
@@ -19,11 +21,12 @@ typedef struct {
     ManifestEntry* tail;
 } ManifestContent;
 
-void parseManifest();
+int readManifestToMemory();
 int manifestEntryExist(char* displayname);
 int writeManifestToFile();
-void addManifestEntry(char* displayName, char* login, char* url);
-ManifestEntry* getManifestEntry(char* displayName);
+int addManifestEntry(char* displayName, char* login, char* url);
+ManifestEntry* getManifestEntry(char* displayName, char* userName);
 int removeManifestEntry();
+int deallocateManifest();
 
 #endif

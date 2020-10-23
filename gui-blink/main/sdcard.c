@@ -9,7 +9,6 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include "sdkconfig.h"
-#include "../include/spi_init.h"
 #include "../include/sdcard.h"
 #include "driver/gpio.h"
 #include "esp_vfs_fat.h"
@@ -17,7 +16,7 @@
 #include "driver/sdmmc_host.h"
 #include <string.h>
 
-#define TAG "HSPI"
+#define TAG "SD-CARD"
 
 static int is_mounted = 0;
 
@@ -50,27 +49,6 @@ esp_err_t spi_init(spi_host_device_t spi_host) {
         ESP_LOGE(TAG, "Failed to initialize bus (%s).", esp_err_to_name(err));
     
     return err;
-}
-
-uint32_t spi_transmit(spi_device_handle_t dev, uint32_t msg, int len) {
-    uint16_t data = SPI_SWAP_DATA_TX(msg, len);
-    spi_transaction_t t;
-    uint32_t rec_buff;
-    
-    memset(&t, '\0', sizeof(t));
-    t.length = len;
-    t.tx_buffer = &data;
-    t.rx_buffer = &rec_buff;
-
-    esp_err_t err = spi_device_polling_transmit(dev, &t);
-    if (err == ESP_OK)
-        ESP_LOGI(TAG, "Successfully transmitted 0x%08x, returning 0x%02x.",
-            msg, (uint32_t)t.rx_buffer);
-    else
-        ESP_LOGE(TAG, "Failed to transmit 0x%x (%s).",
-            data, esp_err_to_name(err));
-
-    return rec_buff;
 }
 
 esp_err_t mount_fs(const char* mount_point, sdmmc_card_t* sdcard) {

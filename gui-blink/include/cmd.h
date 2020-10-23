@@ -2,6 +2,12 @@
 #define __CMD_H__
 
 #include "driver/gpio.h"
+#include "driver/uart.h"
+
+#define CMD_SUCCESS 1
+#define CMD_FAILURE 0
+
+#define PORT_NUM 0
 
 #define GPIO_GREEN     (GPIO_NUM_32)
 #define GPIO_RED       (GPIO_NUM_33)
@@ -28,7 +34,7 @@
 esp_err_t cmd_led_red(int status);
 esp_err_t cmd_led_green(int status);
 esp_err_t cmd_request_entries();
-esp_err_t cmd_request_credential(char* filename);
-esp_err_t cmd_store_credential(char* filename, char* url, char* username, char* pw);
+esp_err_t cmd_request_credential(char* displayname, char* userName);
+esp_err_t cmd_store_credential(char* displayName, char* username, char* url, char* pw);
 
 #endif
