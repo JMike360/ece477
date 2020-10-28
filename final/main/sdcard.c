@@ -21,6 +21,17 @@
 sdmmc_card_t* sdcard = NULL;
 static uint8_t spi_init_flag = 0x0;
 
+/**************************************************
+ * spiInit
+ * Initialize SPI2 (or HSPI) for connection using
+ * PIN_NUM_MOSI, PIN_NUM_MISO, PIN_NUM_CLK.
+ * 
+ * input:
+ * void
+ * 
+ * output:
+ * esp_err_t - return status
+**************************************************/
 esp_err_t spiInit() {
     // ensure module init once
     if ( ( spi_init_flag & (1 << SPI2_HOST) ) != 0 ) {
@@ -50,6 +61,19 @@ esp_err_t spiInit() {
     return err;
 }
 
+/**************************************************
+ * mount_fs
+ * Mount SD card by initializing it through SPI.
+ * Prior to calling this function, spiInit() should be
+ * called to initialize the SPI. SD card information
+ * is stored in 'sdcard' in sdcard.c
+ * 
+ * input:
+ * void
+ * 
+ * output:
+ * esp_err_t - return status
+**************************************************/
 esp_err_t mount_fs() {
     esp_vfs_fat_mount_config_t mount_config = {
         .format_if_mount_failed = false,
@@ -74,6 +98,17 @@ esp_err_t mount_fs() {
     return ret;
 }
 
+/**************************************************
+ * umount_fs
+ * Unmount the SD card that was previously mounted
+ * using mount_fs() and stored as 'sdcard' in sdcard.c
+ * 
+ * input:
+ * void
+ * 
+ * output:
+ * esp_err_t - return status
+**************************************************/
 esp_err_t umount_fs() {
     esp_err_t ret = esp_vfs_fat_sdcard_unmount(MOUNT_POINT, sdcard);
     if (ret == ESP_OK)

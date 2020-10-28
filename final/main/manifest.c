@@ -8,11 +8,35 @@
 
 static ManifestContent* content = NULL;
 
+/**************************************************
+ * _clearBuffer
+ * Set all values in data buffer to null char
+ * 
+ * input:
+ * uint8_t* data - buffer to be cleared
+ * int len - length of buffer
+ * 
+ * output:
+ * void
+**************************************************/
 void _clearBuffer(char* buff, int size) {
     for (int i = 0; i < size; i++)
         buff[i] = '\0';
 }
 
+/**************************************************
+ * readManifestToMemory
+ * Parse existing manifest file and store it as a
+ * data structure for easy access. Create a new
+ * manifest file if no such file existed. The
+ * manifest is stored as 'content' in manifest.c
+ * 
+ * input:
+ * void
+ * 
+ * output:
+ * int - manifest return status
+**************************************************/
 int readManifestToMemory() {
     if (content != NULL) {
         ESP_LOGE(TAG, "Manifest already read to memory. Deallocate before reading again");
@@ -60,6 +84,19 @@ int readManifestToMemory() {
     return MANIFEST_SUCCESS;
 }
 
+/**************************************************
+ * writeManifestToFile
+ * Print contents of manifest stored as data
+ * structure 'content' in manifest.c into text
+ * file named '/sdcard/manifest'. Manifest stored
+ * on memory is not deallocated!
+ * 
+ * input:
+ * void
+ * 
+ * output:
+ * int - manifest return status
+**************************************************/
 int writeManifestToFile() {
     FILE* fp = fopen("/sdcard/manifest", "w");
     if (fp == NULL) {
@@ -84,9 +121,21 @@ int writeManifestToFile() {
     return MANIFEST_SUCCESS;
 }
 
+/**************************************************
+ * deallocateManifest
+ * Free up all memory allocated to linkedlist
+ * structure used to store manifest file content.
+ * 'content' in manifest.c is set to NULL.
+ * 
+ * input:
+ * void
+ * 
+ * output:
+ * int - manifest return status
+**************************************************/
 int deallocateManifest() {
     if (content == NULL) {
-        ESP_LOGE(TAG, "Attempting to deallocate manifest that was previously deallocated");
+        ESP_LOGE(TAG, "Attempting to deallocate manifest that was unallocated");
         return MANIFEST_FAILURE;
     }
 
@@ -103,6 +152,23 @@ int deallocateManifest() {
     return MANIFEST_SUCCESS;
 }
 
+/**************************************************
+ * addManifestEntry
+ * Add a new entry into the manifest on memory if
+ * entry does not exist. Otherwise, modifies the
+ * existing manifest entry. Prior to calling this
+ * function, manifest file must be parsed and stored
+ * via readManifestToMemory(). Content should later
+ * be saved to text file via writeManifestToFile().
+ * 
+ * input:
+ * char* displayName - website name such as 'Facebook'
+ * char* username - login id which is unprotected
+ * char* url - website login url such as 'facebook.com'
+ * 
+ * output:
+ * int - manifest return status
+**************************************************/
 int addManifestEntry(char* displayName, char* username, char* url) {
     if (content == NULL)
         return MANIFEST_FAILURE;
@@ -128,6 +194,20 @@ int addManifestEntry(char* displayName, char* username, char* url) {
     return MANIFEST_SUCCESS;
 }
 
+/**************************************************
+ * getManifestEntry
+ * Retrieve existing entry from manifest by comparing
+ * displayName and username. Return NULL if entry does
+ * not exist. Prior to calling this function, manifest
+ * file must be parsed and stored via readManifestToMemory().
+ * 
+ * input:
+ * char* displayName - website name such as 'Facebook'
+ * char* userName - login id which is unprotected
+ * 
+ * output:
+ * ManifestEntry* - entry that matched displayName and userName
+**************************************************/
 ManifestEntry* getManifestEntry(char* displayName, char* userName) {
     if (content == NULL)
         return NULL;
@@ -145,6 +225,21 @@ ManifestEntry* getManifestEntry(char* displayName, char* userName) {
     return currEntry;
 }
 
+/**************************************************
+ * removeManifestEntry
+ * Remove an entry from the manifest on memory if
+ * entry existed. If entry does not exist, return fail.
+ * Prior to calling this function, manifest file must
+ * be parsed and stored via readManifestToMemory().
+ * Content should later be saved to text file via
+ * writeManifestToFile().
+ * 
+ * input:
+ * char* displayName - website name such as 'Facebook'
+ * 
+ * output:
+ * int - manifest return status
+**************************************************/
 int removeManifestEntry(char* displayName) {
     if (content == NULL)
         NULL;

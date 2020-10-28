@@ -32,19 +32,33 @@
 #define BAUD_RATE 115200
 #define STACK_SIZE 2048
 
-bool _mystrcmp(uint8_t* uart_input, const char* cmd, int start, int end) {
-    for(int i = start; i <= end; i++) {
-        if (uart_input[i] != cmd[i - start])
-            return false;
-    }
-    return true;
-}
-
+/**************************************************
+ * _clearDataBuffer
+ * Set all values in data buffer to null char
+ * 
+ * input:
+ * uint8_t* data - buffer to be cleared
+ * int len - length of buffer
+ * 
+ * output:
+ * void
+**************************************************/
 void _clearDataBuffer(uint8_t* data, int len) {
     for(int i = 0; i < len; i++)
         data[i] = '\0';
 }
 
+/**************************************************
+ * gpioInit
+ * Initialize GPIO pin for LEDs using GPIO_GREEN and
+ * GPIO_RED and set them to output mode
+ * 
+ * input:
+ * void
+ * 
+ * output:
+ * void
+**************************************************/
 void gpioInit(void) {
     gpio_pad_select_gpio(GPIO_GREEN);
     gpio_pad_select_gpio(GPIO_RED);
@@ -52,7 +66,17 @@ void gpioInit(void) {
     gpio_set_direction(GPIO_RED, GPIO_MODE_OUTPUT);
 }
 
-
+/**************************************************
+ * uartInit
+ * Initialize UART port 0 (embedded USB port) pins
+ * and install driver for UART.
+ * 
+ * input:
+ * void
+ * 
+ * output:
+ * void
+**************************************************/
 void uartInit () {
     uart_config_t config = {
         .baud_rate = BAUD_RATE,
@@ -68,6 +92,18 @@ void uartInit () {
     ESP_ERROR_CHECK(uart_set_pin(PORT_NUM, PIN_TX, PIN_RX, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE));
 }
 
+/**************************************************
+ * _clearDataBuffer
+ * Read UART messages and call the corresponding
+ * command functions. This function stays in an
+ * infinite loop until the terminate command is given.
+ * 
+ * input:
+ * void
+ * 
+ * output:
+ * void
+**************************************************/
 void readCMD() {
     // Configure a temporary buffer for the incoming data
     uint8_t *data = (uint8_t *) malloc(BUF_SIZE);
@@ -112,6 +148,17 @@ void readCMD() {
     free(data);
 }
 
+/**************************************************
+ * app_main
+ * Initialize SPI, GPIO, SD card, manifest and prepare
+ * device for listening to incoming UART commands.
+ * 
+ * input:
+ * void
+ * 
+ * output:
+ * void
+**************************************************/
 void app_main(void) {
     spiInit();
     mount_fs();
