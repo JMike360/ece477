@@ -20,14 +20,16 @@ LCD module
 ## GPIO table
 | GPIO PIN      | Function  | Endpoint     |
 |---------------|-----------|--------------|
+| 1             | U0TXD     | FT232 RXD    |
+| 3             | U0RXD     | FT232 TXD    |
+| 9             | U1RXD     | Console in   |
+| 10            | U1TXD     | Console_out  |
 | 12            | HSPI_MISO | MicroSD Dout |
 | 13            | HSPI_MOSI | MicroSD Din  |
 | 14            | HSPI_CLK  | MicroSD CLK  |
 | 15            | HSPI_CS0  | MicroSD CS   |
 | 16            | U2RXD     | Fingerprint Scanner TX |
 | 17            | U2TXD     | Fingerprint Scanner RX |
-  
-Fingerprint Scanner needs 17 TX and 16 RX
 
 GPIO 6-11 - SPI flash  
 GPIO 34-39 - input mode only    
