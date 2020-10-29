@@ -30,11 +30,14 @@
 #define CMD_RESP_DELETE_FINGERPRINT     0xf
 #define CMD_ERR_INCORRECT_PACKET_FORMAT 0x10
 #define CMD_ERR_UNRECOGNIZED_COMMAND    0x11
+#define CMD_POWER_OFF                   0x12
 
 int cmd_led_red(int status);
 int cmd_led_green(int status);
 int cmd_request_entries();
 int cmd_request_credential(char* displayname, char* userName);
 int cmd_store_credential(char* displayName, char* username, char* url, char* pw);
+int cmd_modify_credential(char* displayName, char* username, char* pw);
+int cmd_delete_credential(char* displayName, char* userName);
 
 #endif

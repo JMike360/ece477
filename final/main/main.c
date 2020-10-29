@@ -110,7 +110,7 @@ void readCMD() {
     uint8_t *data = (uint8_t *) malloc(BUF_SIZE);
     char *displayName, *username, *url, *pw;
 
-    // while (1) {
+    while (1) {
         int i = 0;
         int returnStatus = 0;
 
@@ -143,8 +143,22 @@ void readCMD() {
                 pw = strtok(NULL, ",");
                 returnStatus = cmd_store_credential(displayName, username, url, pw);
                 break;
+            case CMD_MODIFY_CREDENTIAL:
+                displayName = strtok((char*) &data[3], ",");
+                username = strtok(NULL, ",");
+                pw = strtok(NULL, ",");
+                returnStatus = cmd_modify_credential(displayName, username, pw);
+                break;
+            case CMD_DELETE_CREDENTIAL:
+                displayName = strtok((char*) &data[3], ",");
+                username = strtok(NULL, ",");
+                returnStatus = cmd_delete_credential(displayName, username);
+                break;
+            case CMD_POWER_OFF:
+                free(data);
+                return;
         }
-    // }
+    }
 
     free(data);
 }
@@ -171,7 +185,7 @@ void app_main(void) {
     if (readManifestToMemory() == MANIFEST_FAILURE)
         return;
 
-    // readCMD();
+    readCMD();
 
     if (writeManifestToFile() == MANIFEST_FAILURE)
         return;

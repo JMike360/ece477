@@ -218,7 +218,7 @@ ManifestEntry* getManifestEntry(char* displayName, char* userName) {
     if (currEntry != NULL)
         ESP_LOGI(TAG, "Successfully retrieved manifest entry");
     else
-        ESP_LOGE(TAG, "Failed to retrieve manifest entry");
+        ESP_LOGI(TAG, "Failed to retrieve manifest entry. Not found");
     
     return currEntry;
 }
@@ -238,7 +238,7 @@ ManifestEntry* getManifestEntry(char* displayName, char* userName) {
  * output:
  * int - manifest return status
 **************************************************/
-int removeManifestEntry(char* displayName) {
+int removeManifestEntry(char* displayName, char* userName) {
     if (content == NULL)
         NULL;
 
@@ -246,7 +246,8 @@ int removeManifestEntry(char* displayName) {
     if (currEntry == NULL)
         return MANIFEST_FAILURE;
 
-    if (strcmp(currEntry->displayName, displayName) == 0) {
+    if ((strcmp(currEntry->displayName, displayName) == 0)
+        && (strcmp(currEntry->username, userName) == 0)) {
         content->head = currEntry->next;
         free(currEntry);
         content->numEntry -= 1;
