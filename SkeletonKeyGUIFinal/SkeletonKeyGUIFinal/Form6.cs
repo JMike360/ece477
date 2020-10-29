@@ -20,20 +20,19 @@ namespace SkeletonKeyGUIFinal
         {
             InitializeComponent();
             disableControls();
-            /* Idea for Command structure Demo [ | # | Command | Data | \n | ] with Following Commands: Strt, Stop, Read, Wrte, LedR, LedG
-             Strt Command tells ESP32 to wait for GUI commands 
-             Stop Command Tells ESP32 to stop waiting for GUI commands
-             Read Command Tells ESP32 that The GUI wants to read to the SD card onboard
-             Wrte Command Tells ESP32 That the GUI wants to write to the SD card onboard
-             LEDR and LEDG tell the ESP32 which LED the GUI wants on
+            /* Command structure [ | # | Header Byte | Size | Data | \n |]
+             Software overview
+             https://purdue0-my.sharepoint.com/:x:/r/personal/rodri405_purdue_edu/_layouts/15/Doc.aspx?sourcedoc=%7BBF7CB97F-7DCC-4985-B7E2-5715AE696313%7D&file=DataStructurePackages.xlsx&wdOrigin=OFFICECOM-WEB.START.REC&ct=1603399070342&action=default&mobileredirect=true
+             For Week 1:
+                LED Red On/Off Test	    ON:{ startCodeByte, 0x00, 0x01, 1, endCodeByte} / OFF:{ startCodeByte, 0x00, 0x01, 0, endCodeByte};
+                LED Green On/Off Test	ON:{ startCodeByte, 0x01, 0x01, 1, endCodeByte}; / OFF:{ startCodeByte, 0x01, 0x01, 0, endCodeByte};
+                Store Credential	    { startCodeByte, 0x04, MsgSize, DisplayName,URL,UserName,Password, endCodeByte}; 
+                Request Credential	    { startCodeByte, 0x03, MsgSize, [DisplayName,URL,UserName,Password], endCodeByte};
+                Request Entries	        { startCodeByte, 0x02, 0x00, 0, endCodeByte};
+                
 
                EX:
-                    #WrteILoveECE477\n 
-                    #readSavedPassText\n
-                    #LEDRON\n 
-                    #LEDROF\n
-                    #LEDRON\n 
-                    #LEDROF\n
+
                     
             */
             ports = SerialPort.GetPortNames();
@@ -68,7 +67,6 @@ namespace SkeletonKeyGUIFinal
             string selectedPort = comboBox1.GetItemText(comboBox1.SelectedItem); //Command
             port = new SerialPort(selectedPort, 115200, Parity.None, 8, StopBits.One); // important contection waht buard rate esp32 needs etc.
             port.Open();
-            //port.Write("#STRT\n");
             button1.Text = "Disconnect";
             enableControls();
         }
@@ -80,12 +78,22 @@ namespace SkeletonKeyGUIFinal
 
                 if (checkBox1.Checked)
                 {
-                    port.WriteLine("#LEDRON\n");
+                    char startCode = '#';
+                    byte startCodeByte = Convert.ToByte(startCode);
+                    char endCode = '\n';
+                    byte endCodeByte = Convert.ToByte(endCode);
+                    byte[] LEDRON = { startCodeByte, 0x00, 0x01, 1, endCodeByte};
+                    port.Write(LEDRON,0, 5);
 
                 }
                 else
                 {
-                    port.WriteLine("#LEDROF\n");
+                    char startCode = '#';
+                    byte startCodeByte = Convert.ToByte(startCode);
+                    char endCode = '\n';
+                    byte endCodeByte = Convert.ToByte(endCode);
+                    byte[] LEDROF = { startCodeByte, 0x00, 0x01, 0, endCodeByte };
+                    port.Write(LEDROF, 0, 5);
                 }
             }
         }
@@ -96,18 +104,28 @@ namespace SkeletonKeyGUIFinal
             {
                 if (checkBox2.Checked)
                 {
-                    port.Write("#LEDGON\n");
+                    char startCode = '#';
+                    byte startCodeByte = Convert.ToByte(startCode);
+                    char endCode = '\n';
+                    byte endCodeByte = Convert.ToByte(endCode);
+                    byte[] LEDGON = { startCodeByte, 0x01, 0x01, 1, endCodeByte };
+                    port.Write(LEDGON, 0, 5);
                 }
                 else
                 {
-                    port.Write("#LEDGOF\n");
+                    char startCode = '#';
+                    byte startCodeByte = Convert.ToByte(startCode);
+                    char endCode = '\n';
+                    byte endCodeByte = Convert.ToByte(endCode);
+                    byte[] LEDGOF = { startCodeByte, 0x01, 0x01, 0, endCodeByte };
+                    port.Write(LEDGOF, 0, 5);
                 }
             }
         }
+
         private void disconnectFromESP()
         {
             isConnected = false;
-            //port.Write("#STOP\n");
             port.Close();
             button1.Text = "Connect";
             disableControls();
@@ -119,14 +137,55 @@ namespace SkeletonKeyGUIFinal
         {
             if (isConnected)
             {
-                port.Write("#Wrte" + textBox1.Text + "#\n");
+                //Store Credential	    { startCodeByte, 0x04, MsgSize, [DisplayName,UserName,url,Password,], endCodeByte}; 
+                string MSG = textBox1.Text;
+                string end = "\n";
+                int MSGsize = MSG.Length;
+                byte[] MSGByte = Encoding.ASCII.GetBytes(MSG);
+                byte[] endBYTE = Encoding.ASCII.GetBytes(end);
+                byte MSGsizeByte = Convert.ToByte(MSGsize);
+
+                char startCode = '#';
+                byte startCodeByte = Convert.ToByte(startCode);
+  
+
+                byte[] StoreCred = { startCodeByte, 0x04, MSGsizeByte };
+                port.Write(StoreCred, 0, 3);
+                port.Write(MSGByte, 0, MSGsize);
+                port.Write(endBYTE, 0, 1);
             }
         }
 
         //read
         private void button3_Click(object sender, EventArgs e)
         {
-            //Port.Read()
+            if (isConnected)
+            {
+                //Request Credential   { startCodeByte, 0x03, DisplayName size, displayName, endCodeByte};
+                string MSG = textBox1.Text; //Facebook
+                string end = "\n";
+                int MSGsize = MSG.Length;
+                byte[] MSGByte = Encoding.ASCII.GetBytes(MSG);
+                byte[] endBYTE = Encoding.ASCII.GetBytes(end);
+                byte MSGsizeByte = Convert.ToByte(MSGsize);
+
+                char startCode = '#';
+                byte startCodeByte = Convert.ToByte(startCode);
+                byte[] RequestCred = { startCodeByte, 0x03, MSGsizeByte};
+
+                port.Write(RequestCred, 0, 3);
+                port.Write(MSGByte, 0, MSGsize);
+                port.Write(endBYTE, 0, 1);
+
+                byte[] PasswordArray = new byte[100];
+
+
+                int cred = port.Read(PasswordArray,0,100);
+                //string[] credArray = cred.Split(',');
+                var str = System.Text.Encoding.Default.GetString(PasswordArray);
+                MessageBox.Show(str);
+
+            }
         }
 
         private void enableControls()
