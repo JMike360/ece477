@@ -24,7 +24,6 @@
 #define ECHO_TEST_CTS  (UART_PIN_NO_CHANGE)
 
 #define BUF_SIZE (1024)
-
 #define TAG "UART-CMD"
 
 #define PIN_TX 1
@@ -64,6 +63,7 @@ void gpioInit(void) {
     gpio_pad_select_gpio(GPIO_RED);
     gpio_set_direction(GPIO_GREEN, GPIO_MODE_OUTPUT);
     gpio_set_direction(GPIO_RED, GPIO_MODE_OUTPUT);
+    ESP_LOGI("GPIO", "Successfullly initialized GPIO");
 }
 
 /**************************************************
@@ -90,6 +90,7 @@ void uartInit () {
     ESP_ERROR_CHECK(uart_driver_install(PORT_NUM, BUF_SIZE*2, 0, 0, NULL, intr_alloc_flags));
     ESP_ERROR_CHECK(uart_param_config(PORT_NUM, &config));
     ESP_ERROR_CHECK(uart_set_pin(PORT_NUM, PIN_TX, PIN_RX, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE));
+    ESP_LOGI("UART", "Successfullly initialized UART");
 }
 
 /**************************************************
@@ -109,7 +110,7 @@ void readCMD() {
     uint8_t *data = (uint8_t *) malloc(BUF_SIZE);
     char *displayName, *username, *url, *pw;
 
-    while (1) {
+    // while (1) {
         int i = 0;
         int returnStatus = 0;
 
@@ -143,7 +144,7 @@ void readCMD() {
                 returnStatus = cmd_store_credential(displayName, username, url, pw);
                 break;
         }
-    }
+    // }
 
     free(data);
 }
@@ -161,7 +162,7 @@ void readCMD() {
 **************************************************/
 void app_main(void) {
     spiInit();
-    mount_fs();
+    mountSD();
     sleep(2);
     gpioInit();
     uartInit();
@@ -169,11 +170,13 @@ void app_main(void) {
 
     if (readManifestToMemory() == MANIFEST_FAILURE)
         return;
+
     // readCMD();
+
     if (writeManifestToFile() == MANIFEST_FAILURE)
         return;
     if (deallocateManifest() == MANIFEST_FAILURE)
         return;
 
-    umount_fs();
+    unmountSD();
 }

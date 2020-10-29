@@ -1,7 +1,6 @@
 #include "../include/manifest.h"
 #include <stdlib.h>
 #include <string.h>
-
 #include "esp_log.h"
 
 #define TAG "MANIFEST"
@@ -42,21 +41,18 @@ int readManifestToMemory() {
         ESP_LOGE(TAG, "Manifest already read to memory. Deallocate before reading again");
         return MANIFEST_FAILURE;
     }
-
-    FILE* fp = fopen("/sdcard/manifest", "r");
-    if (fp == NULL) {
-        fp = fopen("/sdcard/manifest", "w");
-        if (fp == NULL) {
-            ESP_LOGE(TAG, "Unable to open manifest file for reading");
-            return MANIFEST_FAILURE;
-        }
-    }
     
     // allocate data structure to store info
     content = malloc(sizeof(ManifestContent));
     content->numEntry = 0;
     content->head = NULL;
     content->tail = NULL;
+
+    FILE* fp = fopen(MANIFEST_FILENAME, "r");
+    if (fp == NULL) {
+        ESP_LOGI(TAG, "Manifest file does not exist yet");
+        return MANIFEST_SUCCESS;
+    }
 
     // store manifest info to structure
     char lineBuffer[64];
@@ -80,6 +76,8 @@ int readManifestToMemory() {
         addManifestEntry(displayName, username, url);
     } while (!feof(fp));
 
+    fclose(fp);
+
     ESP_LOGI(TAG, "Successfully read manifest to memory");
     return MANIFEST_SUCCESS;
 }
@@ -98,7 +96,7 @@ int readManifestToMemory() {
  * int - manifest return status
 **************************************************/
 int writeManifestToFile() {
-    FILE* fp = fopen("/sdcard/manifest", "w");
+    FILE* fp = fopen(MANIFEST_FILENAME, "w");
     if (fp == NULL) {
         ESP_LOGE(TAG, "Unable to open manifest file for writing");
         return MANIFEST_FAILURE;

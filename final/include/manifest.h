@@ -8,6 +8,8 @@
 #define MANIFEST_SUCCESS 1
 #define MANIFEST_FAILURE 0
 
+#define MANIFEST_FILENAME "/sdcard/MANIFEST"
+
 typedef struct _ManifestEntry {
     char displayName[32];
     char username[32];

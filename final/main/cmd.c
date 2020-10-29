@@ -15,7 +15,7 @@ int cmd_led_green(int status) {
 
 int cmd_request_entries() {
     writeManifestToFile();
-    FILE* fp = fopen("/sdcard/manifest", "r");
+    FILE* fp = fopen(MANIFEST_FILENAME, "r");
     if (fp == NULL)
         return CMD_FAILURE;
     fseek(fp, 0, SEEK_END);
@@ -44,9 +44,10 @@ int cmd_request_credential(char* displayName, char* username) {
     fseek(fp, 0, SEEK_END);
     size_t filesize = ftell(fp);
     fseek(fp, 0, SEEK_SET);
-    char* buffer = calloc(filesize, sizeof(char));
+    char* buffer = calloc(filesize + 1, sizeof(char));
     fread(buffer, sizeof(char), filesize, fp);
-    uart_write_bytes(PORT_NUM, buffer, filesize);
+    buffer[filesize] = '\n';
+    uart_write_bytes(PORT_NUM, buffer, filesize + 1);
     free(buffer);
     fclose(fp);
     return CMD_SUCCESS;

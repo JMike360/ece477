@@ -13,14 +13,12 @@
 #define PIN_NUM_CS_SD       GPIO_NUM_15
 
 #define SPI_DMA_CHANNEL 1
-
-#define SD_CMD_LEN          40
 #define SD_START            ((long)0x1 << 38)
 
 #define MOUNT_POINT "/sdcard"
 
 esp_err_t spiInit();
-esp_err_t mount_fs();
-esp_err_t umount_fs();
+esp_err_t mountSD();
+esp_err_t unmountSD();
 
 #endif

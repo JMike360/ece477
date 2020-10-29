@@ -53,10 +53,10 @@ esp_err_t spiInit() {
     esp_err_t err = spi_bus_initialize(SPI2_HOST, &bus_cfg, SPI_DMA_CHANNEL);
     if (err == ESP_OK) {
         spi_init_flag |= (1 << SPI2_HOST);
-        ESP_LOGI(TAG, "Successfully initialized bus.");
+        ESP_LOGI(TAG, "Successfully initialized SPI bus");
     }
     else
-        ESP_LOGE(TAG, "Failed to initialize bus (%s).", esp_err_to_name(err));
+        ESP_LOGE(TAG, "Failed to initialize bus (%s)", esp_err_to_name(err));
     
     return err;
 }
@@ -74,7 +74,7 @@ esp_err_t spiInit() {
  * output:
  * esp_err_t - return status
 **************************************************/
-esp_err_t mount_fs() {
+esp_err_t mountSD() {
     esp_vfs_fat_mount_config_t mount_config = {
         .format_if_mount_failed = false,
         .max_files = 4,
@@ -91,9 +91,9 @@ esp_err_t mount_fs() {
     esp_err_t ret = esp_vfs_fat_sdspi_mount(MOUNT_POINT, &host, &dev_config,
         &mount_config, &sdcard);
     if (ret == ESP_OK)
-        ESP_LOGI(TAG, "Successfully mounted SD card.");
+        ESP_LOGI(TAG, "Successfully mounted SD card");
     else
-        ESP_LOGE(TAG, "Failed to mount SD card (%s).", esp_err_to_name(ret));
+        ESP_LOGE(TAG, "Failed to mount SD card (%s)", esp_err_to_name(ret));
     
     return ret;
 }
@@ -109,11 +109,11 @@ esp_err_t mount_fs() {
  * output:
  * esp_err_t - return status
 **************************************************/
-esp_err_t umount_fs() {
+esp_err_t unmountSD() {
     esp_err_t ret = esp_vfs_fat_sdcard_unmount(MOUNT_POINT, sdcard);
     if (ret == ESP_OK)
-        ESP_LOGI(TAG, "Successfully unmounted SD card.");
+        ESP_LOGI(TAG, "Successfully unmounted SD card");
     else
-        ESP_LOGE(TAG, "Failed to unmount SD card (%s).", esp_err_to_name(ret));
+        ESP_LOGE(TAG, "Failed to unmount SD card (%s)", esp_err_to_name(ret));
     return ret;
 }
