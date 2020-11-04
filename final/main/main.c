@@ -17,6 +17,7 @@
 #include "esp_log.h"
 #include <unistd.h>
 
+#include "../include/bt.h"
 #include "../include/sdcard.h"
 #include "../include/manifest.h"
 
@@ -30,6 +31,9 @@
 #define PIN_RX 3
 #define BAUD_RATE 115200
 #define STACK_SIZE 2048
+
+#define MODE_BT     0
+#define MODE_UART   1
 
 /**************************************************
  * _clearDataBuffer
@@ -95,72 +99,68 @@ void uartInit () {
 
 /**************************************************
  * _clearDataBuffer
- * Read UART messages and call the corresponding
- * command functions. This function stays in an
- * infinite loop until the terminate command is given.
+ * Read UART or Bluetooth messages depending on mode
+ * and obtains the command string. This function stays
+ * in an infinite loop until the terminate command is given.
  * 
  * input:
- * void
+ * int - 0 for BT, 1 for UART
  * 
  * output:
  * void
 **************************************************/
-void readCMD() {
-    // Configure a temporary buffer for the incoming data
-    uint8_t *data = (uint8_t *) malloc(BUF_SIZE);
+void readUARTCMD(uint8_t* data) {
     char *displayName, *username, *url, *pw;
+    int i = 0;
+    int returnStatus = 0;
 
     while (1) {
-        int i = 0;
-        int returnStatus = 0;
-
         do {
             i += uart_read_bytes(PORT_NUM, &data[i], BUF_SIZE, 20 / portTICK_RATE_MS);
-            ESP_LOGI(TAG, "len = %d, str = %s\n", i, data);
         } while(data[i-1] != '\n');
         ESP_LOGI(TAG, "reading from UART: %s\n", data);
-
-        // uart_write_bytes(UART_NUM_1, (const char *) data, len);
-        switch (data[1]) {
-            case CMD_LED_RED:
-                returnStatus = cmd_led_red(data[3]);
-                break;
-            case CMD_LED_GREEN:
-                returnStatus = cmd_led_green(data[3]);
-                break;
-            case CMD_REQUEST_ENTRIES:
-                returnStatus = cmd_request_entries();
-                break;
-            case CMD_REQUEST_CREDENTIAL:
-                displayName = strtok((char*) &data[3], ",");
-                username = strtok(NULL, ",");
-                returnStatus = cmd_request_credential(displayName, username);
-                break;
-            case CMD_STORE_CREDENTIAL:
-                displayName = strtok((char*) &data[3], ",");
-                username = strtok(NULL, ",");
-                url = strtok(NULL, ",");
-                pw = strtok(NULL, ",");
-                returnStatus = cmd_store_credential(displayName, username, url, pw);
-                break;
-            case CMD_MODIFY_CREDENTIAL:
-                displayName = strtok((char*) &data[3], ",");
-                username = strtok(NULL, ",");
-                pw = strtok(NULL, ",");
-                returnStatus = cmd_modify_credential(displayName, username, pw);
-                break;
-            case CMD_DELETE_CREDENTIAL:
-                displayName = strtok((char*) &data[3], ",");
-                username = strtok(NULL, ",");
-                returnStatus = cmd_delete_credential(displayName, username);
-                break;
-            case CMD_POWER_OFF:
-                free(data);
-                return;
-        }
+        doCMD(data);
     }
+}
 
-    free(data);
+int doCMD(uint8_t* data) {
+    switch (data[1]) {
+        case CMD_LED_RED:
+            returnStatus = cmd_led_red(data[3]);
+            break;
+        case CMD_LED_GREEN:
+            returnStatus = cmd_led_green(data[3]);
+            break;
+        case CMD_REQUEST_ENTRIES:
+            returnStatus = cmd_request_entries();
+            break;
+        case CMD_REQUEST_CREDENTIAL:
+            displayName = strtok((char*) &data[3], ",");
+            username = strtok(NULL, ",");
+            returnStatus = cmd_request_credential(displayName, username);
+            break;
+        case CMD_STORE_CREDENTIAL:
+            displayName = strtok((char*) &data[3], ",");
+            username = strtok(NULL, ",");
+            url = strtok(NULL, ",");
+            pw = strtok(NULL, ",");
+            returnStatus = cmd_store_credential(displayName, username, url, pw);
+            break;
+        case CMD_MODIFY_CREDENTIAL:
+            displayName = strtok((char*) &data[3], ",");
+            username = strtok(NULL, ",");
+            pw = strtok(NULL, ",");
+            returnStatus = cmd_modify_credential(displayName, username, pw);
+            break;
+        case CMD_DELETE_CREDENTIAL:
+            displayName = strtok((char*) &data[3], ",");
+            username = strtok(NULL, ",");
+            returnStatus = cmd_delete_credential(displayName, username);
+            break;
+        case CMD_POWER_OFF:
+            free(data);
+            return 1;
+    }
 }
 
 /**************************************************
@@ -178,14 +178,22 @@ void app_main(void) {
     spiInit();
     mountSD();
     sleep(2);
+
     gpioInit();
     uartInit();
+    btInit();
     sleep(1);
 
     if (readManifestToMemory() == MANIFEST_FAILURE)
         return;
 
-    readCMD();
+    uint8_t *data = (uint8_t *) malloc(BUF_SIZE);
+    
+    int mode = gpio_get_level(GPIO_NUM_26) == 1 ? MODE_UART : MODE_BT;
+    if (mode == MODE_UART)
+        readUARTCMD(data);
+    else if (mode == MODE_BT)
+        btRegister();
 
     if (writeManifestToFile() == MANIFEST_FAILURE)
         return;

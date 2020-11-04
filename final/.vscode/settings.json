@@ -16,6 +16,7 @@
         "numeric": "c",
         "streambuf": "c",
         "functional": "c",
-        "valarray": "c"
+        "valarray": "c",
+        "random": "c"
     }
 }
