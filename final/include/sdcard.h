@@ -17,7 +17,7 @@
 
 #define MOUNT_POINT "/sdcard"
 
-esp_err_t spiInit();
+esp_err_t sdspiInit();
 esp_err_t mountSD();
 esp_err_t unmountSD();
 

@@ -8,9 +8,11 @@
 #define CMD_FAILURE 0
 
 #define PORT_NUM 0
-
 #define GPIO_GREEN     (GPIO_NUM_32)
 #define GPIO_RED       (GPIO_NUM_33)
+
+#define BT_MODE     0
+#define UART_MODE   1
 
 #define CMD_LED_RED                     0x0
 #define CMD_LED_GREEN                   0x1
@@ -32,6 +34,8 @@
 #define CMD_ERR_UNRECOGNIZED_COMMAND    0x11
 #define CMD_POWER_OFF                   0x12
 
+void doCMD(uint8_t* data, int mode);
+int getRunning();
 int cmd_led_red(int status);
 int cmd_led_green(int status);
 int cmd_request_entries();

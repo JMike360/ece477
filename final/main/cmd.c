@@ -2,9 +2,16 @@
 #include "../include/cmd.h"
 #include "../include/manifest.h"
 #include "esp_log.h"
+#include "../include/bt.h"
 #include <time.h>
 
 // one function per command
+
+static int running = 1;
+
+int getRunning() {
+    return running;
+}
 
 int cmd_led_red(int status) {
     return gpio_set_level(GPIO_RED, status);
@@ -90,4 +97,58 @@ int cmd_delete_credential(char* displayName, char* userName) {
     strcat(path, displayName);
     remove(path);
     return CMD_SUCCESS;
+}
+
+void doCMD(uint8_t* data, int mode) {
+    int returnStatus = 0;
+    char *displayName, *username, *url, *pw;
+    switch (data[1]) {
+        case CMD_LED_RED:
+            returnStatus = cmd_led_red(data[3]);
+            break;
+        case CMD_LED_GREEN:
+            returnStatus = cmd_led_green(data[3]);
+            break;
+        case CMD_REQUEST_ENTRIES:
+            cmd_request_entries();
+            break;
+        case CMD_REQUEST_CREDENTIAL:
+            displayName = strtok((char*) &data[3], ",");
+            username = strtok(NULL, ",");
+            cmd_request_credential(displayName, username);
+            break;
+        case CMD_STORE_CREDENTIAL:
+            displayName = strtok((char*) &data[3], ",");
+            username = strtok(NULL, ",");
+            url = strtok(NULL, ",");
+            pw = strtok(NULL, ",");
+            returnStatus = cmd_store_credential(displayName, username, url, pw);
+            break;
+        case CMD_MODIFY_CREDENTIAL:
+            displayName = strtok((char*) &data[3], ",");
+            username = strtok(NULL, ",");
+            pw = strtok(NULL, ",");
+            returnStatus = cmd_modify_credential(displayName, username, pw);
+            break;
+        case CMD_DELETE_CREDENTIAL:
+            displayName = strtok((char*) &data[3], ",");
+            username = strtok(NULL, ",");
+            returnStatus = cmd_delete_credential(displayName, username);
+            break;
+        case CMD_POWER_OFF:
+            running = 0;
+            break;
+    }
+
+    switch (data[1]) {
+        case CMD_LED_RED:
+        case CMD_LED_GREEN:
+        case CMD_STORE_CREDENTIAL:
+        case CMD_MODIFY_CREDENTIAL:
+        case CMD_DELETE_CREDENTIAL:
+            if (mode == BT_MODE)
+                btSendData((uint8_t*) &returnStatus, 1);
+            else if (mode == UART_MODE) 
+                uart_write_bytes(PORT_NUM, (char*) &returnStatus, 1);
+    }
 }

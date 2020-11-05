@@ -1,9 +1,3 @@
-/**************************************************
-* To do list:
-* i. replace every logging function with OLED display
-* ii. add function documentation
-*
-**************************************************/
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -22,7 +16,7 @@ sdmmc_card_t* sdcard = NULL;
 static uint8_t spi_init_flag = 0x0;
 
 /**************************************************
- * spiInit
+ * sdspiInit
  * Initialize SPI2 (or HSPI) for connection using
  * PIN_NUM_MOSI, PIN_NUM_MISO, PIN_NUM_CLK.
  * 
@@ -32,7 +26,7 @@ static uint8_t spi_init_flag = 0x0;
  * output:
  * esp_err_t - return status
 **************************************************/
-esp_err_t spiInit() {
+esp_err_t sdspiInit() {
     // ensure module init once
     if ( ( spi_init_flag & (1 << SPI2_HOST) ) != 0 ) {
         ESP_LOGI(TAG, "Already initialized. Aborting attempt.");
@@ -64,7 +58,7 @@ esp_err_t spiInit() {
 /**************************************************
  * mount_fs
  * Mount SD card by initializing it through SPI.
- * Prior to calling this function, spiInit() should be
+ * Prior to calling this function, sdspiInit() should be
  * called to initialize the SPI. SD card information
  * is stored in 'sdcard' in sdcard.c
  * 
