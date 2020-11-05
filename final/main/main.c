@@ -107,18 +107,16 @@ void app_main(void) {
     sdspiInit();
     mountSD();
     ledInit();
+    btInit();
+    btRegister();
+    btSetPairing();
+    uartInit();
     sleep(2);
 
     if (readManifestToMemory() == MANIFEST_FAILURE)
         return;
 
     uint8_t* data = (uint8_t*) malloc(BUF_SIZE);
-
-    btInit();
-    btRegister();
-    btSetParing();
-
-    uartInit();
 
     while(getRunning()) {
         memset(data, 0, BUF_SIZE);

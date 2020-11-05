@@ -21,7 +21,7 @@ int cmd_led_green(int status) {
     return gpio_set_level(GPIO_GREEN, status);
 }
 
-int cmd_request_entries() {
+int cmd_request_entries(int mode) {
     writeManifestToFile();
     FILE* fp = fopen(MANIFEST_FILENAME, "r");
     if (fp == NULL)
@@ -31,17 +31,17 @@ int cmd_request_entries() {
     fseek(fp, 0, SEEK_SET);
     char* buffer = calloc(filesize, sizeof(char));
     fread(buffer, sizeof(char), filesize, fp);
-    uart_write_bytes(PORT_NUM, buffer, filesize);
+    if (mode == UART_MODE)
+        uart_write_bytes(PORT_NUM, buffer, filesize);
+    else if (mode == BT_MODE)
+        btSendData((uint8_t*) buffer, filesize);
     free(buffer);
     fclose(fp);
     return CMD_SUCCESS;
 }
 
-int cmd_request_credential(char* displayName, char* username) {
+int cmd_request_credential(char* displayName, char* username, int mode) {
     if (getManifestEntry(displayName, username) == NULL)
-        return CMD_FAILURE;
-    ManifestEntry* entry = getManifestEntry(displayName, username);
-    if (entry == NULL)
         return CMD_FAILURE;
     char path[256] = {'\0'};
     strcat(path, "/sdcard/");
@@ -56,7 +56,10 @@ int cmd_request_credential(char* displayName, char* username) {
     char* buffer = calloc(filesize + 1, sizeof(char));
     fread(buffer, sizeof(char), filesize, fp);
     buffer[filesize] = '\n';
-    uart_write_bytes(PORT_NUM, buffer, filesize + 1);
+    if (mode == UART_MODE)
+        uart_write_bytes(PORT_NUM, buffer, filesize + 1);
+    else if (mode == BT_MODE)
+        btSendData((uint8_t*) buffer, filesize + 1);
     free(buffer);
     fclose(fp);
     return CMD_SUCCESS;
@@ -110,12 +113,12 @@ void doCMD(uint8_t* data, int mode) {
             returnStatus = cmd_led_green(data[3]);
             break;
         case CMD_REQUEST_ENTRIES:
-            cmd_request_entries();
+            cmd_request_entries(mode);
             break;
         case CMD_REQUEST_CREDENTIAL:
             displayName = strtok((char*) &data[3], ",");
             username = strtok(NULL, ",");
-            cmd_request_credential(displayName, username);
+            cmd_request_credential(displayName, username, mode);
             break;
         case CMD_STORE_CREDENTIAL:
             displayName = strtok((char*) &data[3], ",");

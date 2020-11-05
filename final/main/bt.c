@@ -195,7 +195,7 @@ void btRegister() {
     }
 }
 
-void btSetParing() {
+void btSetPairing() {
     #if (CONFIG_BT_SSP_ENABLED == true)
     /* Set default parameters for Secure Simple Pairing */
     esp_bt_sp_param_t param_type = ESP_BT_SP_IOCAP_MODE;
