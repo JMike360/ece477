@@ -84,11 +84,12 @@ void uartInit () {
 **************************************************/
 void readUARTCMD(uint8_t* data) {
     int i = 0;
-
     do {
         i += uart_read_bytes(PORT_NUM, &data[i], BUF_SIZE, 20 / portTICK_RATE_MS);
     } while(data[i-1] != '\n');
     ESP_LOGI(TAG, "reading from UART: %s\n", data);
+    if (data[0] != '#')
+        return;
     doCMD(data, UART_MODE);
 }
 
@@ -106,10 +107,13 @@ void readUARTCMD(uint8_t* data) {
 void app_main(void) {
     sdspiInit();
     mountSD();
+
     ledInit();
+
     btInit();
     btRegister();
     btSetPairing();
+
     uartInit();
     sleep(2);
 

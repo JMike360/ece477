@@ -141,7 +141,11 @@ void doCMD(uint8_t* data, int mode) {
         case CMD_POWER_OFF:
             running = 0;
             break;
+        default:
+            returnStatus = 0;
     }
+
+    char toSend[2];
 
     switch (data[1]) {
         case CMD_LED_RED:
@@ -149,9 +153,11 @@ void doCMD(uint8_t* data, int mode) {
         case CMD_STORE_CREDENTIAL:
         case CMD_MODIFY_CREDENTIAL:
         case CMD_DELETE_CREDENTIAL:
+            toSend[0] = returnStatus;
+            toSend[1] = '\n';
             if (mode == BT_MODE)
-                btSendData((uint8_t*) &returnStatus, 1);
-            else if (mode == UART_MODE) 
-                uart_write_bytes(PORT_NUM, (char*) &returnStatus, 1);
+                btSendData((uint8_t*) toSend, 2);
+            else if (mode == UART_MODE)
+                uart_write_bytes(PORT_NUM, toSend, 2);
     }
 }
