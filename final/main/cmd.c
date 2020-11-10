@@ -3,7 +3,7 @@
 #include "../include/manifest.h"
 #include "esp_log.h"
 #include "../include/bt.h"
-#include <time.h>
+#include "../include/crypto.h"
 
 // one function per command
 
@@ -94,7 +94,8 @@ int cmd_store_credential(char* displayName, char* username, char* url, char* pw)
 }
 
 int cmd_delete_credential(char* displayName, char* userName) {
-    removeManifestEntry(displayName, userName);
+    if(!removeManifestEntry(displayName, userName))
+        return CMD_FAILURE;
     char path[256] = {'\0'};
     strcat(path, "/sdcard/");
     strcat(path, displayName);
@@ -103,6 +104,12 @@ int cmd_delete_credential(char* displayName, char* userName) {
 }
 
 void doCMD(uint8_t* data, int mode) {
+    // debug
+    if (mode == BT_MODE) {
+        for (int i = 0; i < 20; i++)
+            ESP_LOGI("debug-msg", "%d - %c", data[i], data[i]);
+    }
+
     int returnStatus = 0;
     char *displayName, *username, *url, *pw;
     switch (data[1]) {
@@ -113,12 +120,12 @@ void doCMD(uint8_t* data, int mode) {
             returnStatus = cmd_led_green(data[3]);
             break;
         case CMD_REQUEST_ENTRIES:
-            cmd_request_entries(mode);
+            returnStatus = cmd_request_entries(mode);
             break;
         case CMD_REQUEST_CREDENTIAL:
             displayName = strtok((char*) &data[3], ",");
             username = strtok(NULL, ",");
-            cmd_request_credential(displayName, username, mode);
+            returnStatus = cmd_request_credential(displayName, username, mode);
             break;
         case CMD_STORE_CREDENTIAL:
             displayName = strtok((char*) &data[3], ",");
@@ -148,12 +155,23 @@ void doCMD(uint8_t* data, int mode) {
     char toSend[2];
 
     switch (data[1]) {
+        case CMD_REQUEST_CREDENTIAL:
+        case CMD_REQUEST_ENTRIES:
+            if (returnStatus == CMD_FAILURE) {
+                toSend[0] = '0';
+                toSend[1] = '\n';
+                if (mode == BT_MODE)
+                    btSendData((uint8_t*) toSend, 2);
+                else if (mode == UART_MODE)
+                    uart_write_bytes(PORT_NUM, toSend, 2);
+            }
+            break;
         case CMD_LED_RED:
         case CMD_LED_GREEN:
         case CMD_STORE_CREDENTIAL:
         case CMD_MODIFY_CREDENTIAL:
         case CMD_DELETE_CREDENTIAL:
-            toSend[0] = returnStatus;
+            toSend[0] = returnStatus + '0';
             toSend[1] = '\n';
             if (mode == BT_MODE)
                 btSendData((uint8_t*) toSend, 2);

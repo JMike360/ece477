@@ -257,7 +257,8 @@ int removeManifestEntry(char* displayName, char* userName) {
     while (currEntry->next != NULL) {
         ManifestEntry* prevEntry = currEntry;
         currEntry = currEntry->next;
-        if (strcmp(currEntry->displayName, displayName) == 0) {
+        if ((strcmp(currEntry->displayName, displayName) == 0)
+            && (strcmp(currEntry->username, userName) == 0)) {
             prevEntry->next = currEntry->next;
             if (currEntry->next == NULL)
                 content->tail = prevEntry;
