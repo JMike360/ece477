@@ -1,5 +1,7 @@
 #include "esp_system.h"
 #include "uart_setup.h"
+#define PORT_NUM PORT_NUM_2
+#define DATA_PKT_SIZE 128
 
 #define PKT_HEADER   0xEF01
 #define PKT_ADDR    0xFFFFFFFF
@@ -54,13 +56,20 @@ typedef struct sensor_packet {
 sensor_packet* createPacket(uint8_t pid, uint16_t length, uint8_t* data, uint16_t checksum);
 void freePacket(sensor_packet* pkt);
 
+//-------------------------------------------------//
+//------------ High Level Sensor Functions --------//
+//-------------------------------------------------//
+
+int captureImage(int timeout_ms);
+
+//-------------------------------------------------//
+//------------ Low Level Packet Functions ---------//
+//-------------------------------------------------//
+
 int sendHandshakePacket();
 int recvHandshakeAck();
 
-int sendSetAddressPacket();
-int recvSetAddressAck();
-
-int sendSetSystemParamPacket();
+int sendSetSystemParamPacket(uint8_t paramNumber, uint8_t content);
 int recvSetSystemParamAck();
 
 int sendReadSystemParamPacket();
@@ -78,22 +87,23 @@ int recvUploadImgAck();
 int sendDownloadImgPacket();
 int recvDownloadImgAck();
 
-int sendGenerateFileFromImgPacket();
+int sendGenerateFileFromImgPacket(uint8_t bufferID);
 int recvGenerateFileFromImgAck();
 
 int sendGenerateTemplatePacket();
 int recvGenerateTemplateAck();
 
-int sendUploadFilePacket();
+int sendUploadFilePacket(uint8_t bufferID);
 int recvUploadFileAck();
+int recvUploadFile(uint8_t** charFile);
 
 int sendDownloadFilePacket();
 int recvDownloadFileAck();
 
-int sendStoreTemplatePacket();
+int sendStoreTemplatePacket(uint8_t bufferID, uint16_t pageID);
 int recvStoreTemplateAck();
 
-int sendLoadTemplatePacket();
+int sendLoadTemplatePacket(uint8_t bufferID, uint16_t pageID);
 int recvLoadTemplateAck();
 
 int sendDeleteTemplatePacket();
@@ -105,7 +115,7 @@ int recvClearLibraryAck();
 int sendCheckMatchPacket();
 int recvCheckMatchAck();
 
-int sendSearchLibraryPacket();
+int sendSearchLibraryPacket(uint8_t bufferID, uint16_t startPage, uint16_t n);
 int recvSearchLibraryAck();
 
 int sendGenerateRandomNumPacket();

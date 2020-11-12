@@ -19,8 +19,47 @@
 #define BUF_SIZE 1024
 
 #include "driver/uart.h"
+#include "uart_setup.h"
+#include "fingerprint_driver.h"
 
-int sendHeader(){
+void setupFtdiConsole(){
+    uart_begin(PORT_NUM_1);
+}
+
+int getFtdiCommand(){
+    char prompt[] = "\r\n>>";
+    uart_write_bytes(PORT_NUM_1, prompt, sizeof(char)*4);
+
+    uint8_t* data = (uint8_t*) calloc(BUF_SIZE, sizeof(uint8_t));
+    char cmd[50];
+    int idx = 0;
+
+    while(((char)data[0] != '\n') && ((char)data[0] != '\r')){
+        int len = uart_read_bytes(PORT_NUM_1, data, BUF_SIZE, 20 / portTICK_RATE_MS);
+        uart_write_bytes(PORT_NUM_1, (const char *)data, len);
+
+        if((data[0] >= 33) && (data[0] <= 126)){
+            cmd[idx] = data[0];
+            idx++;
+            if(idx == 49){
+                break;
+            }
+            data[0] = 0;
+        }
+    }
+    cmd[idx] = '\0';
+    int command = atoi(cmd);
+    return command;
+}
+
+int testUartDoubleInstall(){
+    uart_begin(PORT_NUM_1);
+    uart_begin(PORT_NUM_2);
+    vTaskDelay(1);
+    printf("Stdout still working...\n");
+    //uart_end(PORT_NUM_0);
+    uart_end(PORT_NUM_2);
+    uart_end(PORT_NUM_1);
     return 0;
 }
 
@@ -44,6 +83,192 @@ int uartEchoTest () {
         //printf("%s\n", (const char*) data);
         //printf("%d\n", len);
         uart_write_bytes(PORT_NUM, (const char *)data, len);
+    }
+    return 0;
+}
+
+int builtinEchoTest () {
+    uart_config_t config = {
+        .baud_rate = 115200,
+        .data_bits = UART_DATA_8_BITS,
+        .parity = UART_PARITY_DISABLE,
+        .stop_bits = UART_STOP_BITS_1,
+        .flow_ctrl = UART_HW_FLOWCTRL_DISABLE,
+        .source_clk = UART_SCLK_APB
+    };
+    int intr_alloc_flags = 0;
+    ESP_ERROR_CHECK(uart_driver_install(0, BUF_SIZE*2, 0, 0, NULL, intr_alloc_flags));
+    ESP_ERROR_CHECK(uart_param_config(0, &config));
+    ESP_ERROR_CHECK(uart_set_pin(0, 1, 3, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE));
+
+    uint8_t* data = (uint8_t*) malloc(BUF_SIZE);
+    while(data[0] != '{'){
+        int len = uart_read_bytes(0, data, BUF_SIZE, 20 / portTICK_RATE_MS);
+        //printf("%s\n", (const char*) data);
+        //printf("%d\n", len);
+        uart_write_bytes(0, (const char *)data, len);
+    }
+    printf("\nFinished echo test\n");
+    return 0;
+}
+
+int doubleEchoTest(){
+    uart_config_t config = {
+        .baud_rate = 115200,
+        .data_bits = UART_DATA_8_BITS,
+        .parity = UART_PARITY_DISABLE,
+        .stop_bits = UART_STOP_BITS_1,
+        .flow_ctrl = UART_HW_FLOWCTRL_DISABLE,
+        .source_clk = UART_SCLK_APB
+    };
+    int intr_alloc_flags = 0;
+    ESP_ERROR_CHECK(uart_driver_install(0, BUF_SIZE*2, 0, 0, NULL, intr_alloc_flags));
+    ESP_ERROR_CHECK(uart_param_config(0, &config));
+    ESP_ERROR_CHECK(uart_set_pin(0, 1, 3, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE));
+
+    uint8_t* data = (uint8_t*) malloc(BUF_SIZE);
+    while(data[0] != '{'){
+        int len = uart_read_bytes(0, data, BUF_SIZE, 20 / portTICK_RATE_MS);
+        //printf("%s\n", (const char*) data);
+        //printf("%d\n", len);
+        uart_write_bytes(0, (const char *)data, len);
+    }
+    printf("\nFinished echo test\n");
+    
+    uart_config_t config2 = {
+        .baud_rate = BAUD_RATE,
+        .data_bits = UART_DATA_8_BITS,
+        .parity = UART_PARITY_DISABLE,
+        .stop_bits = UART_STOP_BITS_1,
+        .flow_ctrl = UART_HW_FLOWCTRL_DISABLE,
+        .source_clk = UART_SCLK_APB
+    };
+    uart_driver_delete(0);
+    intr_alloc_flags = 0;
+    ESP_ERROR_CHECK(uart_driver_install(PORT_NUM, BUF_SIZE*2, 0, 0, NULL, intr_alloc_flags));
+    ESP_ERROR_CHECK(uart_param_config(PORT_NUM, &config2));
+    ESP_ERROR_CHECK(uart_set_pin(PORT_NUM, PIN_TX, PIN_RX, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE));
+    free(data);
+    data = (uint8_t*) malloc(BUF_SIZE);
+    while(data[0] != '{'){
+        int len = uart_read_bytes(PORT_NUM, data, BUF_SIZE, 20 / portTICK_RATE_MS);
+        //printf("%s\n", (const char*) data);
+        //printf("%d\n", len);
+        uart_write_bytes(PORT_NUM, (const char *)data, len);
+    }
+    printf("\nFinished echo test\n");
+    return 0;
+
+}
+
+int testLibraryHandshake(){
+    uart_begin(PORT_NUM_2);
+    int res = sendHandshakePacket();
+    printf("Handshake send result: %d\n", res);
+    recvHandshakeAck();
+    return 0;
+}
+
+int testLibraryReadParam(){
+    uart_begin(PORT_NUM_2);
+    int res = sendReadSystemParamPacket();
+    printf("Read param send result: %d\n", res);
+    recvReadSystemParamAck();
+    return 0;
+}
+
+int testLibraryGenImg(){
+    uart_begin(PORT_NUM_2);
+    int cnt = 0;
+    while(cnt < 10){
+        sendGenerateImgPacket();
+        recvGenerateImgAck();
+        cnt++;
+    }
+    return 0;
+}
+
+int testLibraryCaptureImage(){
+    uart_begin(PORT_NUM_2);
+    int result = captureImage(500);
+    if (result == ACK_CMD_COMPLETE){
+        printf("Image captured successfully\n");
+    }
+    else{
+        printf("Failed to capture Image\n");
+    }
+    return 0;
+}
+
+int testLibraryGenerateFileFromImg(uint8_t bufferID){
+    uart_begin(PORT_NUM_2);
+    int res = sendGenerateFileFromImgPacket(bufferID);
+    printf("Packet send result: %d\n", res);
+    recvGenerateFileFromImgAck();
+    return 0;
+}
+
+int testLibraryGenerateTemplate(){
+    uart_begin(PORT_NUM_2);
+    int res = sendGenerateTemplatePacket();
+    printf("Packet send result: %d\n", res);
+    recvGenerateTemplateAck();
+    return 0;
+}
+
+int testLibraryMatchSearch(uint8_t bufferID){
+    uart_begin(PORT_NUM_2);
+    int res = sendSearchLibraryPacket(bufferID, 0x0000, 0x0005);
+    printf("Packet send result: %d\n", res);
+    recvSearchLibraryAck();
+    return 0;
+}
+
+int testLibraryStoreTemplate(uint16_t pageID){
+    uart_begin(PORT_NUM_2);
+    int res = sendStoreTemplatePacket(0x01, pageID);
+    printf("Packet send result: %d\n", res);
+    recvGenerateTemplateAck();
+    return 0;
+}
+
+int testLibraryLoadTemplate(uint8_t bufferID, uint16_t pageID){
+    uart_begin(PORT_NUM_2);
+    int res = sendLoadTemplatePacket(bufferID, pageID);
+    printf("Packet send result: %d\n", res);
+    recvLoadTemplateAck();
+    return 0;
+}
+
+int testLibraryClearTemplates(){
+    uart_begin(PORT_NUM_2);
+    int res = sendClearLibraryPacket();
+    printf("Packet send result %d\n", res);
+    recvClearLibraryAck();
+    return 0;
+}
+
+int testLibraryUploadFile(uint8_t bufferID){
+    uart_begin(PORT_NUM_2);
+    int res = sendUploadFilePacket(bufferID);
+    printf("Packet send result %d\n", res);
+    int resp = recvUploadFileAck();
+    if(resp == 0){
+        for(int j = 0; j < 2; j++){
+            uint8_t* charFile = malloc(sizeof(uint8_t)*DATA_PKT_SIZE);
+            if(charFile != NULL){
+                recvUploadFile(&charFile);
+                printf("File received:\n");
+                for(int i = 0; i < DATA_PKT_SIZE; i++){
+                    if((i%8) == 0 ){
+                        printf("\n");
+                    }
+                    printf("0x%02x ", charFile[i]);
+                }
+                printf("\n");
+            }
+            free(charFile);
+        }
     }
     return 0;
 }
