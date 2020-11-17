@@ -786,7 +786,15 @@ int checkFingerEnrolled(){
 
     sendLoadTemplatePacket(0x01, 0x00); //attempt to load template 0 to buffer 1
     int resp = recvLoadTemplateAck();
-
+    
+    //turn off led
+    sendTurnLedOffPacket();
+    int ledResp = recvTurnLedOffAck();
+    if(ledResp != 0){
+        #ifdef _DEBUG
+        printf("Failed to turn off led...\n");
+        #endif
+    }
     return (resp == 0)? 1 : 0;
 }
 
@@ -961,6 +969,14 @@ int clearAllData(){
     
     sendClearLibraryPacket();
     int clrResp = recvClearLibraryAck();
-
+    
+    //turn off led
+    sendTurnLedOffPacket();
+    int ledResp = recvTurnLedOffAck();
+    if(ledResp != 0){
+        #ifdef _DEBUG
+        printf("Failed to turn off led...\n");
+        #endif
+    }
     return (clrResp == 0)? 0 : -1;
 }
