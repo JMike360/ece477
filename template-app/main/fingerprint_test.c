@@ -221,7 +221,8 @@ int testLibraryMatchSearch(uint8_t bufferID){
     uart_begin(PORT_NUM_2);
     int res = sendSearchLibraryPacket(bufferID, 0x0000, 0x0005);
     printf("Packet send result: %d\n", res);
-    recvSearchLibraryAck();
+    int resp = recvSearchLibraryAck();
+    printf("Library search response: %d", resp);
     return 0;
 }
 
@@ -229,7 +230,7 @@ int testLibraryStoreTemplate(uint16_t pageID){
     uart_begin(PORT_NUM_2);
     int res = sendStoreTemplatePacket(0x01, pageID);
     printf("Packet send result: %d\n", res);
-    recvGenerateTemplateAck();
+    recvStoreTemplateAck();
     return 0;
 }
 
@@ -274,6 +275,8 @@ int testLibraryUploadFile(uint8_t bufferID){
 }
 
 int testLibraryGenerateCryptoKey(){
+    uart_begin(PORT_NUM_2);
+
     uint8_t bufferID = 0x01;
     int res = sendUploadFilePacket(bufferID);
     printf("Packet send result %d\n", res);
@@ -322,6 +325,46 @@ int testLibraryLedCtrl(int state){
         printf("Send result: %d\n", res);
         recvTurnLedOffAck();
     }
+    return 0;
+}
+
+int testHLcheckFingerEnrolled(){
+    int isEnrolled = checkFingerEnrolled();
+    printf("Check enrolled response: %d\n", isEnrolled);
+    return 0;
+}
+
+int testHLenrollFinger(){
+    int resp = enrollFinger(0);
+    printf("Enroll finger response: %d\n", resp);
+    return 0;
+}
+
+int testHLauthenticateFinger(){
+    int resp = authenticateFinger();
+    printf("Authenticate finger response: %d\n", resp);
+    return 0;
+}
+
+int testHLgetCryptoKey(){
+    uint8_t* key = NULL;
+    int keySize = -1;
+    int resp = getCryptoKey(&key, &keySize);
+    printf("Get crypto key response: %d\n", resp);
+    printf("Hashed Crypto Key:");
+    for(int i = 0; i < keySize; i++){
+        if((i%8) == 0){
+            printf("\n");
+        }
+        printf("0x%02x ", key[i]);
+    }
+    printf("\n");
+    return 0;
+}
+
+int testHLclearAllData(){
+    int resp = clearAllData();
+    printf("Clear all data response: %d\n", resp);
     return 0;
 }
 

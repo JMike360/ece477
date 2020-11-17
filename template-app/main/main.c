@@ -59,12 +59,17 @@ void app_main(void)
         "12. Download Fingerprint Image\n",
         "13. Read System Parameters\n",
         "14. Create Crypto Key\n",
-        "15. Led Control\n"
+        "15. Led Control\n",
+        "16. High Level Check Finger Enrolled\n",
+        "17. High Level Enroll Finger\n",
+        "18. High Level Authenticate Finger\n",
+        "19. High Level Get Crypto Key\n",
+        "20. High Level Clear All Data\n"
     };
     setupFtdiConsole();
     while (cmd != 0){
         printf("\n\nAvailable commands:\n");
-        for(int i = 0; i < 16; i++){
+        for(int i = 0; i < 21; i++){
             printf("%s", cmdList[i]);
         }
         printf("Please enter desired sensor command as number...\n");
@@ -143,6 +148,26 @@ void app_main(void)
                 printf("Please select 1 for led on or 0 for led off...\n");
                 int state = getFtdiCommand();
                 testLibraryLedCtrl(state);
+                break;
+            case 16:
+                printf("Running high level check finger enrolled...\n");
+                testHLcheckFingerEnrolled();
+                break;
+            case 17:
+                printf("Running high level enroll finger...\n");
+                testHLenrollFinger();
+                break;
+            case 18:
+                printf("Running high level authenticate finger...\n");
+                testHLauthenticateFinger();
+                break;
+            case 19:
+                printf("Running high level get crypto key...\n");
+                testHLgetCryptoKey();
+                break;
+            case 20:
+                printf("Running high level clear all data...\n");
+                testHLclearAllData();
                 break;
             default:
                 printf("Unknown command, please select a command from the list\n");

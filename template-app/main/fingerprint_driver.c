@@ -777,3 +777,190 @@ int recvTurnLedOffAck(){
     freePacket(pkt);
     return response;
 }
+
+//------ High Level Functions -------------------------------------------------------//
+
+//returns 1 if enrolled fingerprint template is found, 0 otherwise
+int checkFingerEnrolled(){
+    uart_begin(PORT_NUM_2);
+
+    sendLoadTemplatePacket(0x01, 0x00); //attempt to load template 0 to buffer 1
+    int resp = recvLoadTemplateAck();
+
+    return (resp == 0)? 1 : 0;
+}
+
+//returns 0 on success, -1 otherwise
+int enrollFinger(int templateID){
+    uart_begin(PORT_NUM_2);
+    
+    sendHandshakePacket();
+    int hsResp = recvHandshakeAck();
+    if(hsResp != 0){
+        #ifdef _DEBUG
+        printf("Handshake failed...\n");
+        #endif
+        return -1;
+    }
+
+    captureImage(1000);
+    sendGenerateFileFromImgPacket(0x01);
+    int genFileResp1 = recvGenerateFileFromImgAck();
+    if(genFileResp1 != 0){
+        #ifdef _DEBUG
+        printf("Failed to generate charFile for buffer 1...\n");
+        #endif
+        return -1;
+    }
+
+    captureImage(1000);
+    sendGenerateFileFromImgPacket(0x02);
+    int genFileResp2 = recvGenerateFileFromImgAck();
+    if(genFileResp2 != 0){
+        #ifdef _DEBUG
+        printf("Failed to generate charFile for buffer 2...\n");
+        #endif
+        return -1;
+    }
+
+    sendGenerateTemplatePacket();
+    int genTmpResp = recvGenerateTemplateAck();
+    if(genTmpResp != 0){
+        #ifdef _DEBUG
+        printf("Failed to generate template...\n");
+        #endif
+        return -1;
+    }
+
+    uint16_t pageID = (uint16_t)templateID;
+    sendStoreTemplatePacket(0x01, pageID);
+    int storResp = recvStoreTemplateAck();
+    if(storResp != 0){
+        #ifdef _DEBUG
+        printf("Failed to store template...\n");
+        #endif
+        return -1;
+    }
+
+    //turn off led
+    sendTurnLedOffPacket();
+    int ledResp = recvTurnLedOffAck();
+    if(ledResp != 0){
+        #ifdef _DEBUG
+        printf("Failed to turn off led...\n");
+        #endif
+    }
+
+    return 0;
+} 
+
+//returns 1 if finger matches, 0 otherwise
+int authenticateFinger(){ 
+    uart_begin(PORT_NUM_2);
+    
+    sendHandshakePacket();
+    int hsResp = recvHandshakeAck();
+    if(hsResp != 0){
+        #ifdef _DEBUG
+        printf("Handshake failed...\n");
+        #endif
+        return 0;
+    }
+
+    captureImage(1000);
+    sendGenerateFileFromImgPacket(0x01);
+    int genFileResp1 = recvGenerateFileFromImgAck();
+    if(genFileResp1 != 0){
+        #ifdef _DEBUG
+        printf("Failed to generate charFile for buffer 1...\n");
+        #endif
+        return 0;
+    }
+
+    sendSearchLibraryPacket(0x01, 0x0000, 0x0005);
+    int libSrchResp = recvSearchLibraryAck();
+    if(libSrchResp == 0){
+        #ifdef _DEBUG
+        printf("Match found\n");
+        #endif
+        return 1;
+    }
+
+    //turn off led
+    sendTurnLedOffPacket();
+    int ledResp = recvTurnLedOffAck();
+    if(ledResp != 0){
+        #ifdef _DEBUG
+        printf("Failed to turn off led...\n");
+        #endif
+    }
+    return 0;
+}
+
+//Params: uint8_t** key is the pointer to a uint8_t* to which digest data will be assigned (can be NULL, must be free()'d later)
+                                               //        int* keySize is a pointer whose referenced value will be assigned the digest size
+                                               //returns 0 for success, -1 otherwise
+int getCryptoKey(uint8_t** key, int* keySize){
+    uart_begin(PORT_NUM_2);
+    
+    uint8_t bufferID = 0x01;
+    sendUploadFilePacket(bufferID);
+    uint8_t* charFile = NULL;
+    int size = -1;
+    int resp = recvUploadFileAck(&charFile, &size);
+    if(resp != 0){
+        #ifdef _DEBUG
+        printf("Received failure code, aborting test...\n");
+        #endif
+        return -1;
+    }
+    if((charFile == NULL) || (size == -1)){
+        #ifdef _DEBUG
+        printf("Char file failed to populate, aborting test...\n");
+        #endif
+        return -1;
+    }
+
+    size_t inSize = sizeof(uint8_t)*size;
+    int result = getHashedCryptoKey(charFile, inSize, key, keySize);
+    #ifdef _DEBUG
+    printf("Key hash result: %d\n", result);
+    #endif
+    if((*key == NULL) || (*keySize == -1)){
+        #ifdef _DEBUG
+        printf("Hashed key failed to populate, aborting test...\n");
+        #endif
+        return -1;
+    }
+    
+    #ifdef _DEBUG
+    printf("Hashed Crypto Key:");
+    for(int i = 0; i < *keySize; i++){
+        if((i%8) == 0){
+            printf("\n");
+        }
+        printf("0x%02x ", (*key)[i]);
+    }
+    printf("\n");
+    #endif
+    
+    //turn off led
+    sendTurnLedOffPacket();
+    int ledResp = recvTurnLedOffAck();
+    if(ledResp != 0){
+        #ifdef _DEBUG
+        printf("Failed to turn off led...\n");
+        #endif
+    }
+    return 0;
+} 
+
+//returns 0 on success, -1 otherwise
+int clearAllData(){
+    uart_begin(PORT_NUM_2);
+    
+    sendClearLibraryPacket();
+    int clrResp = recvClearLibraryAck();
+
+    return (clrResp == 0)? 0 : -1;
+}

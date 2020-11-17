@@ -64,7 +64,7 @@ void freePacket(sensor_packet* pkt);
 
 int captureImage(int timeout_ms);
 int checkFingerEnrolled(); //returns 1 if enrolled fingerprint template is found, 0 otherwise
-int enrollFinger(); //returns 0 on success, -1 otherwise
+int enrollFinger(int templateID); //returns 0 on success, -1 otherwise
 int authenticateFinger(); //returns 1 if finger matches, 0 otherwise
 int getCryptoKey(uint8_t** key, int* keySize); //Params: uint8_t** key is the pointer to a uint8_t* to which digest data will be assigned (can be NULL, must be free()'d later)
                                                //        int* keySize is a pointer whose referenced value will be assigned the digest size

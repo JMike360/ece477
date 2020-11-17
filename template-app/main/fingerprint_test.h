@@ -22,3 +22,9 @@ int testLibraryClearTemplates();
 int testLibraryUploadFile(uint8_t bufferID);
 int testLibraryGenerateCryptoKey();
 int testLibraryLedCtrl(int state);
+
+int testHLcheckFingerEnrolled();
+int testHLenrollFinger();
+int testHLauthenticateFinger();
+int testHLgetCryptoKey();
+int testHLclearAllData();
