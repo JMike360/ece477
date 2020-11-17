@@ -1,6 +1,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <mbedtls/aes.h>
+#include <mbedtls/sha256.h>
 
 /* 
   For  Encryption time: 1802.40us  (9.09 MB/s) at 16kB blocks.
@@ -74,4 +75,13 @@ int encodetest()
 
 	esp_aes_free( &ctx );
     return 0;
+}
+
+
+int getHashedCryptoKey(uint8_t* input, size_t inputSize, uint8_t** key, int* keySize){
+	unsigned char* digest = malloc(sizeof(unsigned char)*32);
+	int ret = mbedtls_sha256_ret((const unsigned char *)input, inputSize, digest, 0);
+	*key = (uint8_t*)digest;
+	*keySize = 32;
+	return ret;
 }

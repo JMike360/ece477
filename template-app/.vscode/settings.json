@@ -10,7 +10,9 @@
   "C_Cpp.intelliSenseEngineFallback": "Enabled",
   "idf.portWin": "COM11",
   "files.associations": {
-    "stdio.h": "c"
+    "stdio.h": "c",
+    "xlocale": "c",
+    "xstring": "c"
   },
   "idf.baudRate": "115200",
   "idf.espIdfPathWin": "d:\\JMike\\Documents\\GitHub_Repositories\\ece477\\esp-idf",

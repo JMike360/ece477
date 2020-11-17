@@ -94,8 +94,7 @@ int sendGenerateTemplatePacket();
 int recvGenerateTemplateAck();
 
 int sendUploadFilePacket(uint8_t bufferID);
-int recvUploadFileAck();
-int recvUploadFile(uint8_t** charFile);
+int recvUploadFileAck(uint8_t** charFile, int* size);
 
 int sendDownloadFilePacket();
 int recvDownloadFileAck();

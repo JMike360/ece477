@@ -57,12 +57,13 @@ void app_main(void)
         "10. Library Load Template\n",
         "11. Library Clear All Templates\n",
         "12. Download Fingerprint Image\n",
-        "13. Read System Parameters\n"
+        "13. Read System Parameters\n",
+        "14. Create Crypto Key\n"
     };
     setupFtdiConsole();
     while (cmd != 0){
         printf("\n\nAvailable commands:\n");
-        for(int i = 0; i < 14; i++){
+        for(int i = 0; i < 15; i++){
             printf("%s", cmdList[i]);
         }
         printf("Please enter desired sensor command as number...\n");
@@ -131,6 +132,10 @@ void app_main(void)
             case 13:
                 printf("Running system parameter read test...\n");
                 testLibraryReadParam();
+                break;
+            case 14:
+                printf("Running crypto key generation test...\n");
+                testLibraryGenerateCryptoKey();
                 break;
             default:
                 printf("Unknown command, please select a command from the list\n");

@@ -1,5 +1,6 @@
 
 #include "driver/uart.h"
+#include "crypto_test.h"
 
 void setupFtdiConsole();
 int getFtdiCommand();
@@ -19,3 +20,4 @@ int testLibraryMatchSearch(uint8_t bufferID);
 int testLibraryLoadTemplate(uint8_t bufferID, uint16_t pageID);
 int testLibraryClearTemplates();
 int testLibraryUploadFile(uint8_t bufferID);
+int testLibraryGenerateCryptoKey();

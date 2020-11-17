@@ -46,9 +46,17 @@ void printPacket(sensor_packet* pkt){
     printf("Addr: 0x%02x 0x%02x 0x%02x 0x%02x\n", pkt->addr[0], pkt->addr[1], pkt->addr[2], pkt->addr[3]);
     printf("PID: 0x%02x\n", pkt->pid);
     printf("Length: 0x%04x\n", pkt->length);
+    printf("Data:");
     for(int i = 0; i < pkt->length-2; i++){
-        printf("Data: 0x%02x\n", pkt->data[i]);
+        if((i%8)==0){
+            printf("\n");
+        }
+        else{
+            printf(" ");
+        }
+        printf("0x%02x", pkt->data[i]);
     }
+    printf("\n");
     printf("Checksum: 0x%04x\n", pkt->checksum);
 }
 
@@ -139,9 +147,16 @@ void processResponse(uint8_t response){
 }
 
 int sendPacketAsByteStream(sensor_packet* pkt){
-    size_t streamSize = sizeof(sensor_packet) + 
-                        sizeof(char)*(pkt->length-2) - 
-                        sizeof(pkt->data);
+    if(pkt == NULL){
+        return -1;
+    }
+
+    size_t streamSize = sizeof(pkt->header) +
+                        sizeof(pkt->pid) +
+                        sizeof(pkt->addr[0])*4 +
+                        sizeof(pkt->length) +
+                        sizeof(uint8_t)*(pkt->length);
+    printf("Stream size: %d\n", (int)streamSize);
     char* byteStream = malloc(streamSize);
     byteStream[0] = (const char)(pkt->header >> 8);
     byteStream[1] = (const char)(pkt->header & 0xFF);
@@ -200,11 +215,13 @@ sensor_packet* recvPacketFromByteStream(int size){
     int offset = 9;
     int i = offset;
     for(; i < offset+pkt->length-2; i++){
-        printf("%d\n", i);
         pkt->data[i-offset] = recv[i];
     }
     pkt->checksum = (((uint16_t)recv[i]) << 8) | ((uint16_t)recv[i+1]);
 
+    /*for(int j = 0; j < size; j++){
+        printf("recv: 0x%02x\n", recv[j]);
+    }*/
     free(recv);
     return pkt;
 }
@@ -613,8 +630,9 @@ int recvCkeckMatchAck(){
 
 //------- Upload Char File from FP sensor to Microproc ----------------------------//
 int sendUploadFilePacket(uint8_t bufferID){
-    uint8_t data[] = { 0x0A };
-    sensor_packet* upldFilePkt = createPacket(PKT_PID_CMD, 0x0003, data, 0x000E);
+    uint8_t data[] = { 0x08, bufferID };
+    uint16_t checksum = PKT_PID_CMD + 0x0004 + data[0] + data[1];
+    sensor_packet* upldFilePkt = createPacket(PKT_PID_CMD, 0x0004, data, checksum);
     
     int result = sendPacketAsByteStream(upldFilePkt);
 
@@ -623,49 +641,93 @@ int sendUploadFilePacket(uint8_t bufferID){
 
 }
 
-int recvUploadFileAck(){
-    sensor_packet* pkt = recvPacketFromByteStream(14);
+int recvUploadFileAck(uint8_t** charFile, int* size){
+    sensor_packet** pktList = malloc(sizeof(sensor_packet*)*20);
+    sensor_packet* pkt = recvPacketFromByteStream(12);
+    int idx = 0;
+    int timeout = 19;
+    while(pkt->pid != PKT_PID_END){
+        if(pkt->header == 0x0000){
+            break;
+        }
+        pktList[idx] = pkt;
+        pkt = recvPacketFromByteStream(139);
+        idx++;
+        if(idx >= timeout){
+            break;
+        }
+    }
+    pktList[idx] = pkt;
+
+    size_t refSize = (sizeof(uint8_t)*128*idx);
+    *charFile = malloc(refSize);
+    *size = (int)refSize;
+    int fileIdx = 0;
+
+    printf("Received %d total packets, %d data packets and 1 ack packet\n", idx+1, idx);
+    uint8_t response = 0;
+    for(int i = 0; i <= idx; i++){
+        printPacket(pktList[i]);
+        if(i == 0){
+            response = pktList[i]->data[0];
+            processResponse(response);
+            uint8_t data[] = { 0x00 }; 
+            uint16_t checksum = 0x000A;
+            sensor_packet* expected = createPacket(PKT_PID_ACK, 0x0003, data, checksum);
+            if(!isEqual(pktList[i], expected)){
+                if(response == 0x0F){
+                    printf("Error - Failed to transfer char file.\n");
+                }
+                else{
+                    printf("Error - received packet does not match expected format\n");
+                }
+                response = -1;
+            }
+            freePacket(expected); 
+        }
+        else{
+            for(int pktIdx = 0; pktIdx < (pktList[i]->length-2); pktIdx++){
+                if(fileIdx >= *size){
+                    printf("ERROR --- charFile expected size exceeded ---------------------------------------\n");
+                    break;
+                }
+                (*charFile)[fileIdx] = pktList[i]->data[pktIdx];
+                fileIdx++;
+            }
+        }
+    }
+
+    for(int i = 0; i <= idx; i++){
+        freePacket(pktList[i]);
+    }
+    free(pktList);
+    return response;
+
+}
+
+int recvUploadFile(uint8_t** charFile){
+    sensor_packet* pkt = recvPacketFromByteStream(139);
     if(pkt == NULL){
         printf("Error: null packet received\n");
         return -1;
     }
     printPacket(pkt);
 
-    uint8_t response = pkt->data[0];
-    processResponse(response);
-    uint8_t data[] = { 0x00 }; 
-    uint16_t checksum = 0x000A;
-    sensor_packet* expected = createPacket(PKT_PID_ACK, 0x0003, data, checksum);
+    sensor_packet* expected = createPacket(PKT_PID_DAT, pkt->length, pkt->data, pkt->checksum);
     if(!isEqual(pkt, expected)){
-        if(response == 0x0F){
-            printf("Error - Failed to transfer char file.\n");
-        }
-        else{
+        if(pkt->pid != PKT_PID_END){
             printf("Error - received packet does not match expected format\n");
+            freePacket(expected);
+            freePacket(pkt);
+            return -1;
         }
-       response = -1;
+    }
+
+    for(int i = 0; i < pkt->length-2; i++){
+        (*charFile)[i] = pkt->data[i];
     }
 
     freePacket(expected); 
     freePacket(pkt);
-    return response;
-
-}
-
-int recvUploadFile(uint8_t** charFile){
-    uint8_t* recv = calloc(DATA_PKT_SIZE, sizeof(uint8_t));
-    int buflen = 0;
-    int waitCnt = 0;
-    while(buflen < DATA_PKT_SIZE){
-        if(waitCnt >= 1000){
-            printf("Buffer timed out, continuing with buffer length %d...\n", buflen);
-            break;
-        }
-        vTaskDelay(1);
-        uart_get_buffered_data_len(PORT_NUM, (size_t*)&buflen);
-        waitCnt++;
-    }
-    uart_read_bytes(PORT_NUM, recv, DATA_PKT_SIZE, 20/portTICK_RATE_MS);
-    *charFile = recv;
     return 0;
 }

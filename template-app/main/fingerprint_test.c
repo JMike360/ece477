@@ -21,6 +21,7 @@
 #include "driver/uart.h"
 #include "uart_setup.h"
 #include "fingerprint_driver.h"
+#include "crypto_test.h"
 
 void setupFtdiConsole(){
     uart_begin(PORT_NUM_1);
@@ -252,24 +253,59 @@ int testLibraryUploadFile(uint8_t bufferID){
     uart_begin(PORT_NUM_2);
     int res = sendUploadFilePacket(bufferID);
     printf("Packet send result %d\n", res);
-    int resp = recvUploadFileAck();
+    uint8_t* charFile = NULL;
+    int size = -1;
+    int resp = recvUploadFileAck(&charFile, &size);
+    
     if(resp == 0){
-        for(int j = 0; j < 2; j++){
-            uint8_t* charFile = malloc(sizeof(uint8_t)*DATA_PKT_SIZE);
-            if(charFile != NULL){
-                recvUploadFile(&charFile);
-                printf("File received:\n");
-                for(int i = 0; i < DATA_PKT_SIZE; i++){
-                    if((i%8) == 0 ){
-                        printf("\n");
-                    }
-                    printf("0x%02x ", charFile[i]);
+        printf("File received:\n");
+        if(charFile != NULL){
+            for(int i = 0; i < size; i++){
+                if((i%8) == 0 ){
+                    printf("\n");
                 }
-                printf("\n");
+                printf("0x%02x ", charFile[i]);
             }
-            free(charFile);
+            printf("\n");
         }
+        free(charFile);
     }
+    return 0;
+}
+
+int testLibraryGenerateCryptoKey(){
+    uint8_t bufferID = 0x01;
+    int res = sendUploadFilePacket(bufferID);
+    printf("Packet send result %d\n", res);
+    uint8_t* charFile = NULL;
+    int size = -1;
+    int resp = recvUploadFileAck(&charFile, &size);
+    if(resp != 0){
+        printf("Received failure code, aborting test...\n");
+        return -1;
+    }
+    if((charFile == NULL) || (size == -1)){
+        printf("Char file failed to populate, aborting test...\n");
+        return -1;
+    }
+
+    uint8_t* key = NULL;
+    int keySize = -1;
+    size_t inSize = sizeof(uint8_t)*size;
+    int result = getHashedCryptoKey(charFile, inSize, &key, &keySize);
+    printf("Key hash result: %d\n", result);
+    if((key == NULL) || (keySize == -1)){
+        printf("Hashed key failed to populate, aborting test...\n");
+        return -1;
+    }
+    printf("Hashed Crypto Key:");
+    for(int i = 0; i < keySize; i++){
+        if((i%8) == 0){
+            printf("\n");
+        }
+        printf("0x%02x ", key[i]);
+    }
+    printf("\n");
     return 0;
 }
 
