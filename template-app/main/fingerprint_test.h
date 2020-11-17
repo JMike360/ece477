@@ -21,3 +21,4 @@ int testLibraryLoadTemplate(uint8_t bufferID, uint16_t pageID);
 int testLibraryClearTemplates();
 int testLibraryUploadFile(uint8_t bufferID);
 int testLibraryGenerateCryptoKey();
+int testLibraryLedCtrl(int state);

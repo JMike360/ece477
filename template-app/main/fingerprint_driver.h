@@ -125,3 +125,9 @@ int recvWriteNotepadAck();
 
 int sendReadNotepadPacket();
 int recvReadNotepadAck();
+
+int sendTurnLedOnPacket();
+int recvTurnLedOnAck();
+
+int sendTurnLedOffPacket();
+int recvTurnLedOffAck();

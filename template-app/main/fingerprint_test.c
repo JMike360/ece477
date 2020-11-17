@@ -309,6 +309,22 @@ int testLibraryGenerateCryptoKey(){
     return 0;
 }
 
+int testLibraryLedCtrl(int state){
+    uart_begin(PORT_NUM_2);
+    int res;
+    if(state){
+        res = sendTurnLedOnPacket();
+        printf("Send result: %d\n", res);
+        recvTurnLedOnAck();
+    }
+    else{
+        res = sendTurnLedOffPacket();
+        printf("Send result: %d\n", res);
+        recvTurnLedOffAck();
+    }
+    return 0;
+}
+
 int sendHandshake(){
     uart_config_t config = {
         .baud_rate = BAUD_RATE,

@@ -705,29 +705,69 @@ int recvUploadFileAck(uint8_t** charFile, int* size){
 
 }
 
-int recvUploadFile(uint8_t** charFile){
-    sensor_packet* pkt = recvPacketFromByteStream(139);
+//-------- LED Control Functions ------------------------------------------------------//
+int sendTurnLedOnPacket(){
+    uint8_t data[] = { 0x50 };
+    uint16_t checksum = PKT_PID_CMD + 0x0003 + data[0];
+    sensor_packet* ledOnPkt = createPacket(PKT_PID_CMD, 0x0003, data, checksum);
+    int result = sendPacketAsByteStream(ledOnPkt);
+
+    freePacket(ledOnPkt);
+    return result;
+}
+
+int recvTurnLedOnAck(){
+    sensor_packet* pkt = recvPacketFromByteStream(12);
     if(pkt == NULL){
         printf("Error: null packet received\n");
         return -1;
     }
     printPacket(pkt);
 
-    sensor_packet* expected = createPacket(PKT_PID_DAT, pkt->length, pkt->data, pkt->checksum);
+    uint8_t response = pkt->data[0];
+    processResponse(response);
+    uint8_t data[] = { 0x00 }; 
+    uint16_t checksum = 0x000A;
+    sensor_packet* expected = createPacket(PKT_PID_ACK, 0x0003, data, checksum);
     if(!isEqual(pkt, expected)){
-        if(pkt->pid != PKT_PID_END){
-            printf("Error - received packet does not match expected format\n");
-            freePacket(expected);
-            freePacket(pkt);
-            return -1;
-        }
-    }
-
-    for(int i = 0; i < pkt->length-2; i++){
-        (*charFile)[i] = pkt->data[i];
+        printf("Error - received packet does not match expected format\n");
+        response = -1;
     }
 
     freePacket(expected); 
     freePacket(pkt);
-    return 0;
+    return response;
+}
+
+int sendTurnLedOffPacket(){
+    uint8_t data[] = { 0x51 };
+    uint16_t checksum = PKT_PID_CMD + 0x0003 + data[0];
+    sensor_packet* ledOffPkt = createPacket(PKT_PID_CMD, 0x0003, data, checksum);
+    int result = sendPacketAsByteStream(ledOffPkt);
+
+    freePacket(ledOffPkt);
+    return result;
+}
+
+int recvTurnLedOffAck(){
+    sensor_packet* pkt = recvPacketFromByteStream(12);
+    if(pkt == NULL){
+        printf("Error: null packet received\n");
+        return -1;
+    }
+    printPacket(pkt);
+
+    uint8_t response = pkt->data[0];
+    processResponse(response);
+    uint8_t data[] = { 0x00 }; 
+    uint16_t checksum = 0x000A;
+    sensor_packet* expected = createPacket(PKT_PID_ACK, 0x0003, data, checksum);
+    if(!isEqual(pkt, expected)){
+        printf("Error - received packet does not match expected format\n");
+        response = -1;
+    }
+
+    freePacket(expected); 
+    freePacket(pkt);
+    return response;
 }
