@@ -1,5 +1,7 @@
 #include "esp_system.h"
 #include "uart_setup.h"
+#include "crypto_test.h"
+
 #define PORT_NUM PORT_NUM_2
 #define DATA_PKT_SIZE 128
 
@@ -42,7 +44,7 @@
 #define ACK_PWD_NO_VERIFIED 0x21
 //RX/TX pins on the feather board are labelled as 16RX - GPIO3 / 17TX - GPIO1 for the UART0 port
 
-
+#define _DEBUG
 
 typedef struct sensor_packet {
     uint16_t header;
@@ -61,6 +63,13 @@ void freePacket(sensor_packet* pkt);
 //-------------------------------------------------//
 
 int captureImage(int timeout_ms);
+int checkFingerEnrolled(); //returns 1 if enrolled fingerprint template is found, 0 otherwise
+int enrollFinger(); //returns 0 on success, -1 otherwise
+int authenticateFinger(); //returns 1 if finger matches, 0 otherwise
+int getCryptoKey(uint8_t** key, int* keySize); //Params: uint8_t** key is the pointer to a uint8_t* to which digest data will be assigned (can be NULL, must be free()'d later)
+                                               //        int* keySize is a pointer whose referenced value will be assigned the digest size
+                                               //returns 0 for success, -1 otherwise
+int clearAllData(); //returns 0 on success, -1 otherwise
 
 //-------------------------------------------------//
 //------------ Low Level Packet Functions ---------//

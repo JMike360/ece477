@@ -42,6 +42,7 @@ bool isEqual(sensor_packet* pkt1, sensor_packet* pkt2){
 }
 
 void printPacket(sensor_packet* pkt){
+    #ifdef _DEBUG
     printf("Header: 0x%04x\n", pkt->header);
     printf("Addr: 0x%02x 0x%02x 0x%02x 0x%02x\n", pkt->addr[0], pkt->addr[1], pkt->addr[2], pkt->addr[3]);
     printf("PID: 0x%02x\n", pkt->pid);
@@ -58,9 +59,11 @@ void printPacket(sensor_packet* pkt){
     }
     printf("\n");
     printf("Checksum: 0x%04x\n", pkt->checksum);
+    #endif
 }
 
 void processResponse(uint8_t response){
+    #ifdef _DEBUG
     switch(response){
         case ACK_CMD_COMPLETE:
             printf("Command completed successfully\n");
@@ -144,6 +147,7 @@ void processResponse(uint8_t response){
             printf("Error - unknown response code\n");
             break;
     }
+    #endif
 }
 
 int sendPacketAsByteStream(sensor_packet* pkt){
@@ -156,7 +160,9 @@ int sendPacketAsByteStream(sensor_packet* pkt){
                         sizeof(pkt->addr[0])*4 +
                         sizeof(pkt->length) +
                         sizeof(uint8_t)*(pkt->length);
+    #ifdef _DEBUG
     printf("Stream size: %d\n", (int)streamSize);
+    #endif
     char* byteStream = malloc(streamSize);
     byteStream[0] = (const char)(pkt->header >> 8);
     byteStream[1] = (const char)(pkt->header & 0xFF);
