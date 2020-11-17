@@ -7,7 +7,7 @@
 #define CMD_SUCCESS 1
 #define CMD_FAILURE 0
 
-#define PORT_NUM 0
+#define PORT_NUM_CMD 0
 #define GPIO_GREEN     (GPIO_NUM_32)
 #define GPIO_RED       (GPIO_NUM_33)
 
@@ -33,6 +33,7 @@
 #define CMD_ERR_INCORRECT_PACKET_FORMAT 0x10
 #define CMD_ERR_UNRECOGNIZED_COMMAND    0x11
 #define CMD_POWER_OFF                   0x12
+#define CMD_UNENROLL_FINGERPRINT        0x13
 
 void doCMD(uint8_t* data, int mode);
 int getRunning();

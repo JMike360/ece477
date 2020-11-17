@@ -4,6 +4,7 @@
 #include "esp_log.h"
 #include "../include/bt.h"
 #include "../include/crypto.h"
+#include "../include/fingerprint_driver.h"
 
 // one function per command
 
@@ -32,7 +33,7 @@ int cmd_request_entries(int mode) {
     char* buffer = calloc(filesize, sizeof(char));
     fread(buffer, sizeof(char), filesize, fp);
     if (mode == UART_MODE)
-        uart_write_bytes(PORT_NUM, buffer, filesize);
+        uart_write_bytes(PORT_NUM_CMD, buffer, filesize);
     else if (mode == BT_MODE)
         btSendData((uint8_t*) buffer, filesize);
     free(buffer);
@@ -41,8 +42,17 @@ int cmd_request_entries(int mode) {
 }
 
 int cmd_request_credential(char* displayName, char* username, int mode) {
+    if (authenticateFinger() == 0)
+        return CMD_FAILURE;
+
+    uint8_t* key = NULL;
+    int keysize = 0;
+    if (getCryptoKey(&key, &keysize) == -1)
+        return CMD_FAILURE;
+
     if (getManifestEntry(displayName, username) == NULL)
         return CMD_FAILURE;
+
     char path[256] = {'\0'};
     strcat(path, "/sdcard/");
     strcat(path, displayName); 
@@ -53,19 +63,33 @@ int cmd_request_credential(char* displayName, char* username, int mode) {
     size_t filesize = ftell(fp);
     fseek(fp, 0, SEEK_SET);
 
-    char* buffer = calloc(filesize + 1, sizeof(char));
+    char* buffer = calloc(filesize, sizeof(char));
+    char* plaintext = calloc(filesize + 1, sizeof(char));
     fread(buffer, sizeof(char), filesize, fp);
-    buffer[filesize] = '\n';
+    my_aes_decrypt((uint8_t*)buffer, key, (uint8_t*)plaintext);
+    plaintext[filesize] = '\n';
+
     if (mode == UART_MODE)
-        uart_write_bytes(PORT_NUM, buffer, filesize + 1);
+        uart_write_bytes(PORT_NUM_CMD, plaintext, filesize + 1);
     else if (mode == BT_MODE)
-        btSendData((uint8_t*) buffer, filesize + 1);
+        btSendData((uint8_t*) plaintext, filesize + 1);
+        
     free(buffer);
+    free(plaintext);
+    free(key);
     fclose(fp);
     return CMD_SUCCESS;
 }
 
 int cmd_modify_credential(char* displayName, char* username, char* pw) {
+    if (authenticateFinger() == 0)
+        return CMD_FAILURE;
+
+    uint8_t* key = NULL;
+    int keysize = 0;
+    if (getCryptoKey(&key, &keysize) == -1)
+        return CMD_FAILURE;
+    
     if (getManifestEntry(displayName, username) == NULL)
         return MANIFEST_FAILURE;
         
@@ -75,12 +99,26 @@ int cmd_modify_credential(char* displayName, char* username, char* pw) {
     FILE* fp = fopen(path, "w");
     if (fp == NULL)
         return CMD_FAILURE;
-    fprintf(fp, pw);
+
+    char* encryptedText = calloc(strlen(pw), sizeof(char));
+    my_aes_encrypt((uint8_t*)pw, key, (uint8_t*)encryptedText);
+
+    fprintf(fp, encryptedText);
+    free(key);
+    free(encryptedText);
     fclose(fp);
     return CMD_SUCCESS;
 }
 
 int cmd_store_credential(char* displayName, char* username, char* url, char* pw) {
+    if (authenticateFinger() == 0)
+        return CMD_FAILURE;
+
+    uint8_t* key = NULL;
+    int keysize = 0;
+    if (getCryptoKey(&key, &keysize) == -1)
+        return CMD_FAILURE;
+    
     addManifestEntry(displayName, username, url);
     char path[256] = {'\0'};
     strcat(path, "/sdcard/");
@@ -88,12 +126,19 @@ int cmd_store_credential(char* displayName, char* username, char* url, char* pw)
     FILE* fp = fopen(path, "w");
     if (fp == NULL)
         return CMD_FAILURE;
-    fprintf(fp, pw);
+
+    char* encryptedText = calloc(strlen(pw), sizeof(char));
+    my_aes_encrypt((uint8_t*)pw, key, (uint8_t*)encryptedText);
+    fprintf(fp, encryptedText);
+
     fclose(fp);
     return CMD_SUCCESS;
 }
 
 int cmd_delete_credential(char* displayName, char* userName) {
+    if (authenticateFinger() == 0)
+        return CMD_FAILURE;
+
     if(!removeManifestEntry(displayName, userName))
         return CMD_FAILURE;
     char path[256] = {'\0'};
@@ -103,13 +148,15 @@ int cmd_delete_credential(char* displayName, char* userName) {
     return CMD_SUCCESS;
 }
 
-void doCMD(uint8_t* data, int mode) {
-    // debug
-    if (mode == BT_MODE) {
-        for (int i = 0; i < 20; i++)
-            ESP_LOGI("debug-msg", "%d - %c", data[i], data[i]);
-    }
+int cmd_unenroll_fingerprint() {
+    if (authenticateFinger() == 0)
+        return CMD_FAILURE;
 
+    clearAllData();
+    return CMD_SUCCESS;
+}
+
+void doCMD(uint8_t* data, int mode) {
     int returnStatus = 0;
     char *displayName, *username, *url, *pw;
     switch (data[1]) {
@@ -148,6 +195,9 @@ void doCMD(uint8_t* data, int mode) {
         case CMD_POWER_OFF:
             running = 0;
             break;
+        case CMD_UNENROLL_FINGERPRINT:
+            cmd_unenroll_fingerprint();
+            break;
         default:
             returnStatus = 0;
     }
@@ -163,7 +213,7 @@ void doCMD(uint8_t* data, int mode) {
                 if (mode == BT_MODE)
                     btSendData((uint8_t*) toSend, 2);
                 else if (mode == UART_MODE)
-                    uart_write_bytes(PORT_NUM, toSend, 2);
+                    uart_write_bytes(PORT_NUM_CMD, toSend, 2);
             }
             break;
         case CMD_LED_RED:
@@ -176,6 +226,6 @@ void doCMD(uint8_t* data, int mode) {
             if (mode == BT_MODE)
                 btSendData((uint8_t*) toSend, 2);
             else if (mode == UART_MODE)
-                uart_write_bytes(PORT_NUM, toSend, 2);
+                uart_write_bytes(PORT_NUM_CMD, toSend, 2);
     }
 }

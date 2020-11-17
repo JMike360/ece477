@@ -12,17 +12,11 @@
 #include "../include/bt.h"
 #include "../include/sdcard.h"
 #include "../include/manifest.h"
+#include "../include/fingerprint_driver.h"
 
-#define ECHO_TEST_RTS  (UART_PIN_NO_CHANGE)
-#define ECHO_TEST_CTS  (UART_PIN_NO_CHANGE)
-
-#define BUF_SIZE (1024)
+#define BUF_SIZE_MAIN (1024)
 #define TAG "UART-CMD"
 
-#define PIN_TX 1
-#define PIN_RX 3
-#define BAUD_RATE 115200
-#define STACK_SIZE 2048
 
 /**************************************************
  * ledInit
@@ -44,33 +38,6 @@ void ledInit(void) {
 }
 
 /**************************************************
- * uartInit
- * Initialize UART port 0 (embedded USB port) pins
- * and install driver for UART.
- * 
- * input:
- * void
- * 
- * output:
- * void
-**************************************************/
-void uartInit () {
-    uart_config_t config = {
-        .baud_rate = BAUD_RATE,
-        .data_bits = UART_DATA_8_BITS,
-        .parity = UART_PARITY_DISABLE,
-        .stop_bits = UART_STOP_BITS_1,
-        .flow_ctrl = UART_HW_FLOWCTRL_DISABLE,
-        .source_clk = UART_SCLK_APB
-    };
-    int intr_alloc_flags = 0;
-    ESP_ERROR_CHECK(uart_driver_install(PORT_NUM, BUF_SIZE*2, 0, 0, NULL, intr_alloc_flags));
-    ESP_ERROR_CHECK(uart_param_config(PORT_NUM, &config));
-    ESP_ERROR_CHECK(uart_set_pin(PORT_NUM, PIN_TX, PIN_RX, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE));
-    ESP_LOGI("UART", "Successfullly initialized UART");
-}
-
-/**************************************************
  * _clearDataBuffer
  * Read UART or Bluetooth messages depending on mode
  * and obtains the command string. This function stays
@@ -85,7 +52,7 @@ void uartInit () {
 void readUARTCMD(uint8_t* data) {
     int i = 0;
     do {
-        i += uart_read_bytes(PORT_NUM, &data[i], BUF_SIZE, 20 / portTICK_RATE_MS);
+        i += uart_read_bytes(PORT_NUM, &data[i], BUF_SIZE_MAIN, 20 / portTICK_RATE_MS);
     } while(data[i-1] != '\n');
     ESP_LOGI(TAG, "reading from UART: %s\n", data);
     if (data[0] != '#')
@@ -107,23 +74,28 @@ void readUARTCMD(uint8_t* data) {
 void app_main(void) {
     sdspiInit();
     mountSD();
-
     ledInit();
-
     btInit();
     btRegister();
     btSetPairing();
-
-    uartInit();
+    uart_begin(PORT_NUM_0);
+    uart_begin(PORT_NUM_2);
     sleep(2);
+
+    if (checkFingerEnrolled() == 0) {
+        if (enrollFinger(0) == -1) {
+            ESP_LOGE(TAG, "Fingerprint enrollment failed");
+            return;
+        }
+    }
 
     if (readManifestToMemory() == MANIFEST_FAILURE)
         return;
 
-    uint8_t* data = (uint8_t*) malloc(BUF_SIZE);
+    uint8_t* data = (uint8_t*) malloc(BUF_SIZE_MAIN);
 
     while(getRunning()) {
-        memset(data, 0, BUF_SIZE);
+        memset(data, 0, BUF_SIZE_MAIN);
         readUARTCMD(data);
     }
 
@@ -135,4 +107,6 @@ void app_main(void) {
         return;
 
     unmountSD();
+    uart_end(PORT_NUM_0);
+    uart_end(PORT_NUM_2);
 }
