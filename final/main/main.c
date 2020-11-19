@@ -13,6 +13,7 @@
 #include "../include/sdcard.h"
 #include "../include/manifest.h"
 #include "../include/fingerprint_driver.h"
+#include "../include/my_rsa.h"
 
 #define BUF_SIZE_MAIN (1024)
 #define TAG "UART-CMD"
@@ -80,6 +81,7 @@ void app_main(void) {
     btSetPairing();
     uart_begin(PORT_NUM_0);
     uart_begin(PORT_NUM_2);
+    my_rsa_init();
     sleep(2);
 
     if (checkFingerEnrolled() == 0) {

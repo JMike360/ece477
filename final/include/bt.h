@@ -4,6 +4,6 @@
 void btInit();
 void btRegister();
 void btSetPairing();
-void btSendData(uint8_t* data,int len);
+void btSendData(uint8_t* data);
 
 #endif

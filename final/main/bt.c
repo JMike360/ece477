@@ -22,6 +22,7 @@
 #include "esp_spp_api.h"
 #include "../include/bt.h"
 #include "../include/cmd.h"
+#include "../include/my_rsa.h"
 
 #include "time.h"
 #include "sys/time.h"
@@ -40,9 +41,12 @@ static const esp_spp_role_t role_slave = ESP_SPP_ROLE_SLAVE;
 
 static uint32_t deviceHandle=0;
 
-void btSendData(uint8_t* data,int len) {
+void btSendData(uint8_t* data) {
+    uint8_t* encrypted_data = NULL;
+    my_rsa_encrypt(data, encrypted_data);
+
     if(deviceHandle!=0){
-        esp_spp_write(deviceHandle,len,data);   
+        esp_spp_write(deviceHandle, (int) strlen((char*) encrypted_data), encrypted_data);   
     }
 }
 

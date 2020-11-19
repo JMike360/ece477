@@ -3,7 +3,7 @@
 #include "../include/manifest.h"
 #include "esp_log.h"
 #include "../include/bt.h"
-#include "../include/crypto.h"
+#include "../include/my_aes.h"
 #include "../include/fingerprint_driver.h"
 
 // one function per command
@@ -35,7 +35,7 @@ int cmd_request_entries(int mode) {
     if (mode == UART_MODE)
         uart_write_bytes(PORT_NUM_CMD, buffer, filesize);
     else if (mode == BT_MODE)
-        btSendData((uint8_t*) buffer, filesize);
+        btSendData((uint8_t*) buffer);
     free(buffer);
     fclose(fp);
     return CMD_SUCCESS;
@@ -72,7 +72,7 @@ int cmd_request_credential(char* displayName, char* username, int mode) {
     if (mode == UART_MODE)
         uart_write_bytes(PORT_NUM_CMD, plaintext, filesize + 1);
     else if (mode == BT_MODE)
-        btSendData((uint8_t*) plaintext, filesize + 1);
+        btSendData((uint8_t*) plaintext);
         
     free(buffer);
     free(plaintext);
@@ -211,7 +211,7 @@ void doCMD(uint8_t* data, int mode) {
                 toSend[0] = '0';
                 toSend[1] = '\n';
                 if (mode == BT_MODE)
-                    btSendData((uint8_t*) toSend, 2);
+                    btSendData((uint8_t*) toSend);
                 else if (mode == UART_MODE)
                     uart_write_bytes(PORT_NUM_CMD, toSend, 2);
             }
@@ -224,7 +224,7 @@ void doCMD(uint8_t* data, int mode) {
             toSend[0] = returnStatus + '0';
             toSend[1] = '\n';
             if (mode == BT_MODE)
-                btSendData((uint8_t*) toSend, 2);
+                btSendData((uint8_t*) toSend);
             else if (mode == UART_MODE)
                 uart_write_bytes(PORT_NUM_CMD, toSend, 2);
     }
