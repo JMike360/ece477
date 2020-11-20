@@ -46,7 +46,7 @@ void btSendData(uint8_t* data) {
     my_rsa_encrypt(data, encrypted_data);
 
     if(deviceHandle!=0){
-        esp_spp_write(deviceHandle, (int) strlen((char*) encrypted_data), encrypted_data);   
+        esp_spp_write(deviceHandle, RSA_SEND_LEN, encrypted_data);   
     }
 }
 
@@ -74,6 +74,7 @@ static void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
         break;
     case ESP_SPP_CL_INIT_EVT:
         ESP_LOGI(SPP_TAG, "ESP_SPP_CL_INIT_EVT");
+        // my_rsa_key_exchange();
         break;
     case ESP_SPP_DATA_IND_EVT:
         ESP_LOGI(SPP_TAG, "ESP_SPP_DATA_IND_EVT len=%d handle=%d",

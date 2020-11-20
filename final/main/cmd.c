@@ -45,10 +45,10 @@ int cmd_request_credential(char* displayName, char* username, int mode) {
     if (authenticateFinger() == 0)
         return CMD_FAILURE;
 
-    uint8_t* key = NULL;
-    int keysize = 0;
-    if (getCryptoKey(&key, &keysize) == -1)
-        return CMD_FAILURE;
+    // uint8_t* key = NULL;
+    // int keysize = 0;
+    // if (getCryptoKey(&key, &keysize) == -1)
+    //     return CMD_FAILURE;
 
     if (getManifestEntry(displayName, username) == NULL)
         return CMD_FAILURE;
@@ -64,19 +64,19 @@ int cmd_request_credential(char* displayName, char* username, int mode) {
     fseek(fp, 0, SEEK_SET);
 
     char* buffer = calloc(filesize, sizeof(char));
-    char* plaintext = calloc(filesize + 1, sizeof(char));
+    // char* plaintext = calloc(filesize + 1, sizeof(char));
     fread(buffer, sizeof(char), filesize, fp);
-    my_aes_decrypt((uint8_t*)buffer, key, (uint8_t*)plaintext);
-    plaintext[filesize] = '\n';
+    // my_aes_decrypt((uint8_t*)buffer, key, (uint8_t*)plaintext);
+    // plaintext[filesize] = '\n';
 
     if (mode == UART_MODE)
-        uart_write_bytes(PORT_NUM_CMD, plaintext, filesize + 1);
+        uart_write_bytes(PORT_NUM_CMD, buffer /*plaintext*/, filesize + 1);
     else if (mode == BT_MODE)
-        btSendData((uint8_t*) plaintext);
+        btSendData((uint8_t*) buffer/*plaintext*/);
         
     free(buffer);
-    free(plaintext);
-    free(key);
+    // free(plaintext);
+    // free(key);
     fclose(fp);
     return CMD_SUCCESS;
 }
@@ -85,10 +85,10 @@ int cmd_modify_credential(char* displayName, char* username, char* pw) {
     if (authenticateFinger() == 0)
         return CMD_FAILURE;
 
-    uint8_t* key = NULL;
-    int keysize = 0;
-    if (getCryptoKey(&key, &keysize) == -1)
-        return CMD_FAILURE;
+    // uint8_t* key = NULL;
+    // int keysize = 0;
+    // if (getCryptoKey(&key, &keysize) == -1)
+    //     return CMD_FAILURE;
     
     if (getManifestEntry(displayName, username) == NULL)
         return MANIFEST_FAILURE;
@@ -100,12 +100,12 @@ int cmd_modify_credential(char* displayName, char* username, char* pw) {
     if (fp == NULL)
         return CMD_FAILURE;
 
-    char* encryptedText = calloc(strlen(pw), sizeof(char));
-    my_aes_encrypt((uint8_t*)pw, key, (uint8_t*)encryptedText);
+    // char* encryptedText = calloc(strlen(pw), sizeof(char));
+    // my_aes_encrypt((uint8_t*)pw, key, (uint8_t*)encryptedText);
 
-    fprintf(fp, encryptedText);
-    free(key);
-    free(encryptedText);
+    fprintf(fp, pw /*encryptedText*/);
+    // free(key);
+    // free(encryptedText);
     fclose(fp);
     return CMD_SUCCESS;
 }
@@ -114,10 +114,10 @@ int cmd_store_credential(char* displayName, char* username, char* url, char* pw)
     if (authenticateFinger() == 0)
         return CMD_FAILURE;
 
-    uint8_t* key = NULL;
-    int keysize = 0;
-    if (getCryptoKey(&key, &keysize) == -1)
-        return CMD_FAILURE;
+    // uint8_t* key = NULL;
+    // int keysize = 0;
+    // if (getCryptoKey(&key, &keysize) == -1)
+    //     return CMD_FAILURE;
     
     addManifestEntry(displayName, username, url);
     char path[256] = {'\0'};
@@ -127,9 +127,9 @@ int cmd_store_credential(char* displayName, char* username, char* url, char* pw)
     if (fp == NULL)
         return CMD_FAILURE;
 
-    char* encryptedText = calloc(strlen(pw), sizeof(char));
-    my_aes_encrypt((uint8_t*)pw, key, (uint8_t*)encryptedText);
-    fprintf(fp, encryptedText);
+    // char* encryptedText = calloc(strlen(pw), sizeof(char));
+    // my_aes_encrypt((uint8_t*)pw, key, (uint8_t*)encryptedText);
+    fprintf(fp, pw /*encryptedText*/);
 
     fclose(fp);
     return CMD_SUCCESS;
@@ -152,7 +152,12 @@ int cmd_unenroll_fingerprint() {
     if (authenticateFinger() == 0)
         return CMD_FAILURE;
 
-    clearAllData();
+    if (clearAllData() == -1)
+        return CMD_FAILURE;
+    
+    if (enrollFinger(0) == -1)
+        return CMD_FAILURE;
+
     return CMD_SUCCESS;
 }
 

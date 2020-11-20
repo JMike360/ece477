@@ -18,7 +18,6 @@
 #define BUF_SIZE_MAIN (1024)
 #define TAG "UART-CMD"
 
-
 /**************************************************
  * ledInit
  * Initialize GPIO pin for LEDs using GPIO_GREEN and

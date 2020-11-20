@@ -34,6 +34,7 @@
 #define CMD_ERR_UNRECOGNIZED_COMMAND    0x11
 #define CMD_POWER_OFF                   0x12
 #define CMD_UNENROLL_FINGERPRINT        0x13
+#define CMD_DIFFIE_HELLMAN              0x14
 
 void doCMD(uint8_t* data, int mode);
 int getRunning();

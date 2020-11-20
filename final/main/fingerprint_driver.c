@@ -1,4 +1,7 @@
+#include "esp_log.h"
 #include "../include/fingerprint_driver.h"
+
+#define TAG "fingerprint"
 
 sensor_packet* createPacket(uint8_t pid, uint16_t length, uint8_t* data, uint16_t checksum){
     sensor_packet* pkt = malloc(sizeof(sensor_packet));
@@ -792,9 +795,15 @@ int checkFingerEnrolled(){
     int ledResp = recvTurnLedOffAck();
     if(ledResp != 0){
         #ifdef _DEBUG
-        printf("Failed to turn off led...\n");
+        ESP_LOGE(TAG, "Failed to turn off led...\n");
         #endif
     }
+
+    if (resp == 0)
+        ESP_LOGI(TAG, "Fingerprint is enrolled");
+    else
+        ESP_LOGI(TAG, "FIngerprint is not enrolled");
+
     return (resp == 0)? 1 : 0;
 }
 
@@ -806,7 +815,7 @@ int enrollFinger(int templateID){
     int hsResp = recvHandshakeAck();
     if(hsResp != 0){
         #ifdef _DEBUG
-        printf("Handshake failed...\n");
+        ESP_LOGE(TAG, "Handshake failed...\n");
         #endif
         return -1;
     }
@@ -816,7 +825,7 @@ int enrollFinger(int templateID){
     int genFileResp1 = recvGenerateFileFromImgAck();
     if(genFileResp1 != 0){
         #ifdef _DEBUG
-        printf("Failed to generate charFile for buffer 1...\n");
+        ESP_LOGE(TAG, "Failed to generate charFile for buffer 1...\n");
         #endif
         return -1;
     }
@@ -826,7 +835,7 @@ int enrollFinger(int templateID){
     int genFileResp2 = recvGenerateFileFromImgAck();
     if(genFileResp2 != 0){
         #ifdef _DEBUG
-        printf("Failed to generate charFile for buffer 2...\n");
+        ESP_LOGE(TAG, "Failed to generate charFile for buffer 2...\n");
         #endif
         return -1;
     }
@@ -835,7 +844,7 @@ int enrollFinger(int templateID){
     int genTmpResp = recvGenerateTemplateAck();
     if(genTmpResp != 0){
         #ifdef _DEBUG
-        printf("Failed to generate template...\n");
+        ESP_LOGE(TAG, "Failed to generate template...\n");
         #endif
         return -1;
     }
@@ -845,7 +854,7 @@ int enrollFinger(int templateID){
     int storResp = recvStoreTemplateAck();
     if(storResp != 0){
         #ifdef _DEBUG
-        printf("Failed to store template...\n");
+        ESP_LOGE(TAG, "Failed to store template...\n");
         #endif
         return -1;
     }
@@ -855,9 +864,11 @@ int enrollFinger(int templateID){
     int ledResp = recvTurnLedOffAck();
     if(ledResp != 0){
         #ifdef _DEBUG
-        printf("Failed to turn off led...\n");
+        ESP_LOGE(TAG, "Failed to turn off led...\n");
         #endif
     }
+
+    ESP_LOGI(TAG, "Fingerprint enrollment successful");
 
     return 0;
 } 
@@ -870,7 +881,7 @@ int authenticateFinger(){
     int hsResp = recvHandshakeAck();
     if(hsResp != 0){
         #ifdef _DEBUG
-        printf("Handshake failed...\n");
+        ESP_LOGE(TAG, "Handshake failed...\n");
         #endif
         return 0;
     }
@@ -880,7 +891,7 @@ int authenticateFinger(){
     int genFileResp1 = recvGenerateFileFromImgAck();
     if(genFileResp1 != 0){
         #ifdef _DEBUG
-        printf("Failed to generate charFile for buffer 1...\n");
+        ESP_LOGE(TAG, "Failed to generate charFile for buffer 1...\n");
         #endif
         return 0;
     }
@@ -889,7 +900,7 @@ int authenticateFinger(){
     int libSrchResp = recvSearchLibraryAck();
     if(libSrchResp == 0){
         #ifdef _DEBUG
-        printf("Match found\n");
+        ESP_LOGE(TAG, "Match found\n");
         #endif
         return 1;
     }
@@ -899,7 +910,7 @@ int authenticateFinger(){
     int ledResp = recvTurnLedOffAck();
     if(ledResp != 0){
         #ifdef _DEBUG
-        printf("Failed to turn off led...\n");
+        ESP_LOGE(TAG, "Failed to turn off led...\n");
         #endif
     }
     return 0;
@@ -918,13 +929,13 @@ int getCryptoKey(uint8_t** key, int* keySize){
     int resp = recvUploadFileAck(&charFile, &size);
     if(resp != 0){
         #ifdef _DEBUG
-        printf("Received failure code, aborting test...\n");
+        ESP_LOGE(TAG, "Received failure code, aborting test...\n");
         #endif
         return -1;
     }
     if((charFile == NULL) || (size == -1)){
         #ifdef _DEBUG
-        printf("Char file failed to populate, aborting test...\n");
+        ESP_LOGE(TAG, "Char file failed to populate, aborting test...\n");
         #endif
         return -1;
     }
@@ -932,11 +943,11 @@ int getCryptoKey(uint8_t** key, int* keySize){
     size_t inSize = sizeof(uint8_t)*size;
     int result = getHashedCryptoKey(charFile, inSize, key, keySize);
     #ifdef _DEBUG
-    printf("Key hash result: %d\n", result);
+    ESP_LOGE(TAG, "Key hash result: %d\n", result);
     #endif
     if((*key == NULL) || (*keySize == -1)){
         #ifdef _DEBUG
-        printf("Hashed key failed to populate, aborting test...\n");
+        ESP_LOGE(TAG, "Hashed key failed to populate, aborting test...\n");
         #endif
         return -1;
     }
@@ -957,9 +968,11 @@ int getCryptoKey(uint8_t** key, int* keySize){
     int ledResp = recvTurnLedOffAck();
     if(ledResp != 0){
         #ifdef _DEBUG
-        printf("Failed to turn off led...\n");
+        ESP_LOGE(TAG, "Failed to turn off led...\n");
         #endif
     }
+
+    ESP_LOGI(TAG, "Sucessfully hashed crypto key");
     return 0;
 } 
 
@@ -975,8 +988,13 @@ int clearAllData(){
     int ledResp = recvTurnLedOffAck();
     if(ledResp != 0){
         #ifdef _DEBUG
-        printf("Failed to turn off led...\n");
+        ESP_LOGE(TAG, "Failed to turn off led...\n");
         #endif
     }
+    if (clrResp == 0)
+        ESP_LOGI(TAG, "Successfully cleared all data");
+    else
+        ESP_LOGE(TAG, "Failed to clear all data");
+
     return (clrResp == 0)? 0 : -1;
 }

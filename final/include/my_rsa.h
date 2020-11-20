@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#define RSA_SEND_LEN (4096 / 8)
+
 void my_rsa_init();
 void my_rsa_encrypt(uint8_t* plaintext, uint8_t* ciphertext);
 void my_rsa_decrypt(uint8_t* ciphertext, uint8_t* plaintext);

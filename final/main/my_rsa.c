@@ -17,15 +17,16 @@
 #include "freertos/semphr.h"
 #include "unity.h"
 #include "sdkconfig.h"
+#include "../include/my_rsa.h"
 
 #define PRINT_DEBUG_INFO
 
 #define KEYSIZE 4096
 
-static mbedtls_rsa_context rsa = NULL;
+static mbedtls_rsa_context my_rsa;
+static mbedtls_rsa_context client_rsa;
 
-/* Taken from openssl s_client -connect api.gigafive.com:443 -showcerts
- */
+/* // Taken from openssl s_client -connect api.gigafive.com:443 -showcerts
 static const char *rsa4096_cert = "-----BEGIN CERTIFICATE-----\n"\
     "MIIExzCCA6+gAwIBAgIBAzANBgkqhkiG9w0BAQsFADCBkjELMAkGA1UEBhMCVVMx\n"\
     "CzAJBgNVBAgMAkNBMRQwEgYDVQQHDAtTYW50YSBDbGFyYTElMCMGA1UECgwcR2ln\n"\
@@ -55,12 +56,14 @@ static const char *rsa4096_cert = "-----BEGIN CERTIFICATE-----\n"\
     "cjvvf0utMW5fNjTTxu1nnpuxZM3ifTCqZJ+9\n"\
     "-----END CERTIFICATE-----\n";
 
-/* Some random input bytes to public key encrypt */
+// Some random input bytes to public key encrypt 
 static const uint8_t pki_input[4096/8] = {
     0, 1, 4, 6, 7, 9, 33, 103, 49, 11, 56, 211, 67, 92 };
+*/
 
 /* Result of an RSA4096 operation using cert's public key
    (raw PKI, no padding/etc) */
+/*
 static const uint8_t pki_rsa4096_output[] = {
     0x91, 0x87, 0xcd, 0x04, 0x80, 0x7c, 0x8b, 0x0b,
     0x0c, 0xc0, 0x38, 0x37, 0x7a, 0xe3, 0x2c, 0x94,
@@ -127,13 +130,14 @@ static const uint8_t pki_rsa4096_output[] = {
     0x6a, 0xda, 0x07, 0x5d, 0x83, 0xfc, 0x43, 0x76,
     0x7c, 0xca, 0x8c, 0x00, 0xfc, 0xb9, 0x2c, 0x23,
 };
+*/
 
 /* Pregenerated RSA 4096 size keys using openssl */
 static const char privkey_4096_buf[] = "-----BEGIN RSA PRIVATE KEY-----\n"
                                   "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\n"
                                   "-----END RSA PRIVATE KEY-----";
 
-_Static_assert(sizeof(pki_rsa4096_output) == 4096/8, "rsa4096 output is wrong size");
+// _Static_assert(sizeof(pki_rsa4096_output) == 4096/8, "rsa4096 output is wrong size");
 
 static int myrand(void *rng_state, unsigned char *output, size_t len) {
     size_t olen;
@@ -145,45 +149,51 @@ void my_rsa_init() {
     if (isInit)
         return;
     
-    rsa = malloc(sizeof(rsa));
-    
-    mbedtls_rsa_init(&rsa, MBEDTLS_RSA_PRIVATE, 0);
-    TEST_ASSERT_EQUAL(0, mbedtls_rsa_gen_key(&rsa, myrand, NULL, KEYSIZE, 65537));
+    mbedtls_rsa_init(&my_rsa, MBEDTLS_RSA_PRIVATE, 0);
+    if (mbedtls_rsa_gen_key(&my_rsa, myrand, NULL, KEYSIZE, 65537) != 0)
+        return;
     
     mbedtls_pk_context clientkey;
     mbedtls_pk_init(&clientkey);
-    TEST_ASSERT_EQUAL(0, mbedtls_pk_parse_key(&clientkey, (const uint8_t *)privkey_4096_buf, sizeof(privkey_4096_buf), NULL, 0));
-    memcpy(&rsa, mbedtls_pk_rsa(clientkey), sizeof(mbedtls_rsa_context));
+    if (mbedtls_pk_parse_key(&clientkey, (const uint8_t *)privkey_4096_buf, sizeof(privkey_4096_buf), NULL, 0) != 0)
+        return;
+
+    memcpy(&my_rsa, mbedtls_pk_rsa(clientkey), sizeof(mbedtls_rsa_context));
     
     isInit++;
 }
 
+void my_rsa_key_exchange() {
+    
+}
+
 void my_rsa_encrypt(uint8_t* plaintext, uint8_t* ciphertext) {
-    unsigned char plaintext_buf[4096 / 8];
-    ciphertext = calloc(4096 / 8, sizeof(uint8_t));
+    unsigned char plaintext_buf[RSA_SEND_LEN];
+    ciphertext = calloc(RSA_SEND_LEN, sizeof(uint8_t));
 
-    memcpy(plaintext_buf, plaintext, strlen(plaintext));
+    memcpy(plaintext_buf, plaintext, strlen((char*)plaintext));
 
-    TEST_ASSERT_EQUAL(KEYSIZE, (int)rsa.len * 8);
-    TEST_ASSERT_EQUAL(KEYSIZE, (int)rsa.D.n * sizeof(mbedtls_mpi_uint) * 8); // The private exponent
+    TEST_ASSERT_EQUAL(KEYSIZE, (int)client_rsa.len * 8);
+    TEST_ASSERT_EQUAL(KEYSIZE, (int)client_rsa.D.n * sizeof(mbedtls_mpi_uint) * 8); // The private exponent
 
-    TEST_ASSERT_EQUAL(0, mbedtls_rsa_public(&rsa, plaintext_buf, ciphertext));
+    TEST_ASSERT_EQUAL(0, mbedtls_rsa_public(&client_rsa, plaintext_buf, ciphertext));
 }
 
 void my_rsa_decrypt(uint8_t* ciphertext, uint8_t* plaintext) {
-    unsigned char ciphertext_buf[4096 / 8];
-    plaintext = calloc(4096 / 8, sizeof(uint8_t));
+    unsigned char ciphertext_buf[RSA_SEND_LEN];
+    plaintext = calloc(RSA_SEND_LEN, sizeof(uint8_t));
 
-    memcpy(ciphertext_buf, ciphertext, strlen(ciphertext));
+    memcpy(ciphertext_buf, ciphertext, strlen((char*)ciphertext));
     
-    orig_buf[0] = 0; // Ensure that orig_buf is smaller than rsa.N
+    ciphertext_buf[0] = 0; // Ensure that orig_buf is smaller than rsa.N
 
-    TEST_ASSERT_EQUAL(KEYSIZE, (int)rsa.len * 8);
-    TEST_ASSERT_EQUAL(KEYSIZE, (int)rsa.D.n * sizeof(mbedtls_mpi_uint) * 8); // The private exponent
+    TEST_ASSERT_EQUAL(KEYSIZE, (int)my_rsa.len * 8);
+    TEST_ASSERT_EQUAL(KEYSIZE, (int)my_rsa.D.n * sizeof(mbedtls_mpi_uint) * 8); // The private exponent
 
-    TEST_ASSERT_EQUAL(0, mbedtls_rsa_private(&rsa, NULL, NULL, ciphertext_buf, plaintext));
+    TEST_ASSERT_EQUAL(0, mbedtls_rsa_private(&my_rsa, NULL, NULL, ciphertext_buf, plaintext));
 }
 
 void my_rsa_deinit() {
-    mbedtls_rsa_free(&rsa);
+    mbedtls_rsa_free(&my_rsa);
+    mbedtls_rsa_free(&client_rsa);
 }
