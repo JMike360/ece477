@@ -1,0 +1,22 @@
+{
+    "files.associations": {
+        "*.ipp": "c",
+        "array": "c",
+        "*.tcc": "c",
+        "deque": "c",
+        "list": "c",
+        "string": "c",
+        "vector": "c",
+        "optional": "c",
+        "string_view": "c",
+        "algorithm": "c",
+        "future": "c",
+        "istream": "c",
+        "limits": "c",
+        "numeric": "c",
+        "streambuf": "c",
+        "functional": "c",
+        "valarray": "c",
+        "random": "c"
+    }
+}
