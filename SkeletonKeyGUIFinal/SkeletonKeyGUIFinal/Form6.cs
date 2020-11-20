@@ -138,6 +138,8 @@ namespace SkeletonKeyGUIFinal
             if (isConnected)
             {
                 //Store Credential	    { startCodeByte, 0x04, MsgSize, [DisplayName,UserName,url,Password,], endCodeByte}; 
+                //Facebook,Rodri405@purdue.edu,www.facebook.com,Boomer1950!
+                //Addd error statement if user tries to input not the correct format
                 string MSG = textBox1.Text;
                 string end = "\n";
                 int MSGsize = MSG.Length;
@@ -153,6 +155,29 @@ namespace SkeletonKeyGUIFinal
                 port.Write(StoreCred, 0, 3);
                 port.Write(MSGByte, 0, MSGsize);
                 port.Write(endBYTE, 0, 1);
+
+                System.Threading.Thread.Sleep(2000);
+
+
+                //The ESP32 sends back the request.
+                int intBuffer;
+                intBuffer = port.BytesToRead;
+                byte[] byteBuffer = new byte[intBuffer];
+                port.Read(byteBuffer, 0, intBuffer);
+
+                string str = System.Text.Encoding.Default.GetString(byteBuffer);
+                //MessageBox.Show(cred.ToString());
+                if (str == "1\n")
+                {
+                    MessageBox.Show("Credential Stored");
+                }
+                else
+                {
+                    MessageBox.Show("Operation Failure");
+                }
+
+                
+
             }
         }
 
@@ -162,7 +187,7 @@ namespace SkeletonKeyGUIFinal
             if (isConnected)
             {
                 //Request Credential   { startCodeByte, 0x03, DisplayName size, displayName, endCodeByte};
-                string MSG = textBox1.Text; //Facebook
+                string MSG = textBox1.Text; //Facebook,Rodri405@purdue.edu,
                 string end = "\n";
                 int MSGsize = MSG.Length;
                 byte[] MSGByte = Encoding.ASCII.GetBytes(MSG);
@@ -177,13 +202,25 @@ namespace SkeletonKeyGUIFinal
                 port.Write(MSGByte, 0, MSGsize);
                 port.Write(endBYTE, 0, 1);
 
-                byte[] PasswordArray = new byte[100];
+                System.Threading.Thread.Sleep(2000);
 
 
-                int cred = port.Read(PasswordArray,0,100);
-                //string[] credArray = cred.Split(',');
-                var str = System.Text.Encoding.Default.GetString(PasswordArray);
-                MessageBox.Show(str);
+                //The ESP32 sends back the request.
+                int intBuffer;
+                intBuffer = port.BytesToRead;
+                byte[] byteBuffer = new byte[intBuffer];
+                port.Read(byteBuffer, 0, intBuffer);
+               
+                string str = System.Text.Encoding.Default.GetString(byteBuffer);
+                //MessageBox.Show(cred.ToString());
+                if (str != "0\n")
+                {
+                    MessageBox.Show(str);
+                }
+                else
+                {
+                    MessageBox.Show("Operation Failure");
+                }
 
             }
         }
@@ -220,6 +257,124 @@ namespace SkeletonKeyGUIFinal
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
+
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            //Modify
+            //Facebook,Rodri405@purdue.edu,newpassword
+            string MSG = textBox1.Text;
+            string end = "\n";
+            int MSGsize = MSG.Length;
+            byte[] MSGByte = Encoding.ASCII.GetBytes(MSG);
+            byte[] endBYTE = Encoding.ASCII.GetBytes(end);
+            byte MSGsizeByte = Convert.ToByte(MSGsize);
+
+            char startCode = '#';
+            byte startCodeByte = Convert.ToByte(startCode);
+
+
+            byte[] StoreCred = { startCodeByte, 0x08, MSGsizeByte };
+            port.Write(StoreCred, 0, 3);
+            port.Write(MSGByte, 0, MSGsize);
+            port.Write(endBYTE, 0, 1);
+
+            System.Threading.Thread.Sleep(2000);
+
+            //The ESP32 sends back the request.
+            int intBuffer;
+            intBuffer = port.BytesToRead;
+            byte[] byteBuffer = new byte[intBuffer];
+            port.Read(byteBuffer, 0, intBuffer);
+
+            string str = System.Text.Encoding.Default.GetString(byteBuffer);
+            if (str == "1\n")
+            {
+                MessageBox.Show("Operation Success");
+            }
+            else if (str == "0\n")
+            {
+                MessageBox.Show("Operation Failure");
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            //Delete
+            //Facebook,Rodri405@purdue.edu,
+            string MSG = textBox1.Text;
+            string end = "\n";
+            int MSGsize = MSG.Length;
+            byte[] MSGByte = Encoding.ASCII.GetBytes(MSG);
+            byte[] endBYTE = Encoding.ASCII.GetBytes(end);
+            byte MSGsizeByte = Convert.ToByte(MSGsize);
+
+            char startCode = '#';
+            byte startCodeByte = Convert.ToByte(startCode);
+
+
+            byte[] StoreCred = { startCodeByte, 0x06, MSGsizeByte };
+            port.Write(StoreCred, 0, 3);
+            port.Write(MSGByte, 0, MSGsize);
+            port.Write(endBYTE, 0, 1);
+
+            System.Threading.Thread.Sleep(2000);
+
+            //The ESP32 sends back the request.
+            int intBuffer;
+            intBuffer = port.BytesToRead;
+            byte[] byteBuffer = new byte[intBuffer];
+            port.Read(byteBuffer, 0, intBuffer);
+
+            string str = System.Text.Encoding.Default.GetString(byteBuffer);
+            if (str == "1\n")
+            {
+                MessageBox.Show("Operation Success");
+            }
+            else if (str == "0\n")
+            {
+                MessageBox.Show("Operation Failure");
+            }
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            //Request entries  { startCodeByte, 0x02, 0x0000, endCodeByte};
+            string MSG = textBox1.Text; //Facebook,Rodri405@purdue.edu,
+            string end = "\n";
+            int MSGsize = MSG.Length;
+            byte[] MSGByte = Encoding.ASCII.GetBytes(MSG);
+            byte[] endBYTE = Encoding.ASCII.GetBytes(end);
+            byte MSGsizeByte = Convert.ToByte(MSGsize);
+
+            char startCode = '#';
+            byte startCodeByte = Convert.ToByte(startCode);
+            char endCode = '\n';
+            byte endCodeByte = Convert.ToByte(endCode);
+            byte[] RequestEntry = { startCodeByte, 0x02, endCodeByte };
+
+            port.Write(RequestEntry, 0, 3);
+
+            System.Threading.Thread.Sleep(2000);
+
+
+            //The ESP32 sends back the request.
+            int intBuffer;
+            intBuffer = port.BytesToRead;
+            byte[] byteBuffer = new byte[intBuffer];
+            port.Read(byteBuffer, 0, intBuffer);
+
+            string str = System.Text.Encoding.Default.GetString(byteBuffer);
+            //MessageBox.Show(cred.ToString());
+            if (str != "0\n")
+            {
+                MessageBox.Show(str);
+            }
+            else
+            {
+                MessageBox.Show("Operation Failure");
+            }
 
         }
     }

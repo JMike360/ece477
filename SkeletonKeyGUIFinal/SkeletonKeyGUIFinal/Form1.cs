@@ -80,6 +80,7 @@ namespace SkeletonKeyGUIFinal
         private void button5_Click(object sender, EventArgs e)
         {
             //...Insert Code
+            openChildForm(new Form7());
             HideSubMenu();
         }
         private void button4_Click(object sender, EventArgs e)
