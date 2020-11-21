@@ -65,7 +65,6 @@ int readManifestToMemory() {
         memset(lineBuffer, '\0', sizeof(lineBuffer) / sizeof(lineBuffer[0]));
         do {
             lineBuffer[i] = fgetc(fp);
-            if(feof(fp)) return MANIFEST_SUCCESS;
         } while(lineBuffer[i++] != '\n');
         lineBuffer[i-1] = '\0';
 
@@ -74,6 +73,9 @@ int readManifestToMemory() {
         url = strtok(NULL, ",");
 
         addManifestEntry(displayName, username, url);
+        // attempt to read past EOF to set EOF flag
+        if (fgetc(fp) != EOF)
+            fseek(fp, -1, SEEK_CUR);
     } while (!feof(fp));
 
     fclose(fp);

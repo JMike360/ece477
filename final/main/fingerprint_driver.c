@@ -1,7 +1,7 @@
 #include "esp_log.h"
 #include "../include/fingerprint_driver.h"
 
-#define TAG "fingerprint"
+#define TAG "FINGERPRINT"
 
 sensor_packet* createPacket(uint8_t pid, uint16_t length, uint8_t* data, uint16_t checksum){
     sensor_packet* pkt = malloc(sizeof(sensor_packet));
@@ -187,7 +187,7 @@ int sendPacketAsByteStream(sensor_packet* pkt){
     for(int j = 0; j < i+2; j++){
         printf("0x%02x\n", byteStream[j]);
     }*/
-    int result = uart_write_bytes(PORT_NUM, byteStream, streamSize);
+    int result = uart_write_bytes(UART_NUM_2, byteStream, streamSize);
     #ifdef _DEBUG
     if(result == -1){
         printf("Parameter error when sending uart packet\n");
@@ -207,10 +207,10 @@ sensor_packet* recvPacketFromByteStream(int size){
             break;
         }
         vTaskDelay(1);
-        uart_get_buffered_data_len(PORT_NUM, (size_t*)&buflen);
+        uart_get_buffered_data_len(UART_NUM_2, (size_t*)&buflen);
         waitCnt++;
     }
-    uart_read_bytes(PORT_NUM, recv, size, 20/portTICK_RATE_MS);
+    uart_read_bytes(UART_NUM_2, recv, size, 20/portTICK_RATE_MS);
     sensor_packet* pkt = malloc(sizeof(sensor_packet));
     pkt->header  = (((uint16_t)recv[0]) << 8) | ((uint16_t)recv[1]);
     pkt->addr[0] = recv[2];
@@ -241,7 +241,7 @@ int sendHandshakePacket(){
     uint8_t data[2] = {0x17, 0x00};
     sensor_packet* hs_pkt = createPacket(PKT_PID_CMD, 0x0004, data, 0x001C);
     int result = sendPacketAsByteStream(hs_pkt);
-    uart_wait_tx_done(PORT_NUM, 100);
+    uart_wait_tx_done(UART_NUM_2, 100);
     freePacket(hs_pkt);
     return result;
 }
@@ -320,7 +320,7 @@ int sendStoreTemplatePacket(uint8_t bufferID, uint16_t pageID){
     uint16_t checksum = PKT_PID_CMD + 0x0006 + data[0] + data[1] + data[2] + data[3];
     sensor_packet* storTempPkt = createPacket(PKT_PID_CMD, 0x0006, data, checksum);
     int result = sendPacketAsByteStream(storTempPkt);
-    uart_wait_tx_done(PORT_NUM, 100);
+    uart_wait_tx_done(UART_NUM_2, 100);
     freePacket(storTempPkt);
     return result;
 }
@@ -353,7 +353,7 @@ int sendGenerateTemplatePacket(){
     uint8_t data[] = { 0x05 };
     sensor_packet* genTempPkt = createPacket(PKT_PID_CMD, 0x0003, data, 0x09);
     int result = sendPacketAsByteStream(genTempPkt);
-    uart_wait_tx_done(PORT_NUM, 100);
+    uart_wait_tx_done(UART_NUM_2, 100);
     freePacket(genTempPkt);
     return result;
 }
@@ -386,7 +386,7 @@ int sendGenerateImgPacket(){
     uint8_t data[] = { 0x01 };
     sensor_packet* genImgPkt = createPacket(PKT_PID_CMD, 0x0003, data, 0x0005);
     int result = sendPacketAsByteStream(genImgPkt);
-    uart_wait_tx_done(PORT_NUM, 100);
+    uart_wait_tx_done(UART_NUM_2, 100);
     freePacket(genImgPkt);
     return result;
 }
@@ -785,8 +785,6 @@ int recvTurnLedOffAck(){
 
 //returns 1 if enrolled fingerprint template is found, 0 otherwise
 int checkFingerEnrolled(){
-    uart_begin(PORT_NUM_2);
-
     sendLoadTemplatePacket(0x01, 0x00); //attempt to load template 0 to buffer 1
     int resp = recvLoadTemplateAck();
     
@@ -802,15 +800,13 @@ int checkFingerEnrolled(){
     if (resp == 0)
         ESP_LOGI(TAG, "Fingerprint is enrolled");
     else
-        ESP_LOGI(TAG, "FIngerprint is not enrolled");
+        ESP_LOGI(TAG, "Fingerprint is not enrolled");
 
     return (resp == 0)? 1 : 0;
 }
 
 //returns 0 on success, -1 otherwise
 int enrollFinger(int templateID){
-    uart_begin(PORT_NUM_2);
-    
     sendHandshakePacket();
     int hsResp = recvHandshakeAck();
     if(hsResp != 0){
@@ -875,8 +871,6 @@ int enrollFinger(int templateID){
 
 //returns 1 if finger matches, 0 otherwise
 int authenticateFinger(){ 
-    uart_begin(PORT_NUM_2);
-    
     sendHandshakePacket();
     int hsResp = recvHandshakeAck();
     if(hsResp != 0){
@@ -913,6 +907,8 @@ int authenticateFinger(){
         ESP_LOGE(TAG, "Failed to turn off led...\n");
         #endif
     }
+
+    ESP_LOGI(TAG, "Fingerprint authentication successful");
     return 0;
 }
 
@@ -920,8 +916,6 @@ int authenticateFinger(){
                                                //        int* keySize is a pointer whose referenced value will be assigned the digest size
                                                //returns 0 for success, -1 otherwise
 int getCryptoKey(uint8_t** key, int* keySize){
-    uart_begin(PORT_NUM_2);
-    
     uint8_t bufferID = 0x01;
     sendUploadFilePacket(bufferID);
     uint8_t* charFile = NULL;
@@ -978,8 +972,6 @@ int getCryptoKey(uint8_t** key, int* keySize){
 
 //returns 0 on success, -1 otherwise
 int clearAllData(){
-    uart_begin(PORT_NUM_2);
-    
     sendClearLibraryPacket();
     int clrResp = recvClearLibraryAck();
     

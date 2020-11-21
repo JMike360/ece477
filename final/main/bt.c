@@ -22,7 +22,7 @@
 #include "esp_spp_api.h"
 #include "../include/bt.h"
 #include "../include/cmd.h"
-#include "../include/my_rsa.h"
+// #include "../include/my_rsa.h"
 
 #include "time.h"
 #include "sys/time.h"
@@ -42,11 +42,11 @@ static const esp_spp_role_t role_slave = ESP_SPP_ROLE_SLAVE;
 static uint32_t deviceHandle=0;
 
 void btSendData(uint8_t* data) {
-    uint8_t* encrypted_data = NULL;
-    my_rsa_encrypt(data, encrypted_data);
+    // uint8_t* encrypted_data = NULL;
+    // my_rsa_encrypt(data, encrypted_data);
 
     if(deviceHandle!=0){
-        esp_spp_write(deviceHandle, RSA_SEND_LEN, encrypted_data);   
+        esp_spp_write(deviceHandle, strlen((char*)data)/*RSA_SEND_LEN*/, data/*encrypted_data*/);   
     }
 }
 
@@ -101,50 +101,50 @@ static void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
 static void esp_bt_gap_cb(esp_bt_gap_cb_event_t event, esp_bt_gap_cb_param_t *param)
 {
     switch (event) {
-    case ESP_BT_GAP_AUTH_CMPL_EVT:{
-        if (param->auth_cmpl.stat == ESP_BT_STATUS_SUCCESS) {
-            ESP_LOGI(SPP_TAG, "authentication success: %s", param->auth_cmpl.device_name);
-            esp_log_buffer_hex(SPP_TAG, param->auth_cmpl.bda, ESP_BD_ADDR_LEN);
-        } else {
-            ESP_LOGE(SPP_TAG, "authentication failed, status:%d", param->auth_cmpl.stat);
+        case ESP_BT_GAP_AUTH_CMPL_EVT:{
+            if (param->auth_cmpl.stat == ESP_BT_STATUS_SUCCESS) {
+                ESP_LOGI(SPP_TAG, "authentication success: %s", param->auth_cmpl.device_name);
+                esp_log_buffer_hex(SPP_TAG, param->auth_cmpl.bda, ESP_BD_ADDR_LEN);
+            } else {
+                ESP_LOGE(SPP_TAG, "authentication failed, status:%d", param->auth_cmpl.stat);
+            }
+            break;
         }
-        break;
-    }
-    case ESP_BT_GAP_PIN_REQ_EVT:{
-        ESP_LOGI(SPP_TAG, "ESP_BT_GAP_PIN_REQ_EVT min_16_digit:%d", param->pin_req.min_16_digit);
-        if (param->pin_req.min_16_digit) {
-            ESP_LOGI(SPP_TAG, "Input pin code: 0000 0000 0000 0000");
-            esp_bt_pin_code_t pin_code = {0};
-            esp_bt_gap_pin_reply(param->pin_req.bda, true, 16, pin_code);
-        } else {
-            ESP_LOGI(SPP_TAG, "Input pin code: 1234");
-            esp_bt_pin_code_t pin_code;
-            pin_code[0] = '1';
-            pin_code[1] = '2';
-            pin_code[2] = '3';
-            pin_code[3] = '4';
-            esp_bt_gap_pin_reply(param->pin_req.bda, true, 4, pin_code);
+        case ESP_BT_GAP_PIN_REQ_EVT:{
+            ESP_LOGI(SPP_TAG, "ESP_BT_GAP_PIN_REQ_EVT min_16_digit:%d", param->pin_req.min_16_digit);
+            if (param->pin_req.min_16_digit) {
+                ESP_LOGI(SPP_TAG, "Input pin code: 0000 0000 0000 0000");
+                esp_bt_pin_code_t pin_code = {0};
+                esp_bt_gap_pin_reply(param->pin_req.bda, true, 16, pin_code);
+            } else {
+                ESP_LOGI(SPP_TAG, "Input pin code: 1234");
+                esp_bt_pin_code_t pin_code;
+                pin_code[0] = '1';
+                pin_code[1] = '2';
+                pin_code[2] = '3';
+                pin_code[3] = '4';
+                esp_bt_gap_pin_reply(param->pin_req.bda, true, 4, pin_code);
+            }
+            break;
         }
-        break;
-    }
 
-#if (CONFIG_BT_SSP_ENABLED == true)
-    case ESP_BT_GAP_CFM_REQ_EVT:
-        ESP_LOGI(SPP_TAG, "ESP_BT_GAP_CFM_REQ_EVT Please compare the numeric value: %d", param->cfm_req.num_val);
-        esp_bt_gap_ssp_confirm_reply(param->cfm_req.bda, true);
-        break;
-    case ESP_BT_GAP_KEY_NOTIF_EVT:
-        ESP_LOGI(SPP_TAG, "ESP_BT_GAP_KEY_NOTIF_EVT passkey:%d", param->key_notif.passkey);
-        break;
-    case ESP_BT_GAP_KEY_REQ_EVT:
-        ESP_LOGI(SPP_TAG, "ESP_BT_GAP_KEY_REQ_EVT Please enter passkey!");
-        break;
-#endif
+    #if (CONFIG_BT_SSP_ENABLED == true)
+        case ESP_BT_GAP_CFM_REQ_EVT:
+            ESP_LOGI(SPP_TAG, "ESP_BT_GAP_CFM_REQ_EVT Please compare the numeric value: %d", param->cfm_req.num_val);
+            esp_bt_gap_ssp_confirm_reply(param->cfm_req.bda, true);
+            break;
+        case ESP_BT_GAP_KEY_NOTIF_EVT:
+            ESP_LOGI(SPP_TAG, "ESP_BT_GAP_KEY_NOTIF_EVT passkey:%d", param->key_notif.passkey);
+            break;
+        case ESP_BT_GAP_KEY_REQ_EVT:
+            ESP_LOGI(SPP_TAG, "ESP_BT_GAP_KEY_REQ_EVT Please enter passkey!");
+            break;
+    #endif
 
-    default: {
-        ESP_LOGI(SPP_TAG, "event: %d", event);
-        break;
-    }
+        default: {
+            ESP_LOGI(SPP_TAG, "event: %d", event);
+            break;
+        }
     }
     return;
 }
@@ -193,7 +193,7 @@ void btRegister() {
         ESP_LOGE(SPP_TAG, "%s spp register failed: %s\n", __func__, esp_err_to_name(ret));
         return;
     }
-
+    
     if ((ret = esp_spp_init(esp_spp_mode)) != ESP_OK) {
         ESP_LOGE(SPP_TAG, "%s spp init failed: %s\n", __func__, esp_err_to_name(ret));
         return;

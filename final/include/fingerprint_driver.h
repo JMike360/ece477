@@ -2,7 +2,6 @@
 #include "uart_setup.h"
 #include "my_aes.h"
 
-#define PORT_NUM PORT_NUM_2
 #define DATA_PKT_SIZE 128
 
 #define PKT_HEADER   0xEF01
@@ -44,7 +43,7 @@
 #define ACK_PWD_NO_VERIFIED 0x21
 //RX/TX pins on the feather board are labelled as 16RX - GPIO3 / 17TX - GPIO1 for the UART0 port
 
-#define _DEBUG
+// #define _DEBUG
 
 typedef struct sensor_packet {
     uint16_t header;

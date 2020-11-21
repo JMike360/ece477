@@ -33,7 +33,7 @@ int cmd_request_entries(int mode) {
     char* buffer = calloc(filesize, sizeof(char));
     fread(buffer, sizeof(char), filesize, fp);
     if (mode == UART_MODE)
-        uart_write_bytes(PORT_NUM_CMD, buffer, filesize);
+        uart_write_bytes(UART_NUM_0, buffer, filesize);
     else if (mode == BT_MODE)
         btSendData((uint8_t*) buffer);
     free(buffer);
@@ -70,7 +70,7 @@ int cmd_request_credential(char* displayName, char* username, int mode) {
     // plaintext[filesize] = '\n';
 
     if (mode == UART_MODE)
-        uart_write_bytes(PORT_NUM_CMD, buffer /*plaintext*/, filesize + 1);
+        uart_write_bytes(UART_NUM_0, buffer /*plaintext*/, filesize + 1);
     else if (mode == BT_MODE)
         btSendData((uint8_t*) buffer/*plaintext*/);
         
@@ -148,7 +148,7 @@ int cmd_delete_credential(char* displayName, char* userName) {
     return CMD_SUCCESS;
 }
 
-int cmd_unenroll_fingerprint() {
+int cmd_enroll_fingerprint() {
     if (authenticateFinger() == 0)
         return CMD_FAILURE;
 
@@ -156,6 +156,16 @@ int cmd_unenroll_fingerprint() {
         return CMD_FAILURE;
     
     if (enrollFinger(0) == -1)
+        return CMD_FAILURE;
+
+    return CMD_SUCCESS;
+}
+
+int cmd_unenroll_fingerprint() {
+    if (authenticateFinger() == 0)
+        return CMD_FAILURE;
+
+    if (clearAllData() == -1)
         return CMD_FAILURE;
 
     return CMD_SUCCESS;
@@ -200,6 +210,9 @@ void doCMD(uint8_t* data, int mode) {
         case CMD_POWER_OFF:
             running = 0;
             break;
+        case CMD_ENROLL_FINGERPRINT:
+            cmd_enroll_fingerprint();
+            break;
         case CMD_UNENROLL_FINGERPRINT:
             cmd_unenroll_fingerprint();
             break;
@@ -218,7 +231,7 @@ void doCMD(uint8_t* data, int mode) {
                 if (mode == BT_MODE)
                     btSendData((uint8_t*) toSend);
                 else if (mode == UART_MODE)
-                    uart_write_bytes(PORT_NUM_CMD, toSend, 2);
+                    uart_write_bytes(UART_NUM_0, toSend, 2);
             }
             break;
         case CMD_LED_RED:
@@ -231,6 +244,6 @@ void doCMD(uint8_t* data, int mode) {
             if (mode == BT_MODE)
                 btSendData((uint8_t*) toSend);
             else if (mode == UART_MODE)
-                uart_write_bytes(PORT_NUM_CMD, toSend, 2);
+                uart_write_bytes(UART_NUM_0, toSend, 2);
     }
 }
