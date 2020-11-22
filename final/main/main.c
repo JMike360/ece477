@@ -79,7 +79,7 @@ void app_main(void) {
     btRegister();
     btSetPairing();
     sleep(2);
-
+    
     uart_begin(UART_NUM_0);
     uart_begin(UART_NUM_2);
     // my_rsa_init();
@@ -88,10 +88,8 @@ void app_main(void) {
     ESP_LOGI(TAG, "All initialization complete");
 
     while (checkFingerEnrolled() == 0) {
-        if (enrollFinger(0) == -1) {
+        if (enrollFinger(0) == -1)
             ESP_LOGE(TAG, "Fingerprint enrollment failed");
-            return;
-        }
     }
 
     if (readManifestToMemory() == MANIFEST_FAILURE)
@@ -99,10 +97,10 @@ void app_main(void) {
 
     uint8_t* data = (uint8_t*) malloc(BUF_SIZE_MAIN);
 
-    // while(getRunning()) {
-    //     memset(data, 0, BUF_SIZE_MAIN);
-    //     readUARTCMD(data);
-    // }
+    while(getRunning()) {
+        memset(data, 0, BUF_SIZE_MAIN);
+        readUARTCMD(data);
+    }
 
     free(data);
 

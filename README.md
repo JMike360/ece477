@@ -30,7 +30,11 @@ LCD module
 | 15            | HSPI_CS0  | MicroSD CS   |
 | 16            | U2RXD     | Fingerprint Scanner TX |
 | 17            | U2TXD     | Fingerprint Scanner RX |
-
+  
+UART 0: console/debug  
+UART 1: ESP32 - GUI  
+UART 2: ESP32 - Fingerprint  
+  
 GPIO 6-11 - SPI flash  
 GPIO 34-39 - input mode only    
 [Full layout](https://microcontrollerslab.com/wp-content/uploads/2019/02/ESP32-pinout-mapping.png)  

@@ -4,7 +4,7 @@
 void uart_begin(int port){
     switch(port){
         case UART_NUM_0:
-            if(uart_is_driver_installed(UART_NUM_0)){
+            if(!uart_is_driver_installed(UART_NUM_0)){
                 uart_config_t config = {
                     .baud_rate = BAUD_RATE_IO,
                     .data_bits = UART_DATA_8_BITS,
@@ -59,4 +59,5 @@ void uart_begin(int port){
 
 void uart_end(int port){
     ESP_ERROR_CHECK(uart_driver_delete(port));
+    ESP_LOGI("UART", "Successfullly uninitialized UART %d", port);
 }
