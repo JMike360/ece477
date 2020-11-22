@@ -1,5 +1,5 @@
 #include "esp_log.h"
-#include "../include/fingerprint_driver.h"
+#include "../include/fingerprint.h"
 
 #define TAG "FINGERPRINT"
 

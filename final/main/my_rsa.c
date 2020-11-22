@@ -18,8 +18,9 @@
 #include "unity.h"
 #include "sdkconfig.h"
 #include "../include/my_rsa.h"
+#include "esp_log.h"
 
-#define PRINT_DEBUG_INFO
+#define TAG "RSA"
 
 #define KEYSIZE 4096
 
@@ -150,21 +151,29 @@ void my_rsa_init() {
         return;
     
     mbedtls_rsa_init(&my_rsa, MBEDTLS_RSA_PRIVATE, 0);
-    if (mbedtls_rsa_gen_key(&my_rsa, myrand, NULL, KEYSIZE, 65537) != 0)
+    int ret = mbedtls_rsa_gen_key(&my_rsa, myrand, NULL, KEYSIZE, 65537);
+    if (ret != 0) {
+        ESP_LOGE(TAG, "Failed to generate RSA key pair. Err code: %x", ret);
         return;
+    }
     
     mbedtls_pk_context clientkey;
     mbedtls_pk_init(&clientkey);
-    if (mbedtls_pk_parse_key(&clientkey, (const uint8_t *)privkey_4096_buf, sizeof(privkey_4096_buf), NULL, 0) != 0)
+    ret = mbedtls_pk_parse_key(&clientkey, (const uint8_t *)privkey_4096_buf, sizeof(privkey_4096_buf), NULL, 0);
+    if (ret != 0) {
+        ESP_LOGE(TAG, "Failed to parse RSA key pair. Err code: %x", ret);
         return;
+    }
 
     memcpy(&my_rsa, mbedtls_pk_rsa(clientkey), sizeof(mbedtls_rsa_context));
     
     isInit++;
+
+    ESP_LOGI(TAG, "Successfully initialized RSA context");
 }
 
 void my_rsa_key_exchange() {
-    
+    ESP_LOGI(TAG, "Successfully exchanged RSA key pair");
 }
 
 void my_rsa_encrypt(uint8_t* plaintext, uint8_t* ciphertext) {
@@ -177,6 +186,8 @@ void my_rsa_encrypt(uint8_t* plaintext, uint8_t* ciphertext) {
     TEST_ASSERT_EQUAL(KEYSIZE, (int)client_rsa.D.n * sizeof(mbedtls_mpi_uint) * 8); // The private exponent
 
     TEST_ASSERT_EQUAL(0, mbedtls_rsa_public(&client_rsa, plaintext_buf, ciphertext));
+
+    ESP_LOGI(TAG, "Successfully encrypted from %s", plaintext);
 }
 
 void my_rsa_decrypt(uint8_t* ciphertext, uint8_t* plaintext) {
@@ -191,9 +202,13 @@ void my_rsa_decrypt(uint8_t* ciphertext, uint8_t* plaintext) {
     TEST_ASSERT_EQUAL(KEYSIZE, (int)my_rsa.D.n * sizeof(mbedtls_mpi_uint) * 8); // The private exponent
 
     TEST_ASSERT_EQUAL(0, mbedtls_rsa_private(&my_rsa, NULL, NULL, ciphertext_buf, plaintext));
+
+    ESP_LOGI(TAG, "Successfully decrypted into %s", plaintext);
 }
 
 void my_rsa_deinit() {
     mbedtls_rsa_free(&my_rsa);
     mbedtls_rsa_free(&client_rsa);
+
+    ESP_LOGI(TAG, "Successfully uninitialized RSA context");
 }

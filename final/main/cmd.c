@@ -4,7 +4,7 @@
 #include "esp_log.h"
 #include "../include/bt.h"
 #include "../include/my_aes.h"
-#include "../include/fingerprint_driver.h"
+#include "../include/fingerprint.h"
 
 // one function per command
 
@@ -58,10 +58,10 @@ int cmd_request_credential(char* displayName, char* username, int mode) {
     if (getManifestEntry(displayName, username) == NULL)
         return CMD_FAILURE;
 
-    char path[256] = {'\0'};
+    char path[AES_BLOCKSIZE] = {'\0'};
     strcat(path, "/sdcard/");
     strcat(path, displayName); 
-    FILE* fp = fopen(path, "r");
+    FILE* fp = fopen(path, "rb");
     if (fp == NULL)
         return CMD_FAILURE;
     fseek(fp, 0, SEEK_END);
@@ -69,15 +69,15 @@ int cmd_request_credential(char* displayName, char* username, int mode) {
     fseek(fp, 0, SEEK_SET);
 
     char* buffer = calloc(filesize, sizeof(char));
-    char* plaintext = calloc(filesize + 1, sizeof(char));
+    char* plaintext = NULL;
     fread(buffer, sizeof(char), filesize, fp);
-    my_aes_decrypt((uint8_t*)buffer, key, (uint8_t*)plaintext);
-    plaintext[filesize] = '\n';
+    my_aes_decrypt((uint8_t*)buffer, key, (uint8_t**)&plaintext);
+    plaintext[strlen(plaintext)] = '\n';
 
     if (mode == UART_MODE)
-        uart_write_bytes(UART_NUM_0, /*buffer*/ plaintext, filesize + 1);
+        uart_write_bytes(UART_NUM_0, plaintext, strlen(plaintext));
     else if (mode == BT_MODE)
-        btSendData((uint8_t*) /*buffer*/ plaintext);
+        btSendData((uint8_t*) plaintext);
         
     free(buffer);
     free(plaintext);
@@ -88,30 +88,37 @@ int cmd_request_credential(char* displayName, char* username, int mode) {
 }
 
 int cmd_modify_credential(char* displayName, char* username, char* pw) {
-    if (authenticateFinger() == 0)
+    if (authenticateFinger() == 0) {
+        ESP_LOGE(TAG, "Failed to modify credential for %s. Fingerprint authentication failed", displayName);
         return CMD_FAILURE;
-
-    // uint8_t* key = NULL;
-    // int keysize = 0;
-    // if (getCryptoKey(&key, &keysize) == -1)
-    //     return CMD_FAILURE;
+    }
     
-    if (getManifestEntry(displayName, username) == NULL)
-        return MANIFEST_FAILURE;
+    if (getManifestEntry(displayName, username) == NULL) {
+        ESP_LOGE(TAG, "Failed to modify credential for %s. Entry does not exist", displayName);
+        return CMD_FAILURE;
+    }
+
+    uint8_t* key = NULL;
+    int keysize = 0;
+    if (getCryptoKey(&key, &keysize) == -1) {
+        ESP_LOGE(TAG, "Failed to modify credential for %s. Failed to hash AES key", displayName);
+        return CMD_FAILURE;
+    }
         
-    char path[256] = {'\0'};
+    char path[AES_BLOCKSIZE] = {'\0'};
     strcat(path, "/sdcard/");
     strcat(path, displayName);
-    FILE* fp = fopen(path, "w");
-    if (fp == NULL)
+    FILE* fp = fopen(path, "wb");
+    if (fp == NULL) {
+        ESP_LOGE(TAG, "Failed to modify credential for %s. Unable to write pw to file", displayName);
         return CMD_FAILURE;
+    }
 
-    // char* encryptedText = calloc(strlen(pw), sizeof(char));
-    // my_aes_encrypt((uint8_t*)pw, key, (uint8_t*)encryptedText);
-
-    fprintf(fp, pw /*encryptedText*/);
-    // free(key);
-    // free(encryptedText);
+    char* encryptedText = NULL;
+    my_aes_encrypt((uint8_t*)pw, key, (uint8_t**)&encryptedText);
+    fwrite(encryptedText, sizeof(*encryptedText), AES_BLOCKSIZE, fp);
+    free(key);
+    free(encryptedText);
     fclose(fp);
     ESP_LOGI(TAG, "Successfully modified credential for %s", displayName);
     return CMD_SUCCESS;
@@ -136,19 +143,20 @@ int cmd_store_credential(char* displayName, char* username, char* url, char* pw)
     }
     
     addManifestEntry(displayName, username, url);
-    char path[256] = {'\0'};
+    char path[AES_BLOCKSIZE] = {'\0'};
     strcat(path, "/sdcard/");
     strcat(path, displayName);
-    FILE* fp = fopen(path, "w");
+    FILE* fp = fopen(path, "wb");
     if (fp == NULL) {
         ESP_LOGE(TAG, "Failed to stored credential for %s. Unable to write pw to file", displayName);
         return CMD_FAILURE;
     }
 
-    char* encryptedText = calloc(strlen(pw), sizeof(char));
-    my_aes_encrypt((uint8_t*)pw, key, (uint8_t*)encryptedText);
-    fprintf(fp, /*pw*/ encryptedText);
-
+    char* encryptedText = NULL;
+    my_aes_encrypt((uint8_t*)pw, key, (uint8_t**)&encryptedText);
+    fwrite(encryptedText, sizeof(*encryptedText), AES_BLOCKSIZE, fp);
+    free(key);
+    free(encryptedText);
     fclose(fp);
     ESP_LOGI(TAG, "Successfully stored credential for %s", displayName);
     return CMD_SUCCESS;
@@ -160,7 +168,7 @@ int cmd_delete_credential(char* displayName, char* userName) {
 
     if(!removeManifestEntry(displayName, userName))
         return CMD_FAILURE;
-    char path[256] = {'\0'};
+    char path[AES_BLOCKSIZE] = {'\0'};
     strcat(path, "/sdcard/");
     strcat(path, displayName);
     remove(path);

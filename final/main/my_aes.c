@@ -3,22 +3,31 @@
 
 #define TAG "AES"
 
-void my_aes_encrypt(uint8_t* plaintext, uint8_t* key, uint8_t* ciphertext) {
+void my_aes_encrypt(uint8_t* plaintext, uint8_t* key, uint8_t** ciphertext) {
+	char plaintext_buf[256] = {0};
+	memcpy(plaintext_buf, plaintext, strlen((char*)plaintext));
+
 	uint8_t iv[16];
-	memset(iv, 0, sizeof(iv));
+	memcpy(iv, key, sizeof(iv));
+
+	*ciphertext = calloc(256, sizeof(**ciphertext));
 
 	esp_aes_context ctx;
 	esp_aes_init( &ctx );
 	esp_aes_setkey( &ctx, key, 256 );
 
-	esp_aes_crypt_cbc( &ctx, ESP_AES_ENCRYPT, sizeof(plaintext), iv, (uint8_t*)plaintext, (uint8_t*)ciphertext );
-	
-	esp_aes_free( &ctx );
+	int ret = esp_aes_crypt_cbc( &ctx, ESP_AES_ENCRYPT, 256, iv, (uint8_t*)plaintext, (uint8_t*)*ciphertext );
+	if (ret == 0)
+		ESP_LOGI(TAG, "Successfully encrypted %s", plaintext);
+	else if (ret == ERR_ESP_AES_INVALID_INPUT_LENGTH)
+		ESP_LOGE(TAG, "Failed to encrypt %s due to invalid length", plaintext);
 
-	ESP_LOGI(TAG, "Successfully encrypted %s into %s", plaintext, ciphertext);
+	esp_aes_free( &ctx );
 }
 
-void my_aes_decrypt(uint8_t* ciphertext, uint8_t* key, uint8_t* plaintext) {
+void my_aes_decrypt(uint8_t* ciphertext, uint8_t* key, uint8_t** plaintext) {
+	*plaintext = calloc(256, sizeof(**plaintext));
+	
 	uint8_t iv[16];
 	memcpy(iv, key, sizeof(iv));
 
@@ -26,11 +35,13 @@ void my_aes_decrypt(uint8_t* ciphertext, uint8_t* key, uint8_t* plaintext) {
 	esp_aes_init( &ctx );
 	esp_aes_setkey( &ctx, key, 256 );
 
-	esp_aes_crypt_cbc( &ctx, ESP_AES_DECRYPT, sizeof(ciphertext), iv, (uint8_t*)ciphertext, (uint8_t*)plaintext );
+	int ret = esp_aes_crypt_cbc( &ctx, ESP_AES_DECRYPT, 256, iv, (uint8_t*)ciphertext, (uint8_t*)*plaintext );
+	if (ret == 0)
+		ESP_LOGI(TAG, "Successfully decrypted into %s", *plaintext);
+	else if (ret == ERR_ESP_AES_INVALID_INPUT_LENGTH)
+		ESP_LOGE(TAG, "Failed to decrypt due to invalid length");
 
 	esp_aes_free( &ctx );
-
-	ESP_LOGI(TAG, "Successfully decrypted %s into %s", ciphertext, plaintext);
 }
 
 int getHashedCryptoKey(uint8_t* input, size_t inputSize, uint8_t** key, int* keySize){

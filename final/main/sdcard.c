@@ -10,7 +10,7 @@
 #include "driver/sdmmc_host.h"
 #include <string.h>
 
-#define TAG "SD-CARD"
+#define TAG "SDCARD"
 
 sdmmc_card_t* sdcard = NULL;
 static uint8_t spi_init_flag = 0x0;

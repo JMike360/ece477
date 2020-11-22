@@ -12,7 +12,7 @@
 #include "../include/bt.h"
 #include "../include/sdcard.h"
 #include "../include/manifest.h"
-#include "../include/fingerprint_driver.h"
+#include "../include/fingerprint.h"
 // #include "../include/my_rsa.h"
 
 #define BUF_SIZE_MAIN (1024)
@@ -104,6 +104,7 @@ void app_main(void) {
 
     // free(data);
 
+    cmd_delete_credential("aes", "andrew-gan");
     cmd_store_credential("aes", "andrew-gan", "haha.com", "seemslikeitwontbesnowinganytimesoon123");
     cmd_request_credential("aes", "andrew-gan", UART_MODE);
 

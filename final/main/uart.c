@@ -1,5 +1,7 @@
-#include "../include/uart_setup.h"
+#include "../include/uart.h"
 #include "esp_log.h"
+
+#define TAG "UART"
 
 void uart_begin(int port){
     switch(port){
@@ -54,10 +56,10 @@ void uart_begin(int port){
         default:
             break;
     }
-    ESP_LOGI("UART", "Successfullly initialized UART %d", port);
+    ESP_LOGI(TAG, "Successfullly initialized UART %d", port);
 }
 
 void uart_end(int port){
     ESP_ERROR_CHECK(uart_driver_delete(port));
-    ESP_LOGI("UART", "Successfullly uninitialized UART %d", port);
+    ESP_LOGI(TAG, "Successfullly uninitialized UART %d", port);
 }

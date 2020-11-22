@@ -1,5 +1,5 @@
 #include "esp_system.h"
-#include "uart_setup.h"
+#include "uart.h"
 #include "my_aes.h"
 
 #define DATA_PKT_SIZE 128
