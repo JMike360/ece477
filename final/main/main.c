@@ -95,14 +95,17 @@ void app_main(void) {
     if (readManifestToMemory() == MANIFEST_FAILURE)
         return;
 
-    uint8_t* data = (uint8_t*) malloc(BUF_SIZE_MAIN);
+    // uint8_t* data = (uint8_t*) malloc(BUF_SIZE_MAIN);
 
-    while(getRunning()) {
-        memset(data, 0, BUF_SIZE_MAIN);
-        readUARTCMD(data);
-    }
+    // while(getRunning()) {
+    //     memset(data, 0, BUF_SIZE_MAIN);
+    //     readUARTCMD(data);
+    // }
 
-    free(data);
+    // free(data);
+
+    cmd_store_credential("aes", "andrew-gan", "haha.com", "seemslikeitwontbesnowinganytimesoon123");
+    cmd_request_credential("aes", "andrew-gan", UART_MODE);
 
     if (writeManifestToFile() == MANIFEST_FAILURE)
         return;

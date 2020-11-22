@@ -50,7 +50,7 @@ int readManifestToMemory() {
 
     FILE* fp = fopen(MANIFEST_FILENAME, "r");
     if (fp == NULL) {
-        ESP_LOGI(TAG, "Manifest file does not exist yet");
+        // ESP_LOGI(TAG, "Manifest file does not exist yet");
         return MANIFEST_SUCCESS;
     }
 
@@ -80,7 +80,7 @@ int readManifestToMemory() {
 
     fclose(fp);
 
-    ESP_LOGI(TAG, "Successfully read manifest to memory");
+    // ESP_LOGI(TAG, "Successfully read manifest to memory");
     return MANIFEST_SUCCESS;
 }
 
@@ -117,7 +117,7 @@ int writeManifestToFile() {
     }
     fclose(fp);
 
-    ESP_LOGI(TAG, "Successfully written manifest to file");
+    // ESP_LOGI(TAG, "Successfully written manifest to file");
     return MANIFEST_SUCCESS;
 }
 
@@ -148,7 +148,7 @@ int deallocateManifest() {
     free(content);
     content = NULL;
 
-    ESP_LOGI(TAG, "Successfully deallocated manifest on memory");
+    // ESP_LOGI(TAG, "Successfully deallocated manifest on memory");
     return MANIFEST_SUCCESS;
 }
 
@@ -190,7 +190,7 @@ int addManifestEntry(char* displayName, char* username, char* url) {
     strcpy(newEntry->username, username);
     strcpy(newEntry->url, url);
 
-    ESP_LOGI(TAG, "Successfully added manifest entry");
+    // ESP_LOGI(TAG, "Successfully added manifest entry");
     return MANIFEST_SUCCESS;
 }
 
@@ -217,10 +217,12 @@ ManifestEntry* getManifestEntry(char* displayName, char* userName) {
             break;
         currEntry = currEntry->next;
     };
+    /*
     if (currEntry != NULL)
         ESP_LOGI(TAG, "Successfully retrieved manifest entry");
     else
         ESP_LOGI(TAG, "Failed to retrieve manifest entry. Not found");
+    */
     
     return currEntry;
 }
@@ -266,11 +268,11 @@ int removeManifestEntry(char* displayName, char* userName) {
                 content->tail = prevEntry;
             free(currEntry);
             content->numEntry -= 1;
-            ESP_LOGI(TAG, "Successfully removed manifest entry");
+            // ESP_LOGI(TAG, "Successfully removed manifest entry");
             return MANIFEST_SUCCESS;
         }
     };
 
-    ESP_LOGI(TAG, "Failed to remove manifest entry");
+    // ESP_LOGI(TAG, "Failed to remove manifest entry");
     return MANIFEST_FAILURE;
 }

@@ -46,22 +46,22 @@ bool isEqual(sensor_packet* pkt1, sensor_packet* pkt2){
 
 void printPacket(sensor_packet* pkt){
     #ifdef _DEBUG
-    ESP_LOGI(TAG, "Header: 0x%04x\n", pkt->header);
-    ESP_LOGI(TAG, "Addr: 0x%02x 0x%02x 0x%02x 0x%02x\n", pkt->addr[0], pkt->addr[1], pkt->addr[2], pkt->addr[3]);
-    ESP_LOGI(TAG, "PID: 0x%02x\n", pkt->pid);
-    ESP_LOGI(TAG, "Length: 0x%04x\n", pkt->length);
+    ESP_LOGI(TAG, "Header: 0x%04x", pkt->header);
+    ESP_LOGI(TAG, "Addr: 0x%02x 0x%02x 0x%02x 0x%02x", pkt->addr[0], pkt->addr[1], pkt->addr[2], pkt->addr[3]);
+    ESP_LOGI(TAG, "PID: 0x%02x", pkt->pid);
+    ESP_LOGI(TAG, "Length: 0x%04x", pkt->length);
     ESP_LOGI(TAG, "Data:");
     for(int i = 0; i < pkt->length-2; i++){
         if((i%8)==0){
-            ESP_LOGI(TAG, "\n");
+            ESP_LOGI(TAG, "");
         }
         else{
             ESP_LOGI(TAG, " ");
         }
         ESP_LOGI(TAG, "0x%02x", pkt->data[i]);
     }
-    ESP_LOGI(TAG, "\n");
-    ESP_LOGI(TAG, "Checksum: 0x%04x\n", pkt->checksum);
+    ESP_LOGI(TAG, "");
+    ESP_LOGI(TAG, "Checksum: 0x%04x", pkt->checksum);
     #endif
 }
 
@@ -69,85 +69,85 @@ void processResponse(uint8_t response){
     #ifdef _DEBUG
     switch(response){
         case ACK_CMD_COMPLETE:
-            ESP_LOGI(TAG, "Command completed successfully\n");
+            ESP_LOGI(TAG, "Command completed successfully");
             break;
         case ACK_RCV_ERR:
-            ESP_LOGI(TAG, "Error receiving packet\n");
+            ESP_LOGI(TAG, "Error receiving packet");
             break;
         case ACK_NO_FINGER:
-            ESP_LOGI(TAG, "No finger detected on sensor\n");
+            ESP_LOGI(TAG, "No finger detected on sensor");
             break;
         case ACK_ENROLL_FAIL:
-            ESP_LOGI(TAG, "Failed to enroll fingerprint\n");
+            ESP_LOGI(TAG, "Failed to enroll fingerprint");
             break;
         case ACK_IMG_UNCLEAR:
-            ESP_LOGI(TAG, "Failed to generate char file - Image unclear\n");
+            ESP_LOGI(TAG, "Failed to generate char file - Image unclear");
             break;
         case ACK_IMG_SMALL:
-            ESP_LOGI(TAG, "Failed to generate char file - Image too small\n");
+            ESP_LOGI(TAG, "Failed to generate char file - Image too small");
             break;
         case ACK_NO_MATCH:
-            ESP_LOGI(TAG, "Finger does not match\n");
+            ESP_LOGI(TAG, "Finger does not match");
             break;
         case ACK_MATCH_NOT_FOUND:
-            ESP_LOGI(TAG, "Failed to find matching finger in library\n");
+            ESP_LOGI(TAG, "Failed to find matching finger in library");
             break;
         case ACK_CHAR_MERGE_ERR:
-            ESP_LOGI(TAG, "Failed to merge char files\n");
+            ESP_LOGI(TAG, "Failed to merge char files");
             break;
         case ACK_BAD_ADDR:
-            ESP_LOGI(TAG, "PageID address is out of range for finger library\n");
+            ESP_LOGI(TAG, "PageID address is out of range for finger library");
             break;
         case ACK_TEMPLATE_ERR:
-            ESP_LOGI(TAG, "Error reading template from library, or invalid template\n");
+            ESP_LOGI(TAG, "Error reading template from library, or invalid template");
             break;
         case ACK_TEMP_UPLOAD_ERR:
-            ESP_LOGI(TAG, "Error uploading template\n");
+            ESP_LOGI(TAG, "Error uploading template");
             break;
         case ACK_NO_DATA_ACCEPT:
-            ESP_LOGI(TAG, "Sensor is not ready for additional data packets\n");
+            ESP_LOGI(TAG, "Sensor is not ready for additional data packets");
             break;
         case ACK_IMG_UPLOAD_ERR:
-            ESP_LOGI(TAG, "Error uploading image\n");
+            ESP_LOGI(TAG, "Error uploading image");
             break;
         case ACK_DEL_TEMP_FAIL:
-            ESP_LOGI(TAG, "Failed to delete requested template\n");
+            ESP_LOGI(TAG, "Failed to delete requested template");
             break;
         case ACK_CLEAR_LIB_FAIL:
-            ESP_LOGI(TAG, "Failed to clear fingerprint library\n");
+            ESP_LOGI(TAG, "Failed to clear fingerprint library");
             break;
         case ACK_BAD_PASSWORD:
-            ESP_LOGI(TAG, "Operation failed due to incorrect password\n");
+            ESP_LOGI(TAG, "Operation failed due to incorrect password");
             break;
         case ACK_BAD_PRIMARY_IMG:
-            ESP_LOGI(TAG, "Failed to generate image - primary image invalid\n");
+            ESP_LOGI(TAG, "Failed to generate image - primary image invalid");
             break;
         case ACK_FLASH_WRITE_ERR:
-            ESP_LOGI(TAG, "Error when writing to flash\n");
+            ESP_LOGI(TAG, "Error when writing to flash");
             break;
         case ACK_NO_DEF_ERR:
-            ESP_LOGI(TAG, "Undefined error\n");
+            ESP_LOGI(TAG, "Undefined error");
             break;
         case ACK_INVALID_REG:
-            ESP_LOGI(TAG, "Invalid register number\n");
+            ESP_LOGI(TAG, "Invalid register number");
             break;
         case ACK_BAD_REG_CONFIG:
-            ESP_LOGI(TAG, "Incorrect register configuration\n");
+            ESP_LOGI(TAG, "Incorrect register configuration");
             break;
         case ACK_BAD_NOTEPAD_PG:
-            ESP_LOGI(TAG, "Invalid notepad page number\n");
+            ESP_LOGI(TAG, "Invalid notepad page number");
             break;
         case ACK_COMM_PORT_FAIL:
-            ESP_LOGI(TAG, "Failed to operate the communication port\n");
+            ESP_LOGI(TAG, "Failed to operate the communication port");
             break;
         case ACK_ADDR_ERR:
-            ESP_LOGI(TAG, "Address error\n");
+            ESP_LOGI(TAG, "Address error");
             break;
         case ACK_PWD_NO_VERIFIED:
-            ESP_LOGI(TAG, "Error - passowrd not verified\n");
+            ESP_LOGI(TAG, "Error - passowrd not verified");
             break;
         default:
-            ESP_LOGI(TAG, "Error - unknown response code\n");
+            ESP_LOGI(TAG, "Error - unknown response code");
             break;
     }
     #endif
@@ -164,7 +164,7 @@ int sendPacketAsByteStream(sensor_packet* pkt){
                         sizeof(pkt->length) +
                         sizeof(uint8_t)*(pkt->length);
     #ifdef _DEBUG
-    ESP_LOGI(TAG, "Stream size: %d\n", (int)streamSize);
+    ESP_LOGI(TAG, "Stream size: %d", (int)streamSize);
     #endif
     char* byteStream = malloc(streamSize);
     byteStream[0] = (const char)(pkt->header >> 8);
@@ -183,14 +183,14 @@ int sendPacketAsByteStream(sensor_packet* pkt){
     }
     byteStream[i] = (const char)(pkt->checksum >> 8);
     byteStream[i+1] = (const char)(pkt->checksum & 0xFF);
-    /*ESP_LOGI(TAG, "Bytes sent:\n");
+    /*ESP_LOGI(TAG, "Bytes sent:");
     for(int j = 0; j < i+2; j++){
-        ESP_LOGI(TAG, "0x%02x\n", byteStream[j]);
+        ESP_LOGI(TAG, "0x%02x", byteStream[j]);
     }*/
     int result = uart_write_bytes(UART_NUM_2, byteStream, streamSize);
     #ifdef _DEBUG
     if(result == -1){
-        ESP_LOGI(TAG, "Parameter error when sending uart packet\n");
+        ESP_LOGI(TAG, "Parameter error when sending uart packet");
     }
     #endif
     free(byteStream);
@@ -203,7 +203,7 @@ sensor_packet* recvPacketFromByteStream(int size){
     int waitCnt = 0;
     while(buflen < size){
         if(waitCnt >= 1000){
-            ESP_LOGI(TAG, "Buffer timed out, continuing with buffer length %d...\n", buflen);
+            ESP_LOGI(TAG, "Buffer timed out, continuing with buffer length %d...", buflen);
             break;
         }
         vTaskDelay(1);
@@ -229,7 +229,7 @@ sensor_packet* recvPacketFromByteStream(int size){
     pkt->checksum = (((uint16_t)recv[i]) << 8) | ((uint16_t)recv[i+1]);
 
     /*for(int j = 0; j < size; j++){
-        ESP_LOGI(TAG, "recv: 0x%02x\n", recv[j]);
+        ESP_LOGI(TAG, "recv: 0x%02x", recv[j]);
     }*/
     free(recv);
     return pkt;
@@ -255,7 +255,7 @@ int recvHandshakeAck(){
     
     sensor_packet* expected = createPacket(0x07, 0x0003, pkt->data, pkt->checksum);
     if(!isEqual(pkt, expected)){
-        ESP_LOGI(TAG, "Error - received packet does not match expected format\n");
+        ESP_LOGI(TAG, "Error - received packet does not match expected format");
         response = -1;
     }
 
@@ -279,7 +279,7 @@ int sendSetSystemParamPacket(uint8_t paramNumber, uint8_t content){
 }
 
 int recvSetSystemParamAck(){
-    ESP_LOGI(TAG, "Not implemented\n");
+    ESP_LOGI(TAG, "Not implemented");
     return 0;
 }
 
@@ -304,7 +304,7 @@ int recvReadSystemParamAck(){
     processResponse(response);
 
     if(!isEqual(pkt, expected)){
-        ESP_LOGI(TAG, "Error - received packet does not match expected format\n");
+        ESP_LOGI(TAG, "Error - received packet does not match expected format");
         response = -1;
     }
 
@@ -328,7 +328,7 @@ int sendStoreTemplatePacket(uint8_t bufferID, uint16_t pageID){
 int recvStoreTemplateAck(){
     sensor_packet* pkt = recvPacketFromByteStream(12);
     if(pkt == NULL){
-        ESP_LOGI(TAG, "Error: null packet received\n");
+        ESP_LOGI(TAG, "Error: null packet received");
         return -1;
     }
     printPacket(pkt);
@@ -338,7 +338,7 @@ int recvStoreTemplateAck(){
     
     sensor_packet* expected = createPacket(PKT_PID_ACK, 0x0003, pkt->data, pkt->checksum);
     if(!isEqual(pkt, expected)){
-        ESP_LOGI(TAG, "Error - received packet does not match expected format\n");
+        ESP_LOGI(TAG, "Error - received packet does not match expected format");
         response = -1;
     }
 
@@ -361,7 +361,7 @@ int sendGenerateTemplatePacket(){
 int recvGenerateTemplateAck(){
     sensor_packet* pkt = recvPacketFromByteStream(12);
     if(pkt == NULL){
-        ESP_LOGI(TAG, "Error: null packet received\n");
+        ESP_LOGI(TAG, "Error: null packet received");
         return -1;
     }
     printPacket(pkt);
@@ -371,7 +371,7 @@ int recvGenerateTemplateAck(){
     
     sensor_packet* expected = createPacket(PKT_PID_ACK, 0x0003, pkt->data, pkt->checksum);
     if(!isEqual(pkt, expected)){
-        ESP_LOGI(TAG, "Error - received packet does not match expected format\n");
+        ESP_LOGI(TAG, "Error - received packet does not match expected format");
         response = -1;
     }
 
@@ -394,7 +394,7 @@ int sendGenerateImgPacket(){
 int recvGenerateImgAck(){
     sensor_packet* pkt = recvPacketFromByteStream(12);
     if(pkt == NULL){
-        ESP_LOGI(TAG, "Error: null packet received\n");
+        ESP_LOGI(TAG, "Error: null packet received");
         return -1;
     }
     printPacket(pkt);
@@ -404,7 +404,7 @@ int recvGenerateImgAck(){
     
     sensor_packet* expected = createPacket(PKT_PID_ACK, 0x0003, pkt->data, pkt->checksum);
     if(!isEqual(pkt, expected)){
-        ESP_LOGI(TAG, "Error - received packet does not match expected format\n");
+        ESP_LOGI(TAG, "Error - received packet does not match expected format");
         response = -1;
     }
 
@@ -424,7 +424,7 @@ int captureImage(int timeout_ms){
         cnt++;
     }
     #ifdef _DEBUG
-    if(response != ACK_CMD_COMPLETE) ESP_LOGI(TAG, "Error - request timed out\n");
+    if(response != ACK_CMD_COMPLETE) ESP_LOGI(TAG, "Error - request timed out");
     #endif
 
     return (response == ACK_CMD_COMPLETE)? 0 : -1;
@@ -447,7 +447,7 @@ int sendGenerateFileFromImgPacket(uint8_t bufferID){
 int recvGenerateFileFromImgAck(){
     sensor_packet* pkt = recvPacketFromByteStream(12);
     if(pkt == NULL){
-        ESP_LOGI(TAG, "Error: null packet received\n");
+        ESP_LOGI(TAG, "Error: null packet received");
         return -1;
     }
     printPacket(pkt);
@@ -457,7 +457,7 @@ int recvGenerateFileFromImgAck(){
     
     sensor_packet* expected = createPacket(PKT_PID_ACK, 0x0003, pkt->data, pkt->checksum);
     if(!isEqual(pkt, expected)){
-        ESP_LOGI(TAG, "Error - received packet does not match expected format\n");
+        ESP_LOGI(TAG, "Error - received packet does not match expected format");
         response = -1;
     }
 
@@ -484,7 +484,7 @@ int sendSearchLibraryPacket(uint8_t bufferID, uint16_t startPage, uint16_t n){
 int recvSearchLibraryAck(){
     sensor_packet* pkt = recvPacketFromByteStream(16);
     if(pkt == NULL){
-        ESP_LOGI(TAG, "Error: null packet received\n");
+        ESP_LOGI(TAG, "Error: null packet received");
         return -1;
     }
     printPacket(pkt);
@@ -495,10 +495,10 @@ int recvSearchLibraryAck(){
     sensor_packet* expected = createPacket(PKT_PID_ACK, 0x0007, pkt->data, pkt->checksum);
     if(!isEqual(pkt, expected)){
         if(response == 0x09){
-            ESP_LOGI(TAG, "No match found.\n");
+            ESP_LOGI(TAG, "No match found.");
         }
         else{
-            ESP_LOGI(TAG, "Error - received packet does not match expected format\n");
+            ESP_LOGI(TAG, "Error - received packet does not match expected format");
         }
         freePacket(expected);
         freePacket(pkt);
@@ -506,7 +506,7 @@ int recvSearchLibraryAck(){
     }
     uint16_t pageID = (((uint16_t)pkt->data[1]) << 8) + ((uint16_t)pkt->data[2]);
     uint16_t matchScore = (((uint16_t)pkt->data[3]) << 8) + ((uint16_t)pkt->data[4]);
-    ESP_LOGI(TAG, "Matching finger found with ID: %d and match score: %d\n", pageID, matchScore);
+    ESP_LOGI(TAG, "Matching finger found with ID: %d and match score: %d", pageID, matchScore);
 
     freePacket(expected); 
     freePacket(pkt);
@@ -531,7 +531,7 @@ int sendLoadTemplatePacket(uint8_t bufferID, uint16_t pageID){
 int recvLoadTemplateAck(){
     sensor_packet* pkt = recvPacketFromByteStream(12);
     if(pkt == NULL){
-        ESP_LOGI(TAG, "Error: null packet received\n");
+        ESP_LOGI(TAG, "Error: null packet received");
         return -1;
     }
     printPacket(pkt);
@@ -543,13 +543,13 @@ int recvLoadTemplateAck(){
     sensor_packet* expected = createPacket(PKT_PID_ACK, 0x0003, data, checksum);
     if(!isEqual(pkt, expected)){
         if(response == 0x0C){
-            ESP_LOGI(TAG, "Error loading template, template may be invalid.\n");
+            ESP_LOGI(TAG, "Error loading template, template may be invalid.");
         }
         else if (response == 0x0B){
-            ESP_LOGI(TAG, "Fingerprint ID is outside of template library range.\n");
+            ESP_LOGI(TAG, "Fingerprint ID is outside of template library range.");
         }
         else{
-            ESP_LOGI(TAG, "Error - received packet does not match expected format\n");
+            ESP_LOGI(TAG, "Error - received packet does not match expected format");
         }
         response = -1;
     }
@@ -573,7 +573,7 @@ int sendClearLibraryPacket(){
 int recvClearLibraryAck(){
     sensor_packet* pkt = recvPacketFromByteStream(12);
     if(pkt == NULL){
-        ESP_LOGI(TAG, "Error: null packet received\n");
+        ESP_LOGI(TAG, "Error: null packet received");
         return -1;
     }
     printPacket(pkt);
@@ -585,10 +585,10 @@ int recvClearLibraryAck(){
     sensor_packet* expected = createPacket(PKT_PID_ACK, 0x0003, data, checksum);
     if(!isEqual(pkt, expected)){
         if(response == 0x11){
-            ESP_LOGI(TAG, "Failed to clear fingerprint library.\n");
+            ESP_LOGI(TAG, "Failed to clear fingerprint library.");
         }
         else{
-            ESP_LOGI(TAG, "Error - received packet does not match expected format\n");
+            ESP_LOGI(TAG, "Error - received packet does not match expected format");
         }
         response = -1;
     }
@@ -612,7 +612,7 @@ int sendCheckMatchPacket(){
 int recvCkeckMatchAck(){
     sensor_packet* pkt = recvPacketFromByteStream(14);
     if(pkt == NULL){
-        ESP_LOGI(TAG, "Error: null packet received\n");
+        ESP_LOGI(TAG, "Error: null packet received");
         return -1;
     }
     printPacket(pkt);
@@ -624,10 +624,10 @@ int recvCkeckMatchAck(){
     sensor_packet* expected = createPacket(PKT_PID_ACK, 0x0003, data, checksum);
     if(!isEqual(pkt, expected)){
         if(response == 0x11){
-            ESP_LOGI(TAG, "Failed to clear fingerprint library.\n");
+            ESP_LOGI(TAG, "Failed to clear fingerprint library.");
         }
         else{
-            ESP_LOGI(TAG, "Error - received packet does not match expected format\n");
+            ESP_LOGI(TAG, "Error - received packet does not match expected format");
         }
        response = -1;
     }
@@ -673,7 +673,7 @@ int recvUploadFileAck(uint8_t** charFile, int* size){
     *size = (int)refSize;
     int fileIdx = 0;
 
-    ESP_LOGI(TAG, "Received %d total packets, %d data packets and 1 ack packet\n", idx+1, idx);
+    ESP_LOGI(TAG, "Received %d total packets, %d data packets and 1 ack packet", idx+1, idx);
     uint8_t response = 0;
     for(int i = 0; i <= idx; i++){
         printPacket(pktList[i]);
@@ -685,10 +685,10 @@ int recvUploadFileAck(uint8_t** charFile, int* size){
             sensor_packet* expected = createPacket(PKT_PID_ACK, 0x0003, data, checksum);
             if(!isEqual(pktList[i], expected)){
                 if(response == 0x0F){
-                    ESP_LOGI(TAG, "Error - Failed to transfer char file.\n");
+                    ESP_LOGI(TAG, "Error - Failed to transfer char file.");
                 }
                 else{
-                    ESP_LOGI(TAG, "Error - received packet does not match expected format\n");
+                    ESP_LOGI(TAG, "Error - received packet does not match expected format");
                 }
                 response = -1;
             }
@@ -697,7 +697,7 @@ int recvUploadFileAck(uint8_t** charFile, int* size){
         else{
             for(int pktIdx = 0; pktIdx < (pktList[i]->length-2); pktIdx++){
                 if(fileIdx >= *size){
-                    ESP_LOGI(TAG, "ERROR --- charFile expected size exceeded ---------------------------------------\n");
+                    ESP_LOGI(TAG, "ERROR --- charFile expected size exceeded ---------------------------------------");
                     break;
                 }
                 (*charFile)[fileIdx] = pktList[i]->data[pktIdx];
@@ -728,7 +728,7 @@ int sendTurnLedOnPacket(){
 int recvTurnLedOnAck(){
     sensor_packet* pkt = recvPacketFromByteStream(12);
     if(pkt == NULL){
-        ESP_LOGI(TAG, "Error: null packet received\n");
+        ESP_LOGI(TAG, "Error: null packet received");
         return -1;
     }
     printPacket(pkt);
@@ -739,7 +739,7 @@ int recvTurnLedOnAck(){
     uint16_t checksum = 0x000A;
     sensor_packet* expected = createPacket(PKT_PID_ACK, 0x0003, data, checksum);
     if(!isEqual(pkt, expected)){
-        ESP_LOGI(TAG, "Error - received packet does not match expected format\n");
+        ESP_LOGI(TAG, "Error - received packet does not match expected format");
         response = -1;
     }
 
@@ -761,7 +761,7 @@ int sendTurnLedOffPacket(){
 int recvTurnLedOffAck(){
     sensor_packet* pkt = recvPacketFromByteStream(12);
     if(pkt == NULL){
-        ESP_LOGI(TAG, "Error: null packet received\n");
+        ESP_LOGI(TAG, "Error: null packet received");
         return -1;
     }
     printPacket(pkt);
@@ -772,7 +772,7 @@ int recvTurnLedOffAck(){
     uint16_t checksum = 0x000A;
     sensor_packet* expected = createPacket(PKT_PID_ACK, 0x0003, data, checksum);
     if(!isEqual(pkt, expected)){
-        ESP_LOGI(TAG, "Error - received packet does not match expected format\n");
+        ESP_LOGI(TAG, "Error - received packet does not match expected format");
         response = -1;
     }
 
@@ -792,7 +792,7 @@ int checkFingerEnrolled(){
     sendTurnLedOffPacket();
     int ledResp = recvTurnLedOffAck();
     if(ledResp != 0){
-        ESP_LOGE(TAG, "Failed to turn off led...\n");
+        ESP_LOGE(TAG, "Failed to turn off led...");
     }
 
     if (resp == 0)
@@ -808,7 +808,7 @@ int enrollFinger(int templateID){
     sendHandshakePacket();
     int hsResp = recvHandshakeAck();
     if(hsResp != 0){
-        ESP_LOGE(TAG, "Handshake failed...\n");
+        ESP_LOGE(TAG, "Handshake failed...");
         return -1;
     }
 
@@ -816,7 +816,7 @@ int enrollFinger(int templateID){
     sendGenerateFileFromImgPacket(0x01);
     int genFileResp1 = recvGenerateFileFromImgAck();
     if(genFileResp1 != 0){
-        ESP_LOGE(TAG, "Failed to generate charFile for buffer 1...\n");
+        ESP_LOGE(TAG, "Failed to generate charFile for buffer 1...");
         return -1;
     }
 
@@ -824,14 +824,14 @@ int enrollFinger(int templateID){
     sendGenerateFileFromImgPacket(0x02);
     int genFileResp2 = recvGenerateFileFromImgAck();
     if(genFileResp2 != 0){
-        ESP_LOGE(TAG, "Failed to generate charFile for buffer 2...\n");
+        ESP_LOGE(TAG, "Failed to generate charFile for buffer 2...");
         return -1;
     }
 
     sendGenerateTemplatePacket();
     int genTmpResp = recvGenerateTemplateAck();
     if(genTmpResp != 0){
-        ESP_LOGE(TAG, "Failed to generate template...\n");
+        ESP_LOGE(TAG, "Failed to generate template...");
         return -1;
     }
 
@@ -839,7 +839,7 @@ int enrollFinger(int templateID){
     sendStoreTemplatePacket(0x01, pageID);
     int storResp = recvStoreTemplateAck();
     if(storResp != 0){
-        ESP_LOGE(TAG, "Failed to store template...\n");
+        ESP_LOGE(TAG, "Failed to store template...");
         return -1;
     }
 
@@ -847,7 +847,7 @@ int enrollFinger(int templateID){
     sendTurnLedOffPacket();
     int ledResp = recvTurnLedOffAck();
     if(ledResp != 0){
-        ESP_LOGE(TAG, "Failed to turn off led...\n");
+        ESP_LOGE(TAG, "Failed to turn off led...");
     }
 
     ESP_LOGI(TAG, "Fingerprint enrollment successful");
@@ -864,14 +864,14 @@ int authenticateFinger(){
         sendHandshakePacket();
         int hsResp = recvHandshakeAck();
         if(hsResp != 0){
-            ESP_LOGE(TAG, "Handshake failed...\n");
+            ESP_LOGE(TAG, "Handshake failed...");
         }
 
         captureImage(1000);
         sendGenerateFileFromImgPacket(0x01);
         int genFileResp1 = recvGenerateFileFromImgAck();
         if(genFileResp1 != 0){
-            ESP_LOGE(TAG, "Failed to generate charFile for buffer 1...\n");
+            ESP_LOGE(TAG, "Failed to generate charFile for buffer 1... resp = %d", genFileResp1);
         }
 
         sendSearchLibraryPacket(0x01, 0x0000, 0x0005);
@@ -885,7 +885,7 @@ int authenticateFinger(){
         sendTurnLedOffPacket();
         int ledResp = recvTurnLedOffAck();
         if(ledResp != 0){
-            ESP_LOGE(TAG, "Failed to turn off led...\n");
+            ESP_LOGE(TAG, "Failed to turn off led...");
         }
     } while (res == 0 && ++numtry < 3);
 
@@ -903,13 +903,13 @@ int getCryptoKey(uint8_t** key, int* keySize){
     int resp = recvUploadFileAck(&charFile, &size);
     if(resp != 0){
         #ifdef _DEBUG
-        ESP_LOGE(TAG, "Received failure code, aborting test...\n");
+        ESP_LOGE(TAG, "Received failure code, aborting test...");
         #endif
         return -1;
     }
     if((charFile == NULL) || (size == -1)){
         #ifdef _DEBUG
-        ESP_LOGE(TAG, "Char file failed to populate, aborting test...\n");
+        ESP_LOGE(TAG, "Char file failed to populate, aborting test...");
         #endif
         return -1;
     }
@@ -917,11 +917,11 @@ int getCryptoKey(uint8_t** key, int* keySize){
     size_t inSize = sizeof(uint8_t)*size;
     int result = getHashedCryptoKey(charFile, inSize, key, keySize);
     #ifdef _DEBUG
-    ESP_LOGE(TAG, "Key hash result: %d\n", result);
+    ESP_LOGE(TAG, "Key hash result: %d", result);
     #endif
     if((*key == NULL) || (*keySize == -1)){
         #ifdef _DEBUG
-        ESP_LOGE(TAG, "Hashed key failed to populate, aborting test...\n");
+        ESP_LOGE(TAG, "Hashed key failed to populate, aborting test...");
         #endif
         return -1;
     }
@@ -930,11 +930,10 @@ int getCryptoKey(uint8_t** key, int* keySize){
     ESP_LOGI(TAG, "Hashed Crypto Key:");
     for(int i = 0; i < *keySize; i++){
         if((i%8) == 0){
-            ESP_LOGI(TAG, "\n");
+            ESP_LOGI(TAG, "");
         }
         ESP_LOGI(TAG, "0x%02x ", (*key)[i]);
     }
-    ESP_LOGI(TAG, "\n");
     #endif
     
     //turn off led
@@ -942,7 +941,7 @@ int getCryptoKey(uint8_t** key, int* keySize){
     int ledResp = recvTurnLedOffAck();
     if(ledResp != 0){
         #ifdef _DEBUG
-        ESP_LOGE(TAG, "Failed to turn off led...\n");
+        ESP_LOGE(TAG, "Failed to turn off led...");
         #endif
     }
 
@@ -960,7 +959,7 @@ int clearAllData(){
     int ledResp = recvTurnLedOffAck();
     if(ledResp != 0){
         #ifdef _DEBUG
-        ESP_LOGE(TAG, "Failed to turn off led...\n");
+        ESP_LOGE(TAG, "Failed to turn off led...");
         #endif
     }
     if (clrResp == 0)

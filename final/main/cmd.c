@@ -8,6 +8,8 @@
 
 // one function per command
 
+#define TAG "CMD"
+
 static int running = 1;
 
 int getRunning() {
@@ -15,10 +17,12 @@ int getRunning() {
 }
 
 int cmd_led_red(int status) {
+    ESP_LOGI(TAG, "Successfully set red LED to %d", status);
     return gpio_set_level(GPIO_RED, status);
 }
 
 int cmd_led_green(int status) {
+    ESP_LOGI(TAG, "Successfully set green LED to %d", status);
     return gpio_set_level(GPIO_GREEN, status);
 }
 
@@ -38,17 +42,18 @@ int cmd_request_entries(int mode) {
         btSendData((uint8_t*) buffer);
     free(buffer);
     fclose(fp);
+    ESP_LOGI(TAG, "Successfully requested manifest entry");
     return CMD_SUCCESS;
 }
 
 int cmd_request_credential(char* displayName, char* username, int mode) {
-    if (authenticateFinger() == 0)
-        return CMD_FAILURE;
-
-    // uint8_t* key = NULL;
-    // int keysize = 0;
-    // if (getCryptoKey(&key, &keysize) == -1)
+    // if (authenticateFinger() == 0)
     //     return CMD_FAILURE;
+
+    uint8_t* key = NULL;
+    int keysize = 0;
+    if (getCryptoKey(&key, &keysize) == -1)
+        return CMD_FAILURE;
 
     if (getManifestEntry(displayName, username) == NULL)
         return CMD_FAILURE;
@@ -64,20 +69,21 @@ int cmd_request_credential(char* displayName, char* username, int mode) {
     fseek(fp, 0, SEEK_SET);
 
     char* buffer = calloc(filesize, sizeof(char));
-    // char* plaintext = calloc(filesize + 1, sizeof(char));
+    char* plaintext = calloc(filesize + 1, sizeof(char));
     fread(buffer, sizeof(char), filesize, fp);
-    // my_aes_decrypt((uint8_t*)buffer, key, (uint8_t*)plaintext);
-    // plaintext[filesize] = '\n';
+    my_aes_decrypt((uint8_t*)buffer, key, (uint8_t*)plaintext);
+    plaintext[filesize] = '\n';
 
     if (mode == UART_MODE)
-        uart_write_bytes(UART_NUM_0, buffer /*plaintext*/, filesize + 1);
+        uart_write_bytes(UART_NUM_0, /*buffer*/ plaintext, filesize + 1);
     else if (mode == BT_MODE)
-        btSendData((uint8_t*) buffer/*plaintext*/);
+        btSendData((uint8_t*) /*buffer*/ plaintext);
         
     free(buffer);
-    // free(plaintext);
-    // free(key);
+    free(plaintext);
+    free(key);
     fclose(fp);
+    ESP_LOGI(TAG, "Successfully requested credential for %s", displayName);
     return CMD_SUCCESS;
 }
 
@@ -107,31 +113,44 @@ int cmd_modify_credential(char* displayName, char* username, char* pw) {
     // free(key);
     // free(encryptedText);
     fclose(fp);
+    ESP_LOGI(TAG, "Successfully modified credential for %s", displayName);
     return CMD_SUCCESS;
 }
 
 int cmd_store_credential(char* displayName, char* username, char* url, char* pw) {
-    if (authenticateFinger() == 0)
+    if (authenticateFinger() == 0) {
+        ESP_LOGE(TAG, "Failed to stored credential for %s. Fingerprint authentication failed", displayName);
         return CMD_FAILURE;
+    }
 
-    // uint8_t* key = NULL;
-    // int keysize = 0;
-    // if (getCryptoKey(&key, &keysize) == -1)
-    //     return CMD_FAILURE;
+    if (getManifestEntry(displayName, username) != NULL) {
+        ESP_LOGE(TAG, "Failed to stored credential for %s. Entry already exists", displayName);
+        return CMD_FAILURE;
+    }
+
+    uint8_t* key = NULL;
+    int keysize = 0;
+    if (getCryptoKey(&key, &keysize) == -1) {
+        ESP_LOGE(TAG, "Failed to stored credential for %s. Failed to hash AES key", displayName);
+        return CMD_FAILURE;
+    }
     
     addManifestEntry(displayName, username, url);
     char path[256] = {'\0'};
     strcat(path, "/sdcard/");
     strcat(path, displayName);
     FILE* fp = fopen(path, "w");
-    if (fp == NULL)
+    if (fp == NULL) {
+        ESP_LOGE(TAG, "Failed to stored credential for %s. Unable to write pw to file", displayName);
         return CMD_FAILURE;
+    }
 
-    // char* encryptedText = calloc(strlen(pw), sizeof(char));
-    // my_aes_encrypt((uint8_t*)pw, key, (uint8_t*)encryptedText);
-    fprintf(fp, pw /*encryptedText*/);
+    char* encryptedText = calloc(strlen(pw), sizeof(char));
+    my_aes_encrypt((uint8_t*)pw, key, (uint8_t*)encryptedText);
+    fprintf(fp, /*pw*/ encryptedText);
 
     fclose(fp);
+    ESP_LOGI(TAG, "Successfully stored credential for %s", displayName);
     return CMD_SUCCESS;
 }
 
@@ -145,6 +164,7 @@ int cmd_delete_credential(char* displayName, char* userName) {
     strcat(path, "/sdcard/");
     strcat(path, displayName);
     remove(path);
+    ESP_LOGI(TAG, "Successfully deleted credential for %s", displayName);
     return CMD_SUCCESS;
 }
 
@@ -158,6 +178,7 @@ int cmd_enroll_fingerprint() {
     if (enrollFinger(0) == -1)
         return CMD_FAILURE;
 
+    ESP_LOGI(TAG, "Successfully enrolled fingerprint");
     return CMD_SUCCESS;
 }
 
@@ -168,6 +189,7 @@ int cmd_unenroll_fingerprint() {
     if (clearAllData() == -1)
         return CMD_FAILURE;
 
+    ESP_LOGI(TAG, "Successfully unenrolled fingerprint");
     return CMD_SUCCESS;
 }
 
