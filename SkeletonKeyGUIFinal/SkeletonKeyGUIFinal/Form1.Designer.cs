@@ -28,31 +28,34 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.panelSideMenu = new System.Windows.Forms.Panel();
-            this.buttonHelp = new System.Windows.Forms.Button();
-            this.buttonProjectWebsite = new System.Windows.Forms.Button();
-            this.panelPassManagerSubMenu = new System.Windows.Forms.Panel();
-            this.button7 = new System.Windows.Forms.Button();
-            this.buttonPassManager = new System.Windows.Forms.Button();
-            this.panelConnectSkelKeySubMenu = new System.Windows.Forms.Panel();
-            this.button5 = new System.Windows.Forms.Button();
-            this.buttonConnectSkelKey = new System.Windows.Forms.Button();
-            this.panelUserSubmenu = new System.Windows.Forms.Panel();
-            this.button3 = new System.Windows.Forms.Button();
-            this.buttonUser = new System.Windows.Forms.Button();
-            this.Logo = new System.Windows.Forms.Panel();
-            this.pictureBox2 = new System.Windows.Forms.PictureBox();
-            this.panelChildForm = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.panelChildForm = new System.Windows.Forms.Panel();
+            this.panelPassManagerSubMenu = new System.Windows.Forms.Panel();
+            this.buttonProjectWebsite = new System.Windows.Forms.Button();
+            this.buttonHelp = new System.Windows.Forms.Button();
+            this.button7 = new System.Windows.Forms.Button();
+            this.panelConnectSkelKeySubMenu = new System.Windows.Forms.Panel();
+            this.buttonPassManager = new System.Windows.Forms.Button();
+            this.button5 = new System.Windows.Forms.Button();
+            this.panelUserSubmenu = new System.Windows.Forms.Panel();
+            this.buttonConnectSkelKey = new System.Windows.Forms.Button();
+            this.button3 = new System.Windows.Forms.Button();
+            this.Logo = new System.Windows.Forms.Panel();
+            this.buttonUser = new System.Windows.Forms.Button();
+            this.pictureBox2 = new System.Windows.Forms.PictureBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.panelSideMenu.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.panelChildForm.SuspendLayout();
             this.panelPassManagerSubMenu.SuspendLayout();
             this.panelConnectSkelKeySubMenu.SuspendLayout();
             this.panelUserSubmenu.SuspendLayout();
             this.Logo.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
-            this.panelChildForm.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // panelSideMenu
@@ -75,23 +78,37 @@
             this.panelSideMenu.Size = new System.Drawing.Size(333, 776);
             this.panelSideMenu.TabIndex = 0;
             // 
-            // buttonHelp
+            // pictureBox1
             // 
-            this.buttonHelp.Dock = System.Windows.Forms.DockStyle.Top;
-            this.buttonHelp.FlatAppearance.BorderSize = 0;
-            this.buttonHelp.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.buttonHelp.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.buttonHelp.ForeColor = System.Drawing.SystemColors.Control;
-            this.buttonHelp.Location = new System.Drawing.Point(0, 497);
-            this.buttonHelp.Margin = new System.Windows.Forms.Padding(4);
-            this.buttonHelp.Name = "buttonHelp";
-            this.buttonHelp.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
-            this.buttonHelp.Size = new System.Drawing.Size(333, 55);
-            this.buttonHelp.TabIndex = 8;
-            this.buttonHelp.Text = "Help";
-            this.buttonHelp.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.buttonHelp.UseVisualStyleBackColor = true;
-            this.buttonHelp.Click += new System.EventHandler(this.buttonHelp_Click);
+            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
+            this.pictureBox1.Location = new System.Drawing.Point(177, 178);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(612, 383);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox1.TabIndex = 0;
+            this.pictureBox1.TabStop = false;
+            // 
+            // panelChildForm
+            // 
+            this.panelChildForm.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(30)))), ((int)(((byte)(35)))));
+            this.panelChildForm.Controls.Add(this.label1);
+            this.panelChildForm.Controls.Add(this.pictureBox1);
+            this.panelChildForm.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelChildForm.Location = new System.Drawing.Point(333, 0);
+            this.panelChildForm.Name = "panelChildForm";
+            this.panelChildForm.Size = new System.Drawing.Size(952, 776);
+            this.panelChildForm.TabIndex = 1;
+            // 
+            // panelPassManagerSubMenu
+            // 
+            this.panelPassManagerSubMenu.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(32)))), ((int)(((byte)(39)))));
+            this.panelPassManagerSubMenu.Controls.Add(this.button7);
+            this.panelPassManagerSubMenu.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelPassManagerSubMenu.Location = new System.Drawing.Point(0, 391);
+            this.panelPassManagerSubMenu.Margin = new System.Windows.Forms.Padding(4);
+            this.panelPassManagerSubMenu.Name = "panelPassManagerSubMenu";
+            this.panelPassManagerSubMenu.Size = new System.Drawing.Size(333, 51);
+            this.panelPassManagerSubMenu.TabIndex = 6;
             // 
             // buttonProjectWebsite
             // 
@@ -111,16 +128,23 @@
             this.buttonProjectWebsite.UseVisualStyleBackColor = true;
             this.buttonProjectWebsite.Click += new System.EventHandler(this.buttonProjectWebsite_Click);
             // 
-            // panelPassManagerSubMenu
+            // buttonHelp
             // 
-            this.panelPassManagerSubMenu.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(32)))), ((int)(((byte)(39)))));
-            this.panelPassManagerSubMenu.Controls.Add(this.button7);
-            this.panelPassManagerSubMenu.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelPassManagerSubMenu.Location = new System.Drawing.Point(0, 391);
-            this.panelPassManagerSubMenu.Margin = new System.Windows.Forms.Padding(4);
-            this.panelPassManagerSubMenu.Name = "panelPassManagerSubMenu";
-            this.panelPassManagerSubMenu.Size = new System.Drawing.Size(333, 51);
-            this.panelPassManagerSubMenu.TabIndex = 6;
+            this.buttonHelp.Dock = System.Windows.Forms.DockStyle.Top;
+            this.buttonHelp.FlatAppearance.BorderSize = 0;
+            this.buttonHelp.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonHelp.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonHelp.ForeColor = System.Drawing.SystemColors.Control;
+            this.buttonHelp.Location = new System.Drawing.Point(0, 497);
+            this.buttonHelp.Margin = new System.Windows.Forms.Padding(4);
+            this.buttonHelp.Name = "buttonHelp";
+            this.buttonHelp.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
+            this.buttonHelp.Size = new System.Drawing.Size(333, 55);
+            this.buttonHelp.TabIndex = 8;
+            this.buttonHelp.Text = "Help";
+            this.buttonHelp.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.buttonHelp.UseVisualStyleBackColor = true;
+            this.buttonHelp.Click += new System.EventHandler(this.buttonHelp_Click);
             // 
             // button7
             // 
@@ -138,6 +162,17 @@
             this.button7.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.button7.UseVisualStyleBackColor = true;
             this.button7.Click += new System.EventHandler(this.button7_Click);
+            // 
+            // panelConnectSkelKeySubMenu
+            // 
+            this.panelConnectSkelKeySubMenu.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(32)))), ((int)(((byte)(39)))));
+            this.panelConnectSkelKeySubMenu.Controls.Add(this.button5);
+            this.panelConnectSkelKeySubMenu.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelConnectSkelKeySubMenu.Location = new System.Drawing.Point(0, 285);
+            this.panelConnectSkelKeySubMenu.Margin = new System.Windows.Forms.Padding(4);
+            this.panelConnectSkelKeySubMenu.Name = "panelConnectSkelKeySubMenu";
+            this.panelConnectSkelKeySubMenu.Size = new System.Drawing.Size(333, 51);
+            this.panelConnectSkelKeySubMenu.TabIndex = 4;
             // 
             // buttonPassManager
             // 
@@ -157,17 +192,6 @@
             this.buttonPassManager.UseVisualStyleBackColor = true;
             this.buttonPassManager.Click += new System.EventHandler(this.buttonPassManager_Click);
             // 
-            // panelConnectSkelKeySubMenu
-            // 
-            this.panelConnectSkelKeySubMenu.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(32)))), ((int)(((byte)(39)))));
-            this.panelConnectSkelKeySubMenu.Controls.Add(this.button5);
-            this.panelConnectSkelKeySubMenu.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelConnectSkelKeySubMenu.Location = new System.Drawing.Point(0, 285);
-            this.panelConnectSkelKeySubMenu.Margin = new System.Windows.Forms.Padding(4);
-            this.panelConnectSkelKeySubMenu.Name = "panelConnectSkelKeySubMenu";
-            this.panelConnectSkelKeySubMenu.Size = new System.Drawing.Size(333, 51);
-            this.panelConnectSkelKeySubMenu.TabIndex = 4;
-            // 
             // button5
             // 
             this.button5.Dock = System.Windows.Forms.DockStyle.Top;
@@ -184,6 +208,17 @@
             this.button5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.button5.UseVisualStyleBackColor = true;
             this.button5.Click += new System.EventHandler(this.button5_Click);
+            // 
+            // panelUserSubmenu
+            // 
+            this.panelUserSubmenu.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(32)))), ((int)(((byte)(39)))));
+            this.panelUserSubmenu.Controls.Add(this.button3);
+            this.panelUserSubmenu.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelUserSubmenu.Location = new System.Drawing.Point(0, 178);
+            this.panelUserSubmenu.Margin = new System.Windows.Forms.Padding(4);
+            this.panelUserSubmenu.Name = "panelUserSubmenu";
+            this.panelUserSubmenu.Size = new System.Drawing.Size(333, 52);
+            this.panelUserSubmenu.TabIndex = 2;
             // 
             // buttonConnectSkelKey
             // 
@@ -203,17 +238,6 @@
             this.buttonConnectSkelKey.UseVisualStyleBackColor = true;
             this.buttonConnectSkelKey.Click += new System.EventHandler(this.buttonConnectSkelKey_Click);
             // 
-            // panelUserSubmenu
-            // 
-            this.panelUserSubmenu.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(32)))), ((int)(((byte)(39)))));
-            this.panelUserSubmenu.Controls.Add(this.button3);
-            this.panelUserSubmenu.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelUserSubmenu.Location = new System.Drawing.Point(0, 178);
-            this.panelUserSubmenu.Margin = new System.Windows.Forms.Padding(4);
-            this.panelUserSubmenu.Name = "panelUserSubmenu";
-            this.panelUserSubmenu.Size = new System.Drawing.Size(333, 52);
-            this.panelUserSubmenu.TabIndex = 2;
-            // 
             // button3
             // 
             this.button3.Dock = System.Windows.Forms.DockStyle.Top;
@@ -230,6 +254,16 @@
             this.button3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // Logo
+            // 
+            this.Logo.Controls.Add(this.pictureBox2);
+            this.Logo.Dock = System.Windows.Forms.DockStyle.Top;
+            this.Logo.Location = new System.Drawing.Point(0, 0);
+            this.Logo.Margin = new System.Windows.Forms.Padding(4);
+            this.Logo.Name = "Logo";
+            this.Logo.Size = new System.Drawing.Size(333, 123);
+            this.Logo.TabIndex = 0;
             // 
             // buttonUser
             // 
@@ -249,16 +283,6 @@
             this.buttonUser.UseVisualStyleBackColor = true;
             this.buttonUser.Click += new System.EventHandler(this.buttonUser_Click);
             // 
-            // Logo
-            // 
-            this.Logo.Controls.Add(this.pictureBox2);
-            this.Logo.Dock = System.Windows.Forms.DockStyle.Top;
-            this.Logo.Location = new System.Drawing.Point(0, 0);
-            this.Logo.Margin = new System.Windows.Forms.Padding(4);
-            this.Logo.Name = "Logo";
-            this.Logo.Size = new System.Drawing.Size(333, 123);
-            this.Logo.TabIndex = 0;
-            // 
             // pictureBox2
             // 
             this.pictureBox2.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox2.Image")));
@@ -269,25 +293,21 @@
             this.pictureBox2.TabIndex = 0;
             this.pictureBox2.TabStop = false;
             // 
-            // panelChildForm
+            // label1
             // 
-            this.panelChildForm.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(30)))), ((int)(((byte)(35)))));
-            this.panelChildForm.Controls.Add(this.pictureBox1);
-            this.panelChildForm.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelChildForm.Location = new System.Drawing.Point(333, 0);
-            this.panelChildForm.Name = "panelChildForm";
-            this.panelChildForm.Size = new System.Drawing.Size(952, 776);
-            this.panelChildForm.TabIndex = 1;
+            this.label1.AutoSize = true;
+            this.label1.ForeColor = System.Drawing.SystemColors.ControlLight;
+            this.label1.Location = new System.Drawing.Point(76, 629);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(830, 17);
+            this.label1.TabIndex = 1;
+            this.label1.Text = "On First Start Up, If Device Is Lit Green then The Device is not Resistered to a " +
+    "User . To Register User to Device, scan Fingerprint.";
             // 
-            // pictureBox1
+            // contextMenuStrip1
             // 
-            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.Location = new System.Drawing.Point(177, 178);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(612, 383);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox1.TabIndex = 0;
-            this.pictureBox1.TabStop = false;
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(61, 4);
             // 
             // Form1
             // 
@@ -301,13 +321,14 @@
             this.Name = "Form1";
             this.Text = "Form1";
             this.panelSideMenu.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.panelChildForm.ResumeLayout(false);
+            this.panelChildForm.PerformLayout();
             this.panelPassManagerSubMenu.ResumeLayout(false);
             this.panelConnectSkelKeySubMenu.ResumeLayout(false);
             this.panelUserSubmenu.ResumeLayout(false);
             this.Logo.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
-            this.panelChildForm.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -327,9 +348,11 @@
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button buttonUser;
         private System.Windows.Forms.Panel Logo;
-        private System.Windows.Forms.Panel panelChildForm;
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.Panel panelChildForm;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
     }
 }
 

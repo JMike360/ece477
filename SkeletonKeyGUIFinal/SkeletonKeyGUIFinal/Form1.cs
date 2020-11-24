@@ -146,5 +146,54 @@ namespace SkeletonKeyGUIFinal
             childForm.Show(); 
         }
 
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void panelSideMenu_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void panelPassManagerSubMenu_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void panelConnectSkelKeySubMenu_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void panelUserSubmenu_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void Logo_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void pictureBox2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void panelChildForm_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
+        {
+
+        }
     }
 }

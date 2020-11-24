@@ -37,18 +37,17 @@ namespace SkeletonKeyGUIFinal
 
         private void enableControls()
         {
-            button5.Enabled = true;
             button4.Enabled = true;
         }
 
         private void disableControls()
         {
-            button5.Enabled = false;
             button4.Enabled = false;
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
+            port.Close();
             this.Close();
         }
 
@@ -125,6 +124,7 @@ namespace SkeletonKeyGUIFinal
 
         private void button4_Click(object sender, EventArgs e)
         {
+            //Clear fingerprint and Deivce
             DialogResult dialogResult = MessageBox.Show("Sure", "This will clear the device. Do you wish to countinue", MessageBoxButtons.YesNo);
             if (dialogResult == DialogResult.Yes)
             {
@@ -136,27 +136,20 @@ namespace SkeletonKeyGUIFinal
                 byte[] StoreFingerprint = { startCodeByte, 0x07 };
 
                 byte[] FinalBytes = Combine(StoreFingerprint, endBYTE);
-                port.Write(FinalBytes, 0, 4);
 
+                port.Write(FinalBytes, 0, 4);
                 MessageBox.Show("Please Scan Fingerprint");
 
-                System.Threading.Thread.Sleep(5000);
-
-                int intBuffer;
-                intBuffer = port.BytesToRead;
-                byte[] byteBuffer = new byte[intBuffer];
-                port.Read(byteBuffer, 0, intBuffer);
-
-                string str = System.Text.Encoding.Default.GetString(byteBuffer);
-
-                if (str == "1\n")
+                string str = port.ReadLine();
+                if (str == "1")
                 {
-                    MessageBox.Show("Device Clear Success");
+                    MessageBox.Show("Device Clear Success. Please Restart Device and Scan New Fingerprint when Device Lights Green");
                 }
-                else
+                else if (str == "0")
                 {
                     MessageBox.Show("Device Clear Failure");
                 }
+
             }
             else if (dialogResult == DialogResult.No)
             {

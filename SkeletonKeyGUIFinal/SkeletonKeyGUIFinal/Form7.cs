@@ -172,7 +172,11 @@ namespace SkeletonKeyGUIFinal
             port.Read(byteBuffer, 0, intBuffer);
 
             string str = System.Text.Encoding.Default.GetString(byteBuffer);
-            MessageBox.Show(str);
+            if(str == null)
+            {
+                MessageBox.Show("There are no Current Entries");
+            }
+            textBox1.Text = str;
         }
 
 
@@ -184,7 +188,7 @@ namespace SkeletonKeyGUIFinal
             return bytes;
         }
 
-        private void button4_Click(object sender, EventArgs e)
+        private async void button4_Click(object sender, EventArgs e)
         {
             if (isConnected)
             {
@@ -197,6 +201,8 @@ namespace SkeletonKeyGUIFinal
                 byte[] MSGByte = Encoding.ASCII.GetBytes(MSG);
                 byte[] endBYTE = Encoding.ASCII.GetBytes(end);
                 byte MSGsizeByte = Convert.ToByte(MSGsize);
+
+                byte Endbyte = Convert.ToByte('\n');
 
                 char startCode = '#';
                 byte startCodeByte = Convert.ToByte(startCode);
@@ -211,24 +217,20 @@ namespace SkeletonKeyGUIFinal
                 {
                     port.Write(FinalBytes, 0, MSGsize + 4);
                     MessageBox.Show("Please Scan Fingerprint");
+                    
+                    string str = port.ReadLine(); 
 
-                    System.Threading.Thread.Sleep(5000);
-                    //The ESP32 sends back the request.
-                    int intBuffer;
-                    intBuffer = port.BytesToRead;
-                    byte[] byteBuffer = new byte[intBuffer];
-                    port.Read(byteBuffer, 0, intBuffer);
-
-                    string str = System.Text.Encoding.Default.GetString(byteBuffer); 
-
-                    if (str == "1\n")
+                    if (str == "1")
                     {
                         MessageBox.Show("Credential Stored");
+                        textBox1.Clear();
                     }
-                    else
+                    else if (str== "0")
                     {
                         MessageBox.Show("Operation Failure");
+                        textBox1.Text = str;
                     }
+
                 }
                 else
                 {
@@ -261,27 +263,22 @@ namespace SkeletonKeyGUIFinal
                 int freq = MSG.Split(',').Length - 1;
                 if (freq == 2)
                 {
+
                     port.Write(FinalBytes, 0, MSGsize + 4);
-                    MessageBox.Show("Scan Fingerprint Please");
+                    MessageBox.Show("Please Scan Fingerprint");
 
-                    System.Threading.Thread.Sleep(5000); // ESP32 wait time
-
-
-                    //The ESP32 sends back the request.
-                    int intBuffer;
-                    intBuffer = port.BytesToRead;
-                    byte[] byteBuffer = new byte[intBuffer];
-                    port.Read(byteBuffer, 0, intBuffer);
-
-                    string str = System.Text.Encoding.Default.GetString(byteBuffer);
-                    if (str != "0\n")
+                    string str = port.ReadLine();
+                    if (str == "0")
                     {
-                        MessageBox.Show("Operation Success");
+                        MessageBox.Show("Operation Failure");
+                        textBox1.Clear();
                     }
                     else
                     {
-                        MessageBox.Show("Operation Failure");
+                        MessageBox.Show("Operation Success");
+                        textBox1.Text = str;
                     }
+
 
                 }
                 else
@@ -339,6 +336,7 @@ namespace SkeletonKeyGUIFinal
 
         private void button7_Click_1(object sender, EventArgs e)
         {
+            port.Close();
             this.Close();
         }
 
@@ -367,24 +365,19 @@ namespace SkeletonKeyGUIFinal
             if (freq == 2)
             {
                 port.Write(FinalBytes, 0, MSGsize + 4);
-                MessageBox.Show("Scan Fingerprint Please");
+                MessageBox.Show("Please Scan Fingerprint");
 
-                System.Threading.Thread.Sleep(5000);
+                string str = port.ReadLine();
 
-                //The ESP32 sends back the request.
-                int intBuffer;
-                intBuffer = port.BytesToRead;
-                byte[] byteBuffer = new byte[intBuffer];
-                port.Read(byteBuffer, 0, intBuffer);
-
-                string str = System.Text.Encoding.Default.GetString(byteBuffer);
-                if (str == "1\n")
+                if (str == "1")
                 {
-                    MessageBox.Show("Operation Success");
+                    MessageBox.Show("Credential Stored");
+                    textBox1.Clear();
                 }
-                else if (str == "0\n")
+                else if (str == "0")
                 {
                     MessageBox.Show("Operation Failure");
+                    textBox1.Clear();
                 }
             }
             else
@@ -415,31 +408,31 @@ namespace SkeletonKeyGUIFinal
             int freq = MSG.Split(',').Length - 1;
             if (freq == 3)
             {
-                port.Write(FinalBytes, 0, MSGsize + 4);
-                MessageBox.Show("Scan Fingerprint Please");
+                    port.Write(FinalBytes, 0, MSGsize + 4);
+                    MessageBox.Show("Please Scan Fingerprint");
 
-                System.Threading.Thread.Sleep(5000);
+                    string str = port.ReadLine();
 
-                //The ESP32 sends back the request.
-                int intBuffer;
-                intBuffer = port.BytesToRead;
-                byte[] byteBuffer = new byte[intBuffer];
-                port.Read(byteBuffer, 0, intBuffer);
-
-                string str = System.Text.Encoding.Default.GetString(byteBuffer);
-                if (str == "1\n")
-                {
-                    MessageBox.Show("Operation Success");
-                }
-                else if (str == "0\n")
-                {
-                    MessageBox.Show("Operation Failure");
-                }
+                    if (str == "1")
+                    {
+                        MessageBox.Show("Credential Stored");
+                        textBox1.Clear();
+                    }
+                    else if (str == "0")
+                    {
+                        MessageBox.Show("Operation Failure");
+                        textBox1.Clear();
+                    }
             }
             else
             {
                 MessageBox.Show("Incorrect Format. Try Again.");
             }
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
