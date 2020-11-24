@@ -50,7 +50,7 @@ int readManifestToMemory() {
 
     FILE* fp = fopen(MANIFEST_FILENAME, "r");
     if (fp == NULL) {
-        // ESP_LOGI(TAG, "Manifest file does not exist yet");
+        ESP_LOGI(TAG, "Manifest file does not exist yet");
         return MANIFEST_SUCCESS;
     }
 
@@ -65,6 +65,8 @@ int readManifestToMemory() {
         memset(lineBuffer, '\0', sizeof(lineBuffer) / sizeof(lineBuffer[0]));
         do {
             lineBuffer[i] = fgetc(fp);
+            if (feof(fp))
+                return MANIFEST_SUCCESS;
         } while(lineBuffer[i++] != '\n');
         lineBuffer[i-1] = '\0';
 
@@ -80,7 +82,7 @@ int readManifestToMemory() {
 
     fclose(fp);
 
-    // ESP_LOGI(TAG, "Successfully read manifest to memory");
+    ESP_LOGI(TAG, "Successfully read manifest to memory");
     return MANIFEST_SUCCESS;
 }
 
@@ -117,7 +119,7 @@ int writeManifestToFile() {
     }
     fclose(fp);
 
-    // ESP_LOGI(TAG, "Successfully written manifest to file");
+    ESP_LOGI(TAG, "Successfully written manifest to file");
     return MANIFEST_SUCCESS;
 }
 
@@ -277,6 +279,18 @@ int removeManifestEntry(char* displayName, char* userName) {
     return MANIFEST_FAILURE;
 }
 
+/**************************************************
+ * wipeStorageData
+ * Scan through the manifest entries and delete the
+ * corresponding password files before clearing the
+ * manifest file.
+ * 
+ * input:
+ * void
+ * 
+ * output:
+ * void
+**************************************************/
 int wipeStorageData() {
     while(content->head != NULL) {
         char path[256] = {'\0'};

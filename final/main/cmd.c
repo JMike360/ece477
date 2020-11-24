@@ -76,10 +76,12 @@ int cmd_request_credential(char* displayName, char* username, int mode) {
     char* plaintext = NULL;
     fread(buffer, sizeof(char), filesize, fp);
     my_aes_decrypt((uint8_t*)buffer, key, (uint8_t**)&plaintext);
-    plaintext[strlen(plaintext)] = '\n';
+    int decryptedLen = strlen(plaintext);
+    plaintext[decryptedLen] = '\n';
+    plaintext[decryptedLen+1] = '\0';
 
     if (mode == UART_MODE)
-        uart_write_bytes(UART_NUM_0, plaintext, strlen(plaintext));
+        uart_write_bytes(UART_NUM_0, plaintext, decryptedLen+2);
     else if (mode == BT_MODE)
         btSendData((uint8_t*) plaintext);
         

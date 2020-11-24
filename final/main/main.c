@@ -92,21 +92,15 @@ void app_main(void) {
             ESP_LOGE(TAG, "Fingerprint enrollment failed");
     }
 
-    if (readManifestToMemory() == MANIFEST_FAILURE)
+        if (readManifestToMemory() == MANIFEST_FAILURE)
         return;
 
-    /*
     uint8_t* data = (uint8_t*) malloc(BUF_SIZE_MAIN);
     while(getRunning()) {
         memset(data, 0, BUF_SIZE_MAIN);
         readUARTCMD(data);
     }
     free(data);
-    */
-
-    if (cmd_delete_fingerprint() == CMD_FAILURE) {
-        while(1);
-    }
 
     if (writeManifestToFile() == MANIFEST_FAILURE)
         return;
