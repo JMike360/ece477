@@ -47,18 +47,22 @@ int cmd_request_entries(int mode) {
 }
 
 int cmd_request_credential(char* displayName, char* username, int mode) {
-    // if (authenticateFinger() == 0)
-    //     return CMD_FAILURE;
+    if (authenticateFinger() == 0) {
+        ESP_LOGE(TAG, "Failed to request credential for %s. Fingerprint authentication failed", displayName);
+        return CMD_FAILURE;
+    }
 
     uint8_t* key = NULL;
     int keysize = 0;
     if (getCryptoKey(&key, &keysize) == -1)
         return CMD_FAILURE;
 
-    if (getManifestEntry(displayName, username) == NULL)
+    if (getManifestEntry(displayName, username) == NULL) {
+        ESP_LOGE(TAG, "Failed to request credential. Entry not found");
         return CMD_FAILURE;
+    }
 
-    char path[AES_BLOCKSIZE] = {'\0'};
+    char path[256] = {'\0'};
     strcat(path, "/sdcard/");
     strcat(path, displayName); 
     FILE* fp = fopen(path, "rb");
@@ -105,7 +109,7 @@ int cmd_modify_credential(char* displayName, char* username, char* pw) {
         return CMD_FAILURE;
     }
         
-    char path[AES_BLOCKSIZE] = {'\0'};
+    char path[256] = {'\0'};
     strcat(path, "/sdcard/");
     strcat(path, displayName);
     FILE* fp = fopen(path, "wb");
@@ -143,7 +147,7 @@ int cmd_store_credential(char* displayName, char* username, char* url, char* pw)
     }
     
     addManifestEntry(displayName, username, url);
-    char path[AES_BLOCKSIZE] = {'\0'};
+    char path[256] = {'\0'};
     strcat(path, "/sdcard/");
     strcat(path, displayName);
     FILE* fp = fopen(path, "wb");
@@ -168,7 +172,7 @@ int cmd_delete_credential(char* displayName, char* userName) {
 
     if(!removeManifestEntry(displayName, userName))
         return CMD_FAILURE;
-    char path[AES_BLOCKSIZE] = {'\0'};
+    char path[256] = {'\0'};
     strcat(path, "/sdcard/");
     strcat(path, displayName);
     remove(path);
@@ -176,12 +180,15 @@ int cmd_delete_credential(char* displayName, char* userName) {
     return CMD_SUCCESS;
 }
 
-int cmd_enroll_fingerprint() {
+int cmd_store_fingerprint() {
     if (authenticateFinger() == 0)
         return CMD_FAILURE;
 
-    if (clearAllData() == -1)
+    if (clearFingerprintData() == -1)
         return CMD_FAILURE;
+    
+    if (wipeStorageData() == MANIFEST_FAILURE)
+        return MANIFEST_FAILURE;
     
     if (enrollFinger(0) == -1)
         return CMD_FAILURE;
@@ -190,12 +197,15 @@ int cmd_enroll_fingerprint() {
     return CMD_SUCCESS;
 }
 
-int cmd_unenroll_fingerprint() {
+int cmd_delete_fingerprint() {
     if (authenticateFinger() == 0)
         return CMD_FAILURE;
 
-    if (clearAllData() == -1)
+    if (clearFingerprintData() == -1)
         return CMD_FAILURE;
+    
+    if (wipeStorageData() == MANIFEST_FAILURE)
+        return MANIFEST_FAILURE;
 
     ESP_LOGI(TAG, "Successfully unenrolled fingerprint");
     return CMD_SUCCESS;
@@ -226,27 +236,28 @@ void doCMD(uint8_t* data, int mode) {
             pw = strtok(NULL, ",");
             returnStatus = cmd_store_credential(displayName, username, url, pw);
             break;
-        case CMD_MODIFY_CREDENTIAL:
-            displayName = strtok((char*) &data[3], ",");
-            username = strtok(NULL, ",");
-            pw = strtok(NULL, ",");
-            returnStatus = cmd_modify_credential(displayName, username, pw);
+        case CMD_STORE_FINGERPRINT:
+            cmd_store_fingerprint();
             break;
         case CMD_DELETE_CREDENTIAL:
             displayName = strtok((char*) &data[3], ",");
             username = strtok(NULL, ",");
             returnStatus = cmd_delete_credential(displayName, username);
             break;
+        case CMD_DELETE_FINGERPRINT:
+            cmd_delete_fingerprint();
+            break;
+        case CMD_MODIFY_CREDENTIAL:
+            displayName = strtok((char*) &data[3], ",");
+            username = strtok(NULL, ",");
+            pw = strtok(NULL, ",");
+            returnStatus = cmd_modify_credential(displayName, username, pw);
+            break;
         case CMD_POWER_OFF:
             running = 0;
             break;
-        case CMD_ENROLL_FINGERPRINT:
-            cmd_enroll_fingerprint();
-            break;
-        case CMD_UNENROLL_FINGERPRINT:
-            cmd_unenroll_fingerprint();
-            break;
         default:
+            ESP_LOGE(TAG, "Unrecognized command received: %x", data[1]);
             returnStatus = 0;
     }
 
@@ -269,6 +280,8 @@ void doCMD(uint8_t* data, int mode) {
         case CMD_STORE_CREDENTIAL:
         case CMD_MODIFY_CREDENTIAL:
         case CMD_DELETE_CREDENTIAL:
+        case CMD_STORE_FINGERPRINT:
+        case CMD_DELETE_FINGERPRINT:
             toSend[0] = returnStatus + '0';
             toSend[1] = '\n';
             if (mode == BT_MODE)

@@ -22,18 +22,7 @@
 #define CMD_DELETE_CREDENTIAL           0x6
 #define CMD_DELETE_FINGERPRINT          0x7
 #define CMD_MODIFY_CREDENTIAL           0x8
-#define CMD_RESP_REQUEST_ENTRIES        0x9
-#define CMD_RESP_REQUEST_CREDENTIAL     0xa
-#define CMD_RESP_STORE_CREDENTIAL       0xb
-#define CMD_RESP_DELETE_CREDENTIAL      0xc
-#define CMD_RESP_MODIFY_CREDENTIAL      0xd
-#define CMD_RESP_STORE_FINGERPRINT      0xe
-#define CMD_RESP_DELETE_FINGERPRINT     0xf
-#define CMD_ERR_INCORRECT_PACKET_FORMAT 0x10
-#define CMD_ERR_UNRECOGNIZED_COMMAND    0x11
-#define CMD_POWER_OFF                   0x12
-#define CMD_ENROLL_FINGERPRINT          0x13
-#define CMD_UNENROLL_FINGERPRINT        0x14
+#define CMD_POWER_OFF                   0x9
 
 void doCMD(uint8_t* data, int mode);
 int getRunning();
@@ -44,5 +33,7 @@ int cmd_request_credential(char* displayname, char* userName, int mode);
 int cmd_store_credential(char* displayName, char* username, char* url, char* pw);
 int cmd_modify_credential(char* displayName, char* username, char* pw);
 int cmd_delete_credential(char* displayName, char* userName);
+int cmd_store_fingerprint();
+int cmd_delete_fingerprint();
 
 #endif

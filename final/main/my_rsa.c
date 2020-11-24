@@ -19,10 +19,11 @@
 #include "sdkconfig.h"
 #include "../include/my_rsa.h"
 #include "esp_log.h"
+#include "../include/bt.h"
 
 #define TAG "RSA"
 
-#define KEYSIZE 4096
+#define KEYSIZE 1024
 
 static mbedtls_rsa_context my_rsa;
 static mbedtls_rsa_context client_rsa;
@@ -146,11 +147,8 @@ static int myrand(void *rng_state, unsigned char *output, size_t len) {
 }
 
 void my_rsa_init() {
-    static int isInit = 0;
-    if (isInit)
-        return;
-    
     mbedtls_rsa_init(&my_rsa, MBEDTLS_RSA_PRIVATE, 0);
+
     int ret = mbedtls_rsa_gen_key(&my_rsa, myrand, NULL, KEYSIZE, 65537);
     if (ret != 0) {
         ESP_LOGE(TAG, "Failed to generate RSA key pair. Err code: %x", ret);
@@ -166,14 +164,17 @@ void my_rsa_init() {
     }
 
     memcpy(&my_rsa, mbedtls_pk_rsa(clientkey), sizeof(mbedtls_rsa_context));
-    
-    isInit++;
 
     ESP_LOGI(TAG, "Successfully initialized RSA context");
 }
 
-void my_rsa_key_exchange() {
-    ESP_LOGI(TAG, "Successfully exchanged RSA key pair");
+void my_rsa_key_send() {
+    btSendData(*(my_rsa.E.p));
+    ESP_LOGI(TAG, "Successfully sent RSA key pair");
+}
+
+void my_rsa_key_recv(uint8_t* data) {
+    ESP_LOGI(TAG, "Successfully received RSA key pair");
 }
 
 void my_rsa_encrypt(uint8_t* plaintext, uint8_t* ciphertext) {

@@ -13,7 +13,7 @@
 #include "../include/sdcard.h"
 #include "../include/manifest.h"
 #include "../include/fingerprint.h"
-// #include "../include/my_rsa.h"
+#include "../include/my_rsa.h"
 
 #define BUF_SIZE_MAIN (1024)
 #define TAG "MAIN"
@@ -95,18 +95,18 @@ void app_main(void) {
     if (readManifestToMemory() == MANIFEST_FAILURE)
         return;
 
-    // uint8_t* data = (uint8_t*) malloc(BUF_SIZE_MAIN);
+    /*
+    uint8_t* data = (uint8_t*) malloc(BUF_SIZE_MAIN);
+    while(getRunning()) {
+        memset(data, 0, BUF_SIZE_MAIN);
+        readUARTCMD(data);
+    }
+    free(data);
+    */
 
-    // while(getRunning()) {
-    //     memset(data, 0, BUF_SIZE_MAIN);
-    //     readUARTCMD(data);
-    // }
-
-    // free(data);
-
-    cmd_delete_credential("aes", "andrew-gan");
-    cmd_store_credential("aes", "andrew-gan", "haha.com", "seemslikeitwontbesnowinganytimesoon123");
-    cmd_request_credential("aes", "andrew-gan", UART_MODE);
+    if (cmd_delete_fingerprint() == CMD_FAILURE) {
+        while(1);
+    }
 
     if (writeManifestToFile() == MANIFEST_FAILURE)
         return;

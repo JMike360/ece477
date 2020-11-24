@@ -858,8 +858,8 @@ int enrollFinger(int templateID){
 //returns 1 if finger matches, 0 otherwise
 // allow 3 tries
 int authenticateFinger(){
-    int res = 0;
     int numtry = 0;
+    int libSrchResp = 0;
     do {
         sendHandshakePacket();
         int hsResp = recvHandshakeAck();
@@ -875,10 +875,9 @@ int authenticateFinger(){
         }
 
         sendSearchLibraryPacket(0x01, 0x0000, 0x0005);
-        int libSrchResp = recvSearchLibraryAck();
+        libSrchResp = recvSearchLibraryAck();
         if(libSrchResp == 0){
             ESP_LOGI(TAG, "Fingerprint authentication successful");
-            res = 1;
         }
 
         //turn off led
@@ -887,9 +886,9 @@ int authenticateFinger(){
         if(ledResp != 0){
             ESP_LOGE(TAG, "Failed to turn off led...");
         }
-    } while (res == 0 && ++numtry < 3);
+    } while (libSrchResp != 0 && ++numtry < 3);
 
-    return res;
+    return libSrchResp == 0 ? 1 : 0;
 }
 
 //Params: uint8_t** key is the pointer to a uint8_t* to which digest data will be assigned (can be NULL, must be free()'d later)
@@ -897,6 +896,11 @@ int authenticateFinger(){
                                                //returns 0 for success, -1 otherwise
 int getCryptoKey(uint8_t** key, int* keySize){
     uint8_t bufferID = 0x01;
+    uint8_t pageID = 0x00;
+
+    sendLoadTemplatePacket(bufferID, pageID);
+    recvLoadTemplateAck();
+    
     sendUploadFilePacket(bufferID);
     uint8_t* charFile = NULL;
     int size = -1;
@@ -950,7 +954,7 @@ int getCryptoKey(uint8_t** key, int* keySize){
 } 
 
 //returns 0 on success, -1 otherwise
-int clearAllData(){
+int clearFingerprintData(){
     sendClearLibraryPacket();
     int clrResp = recvClearLibraryAck();
     

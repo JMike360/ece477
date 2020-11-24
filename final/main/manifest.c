@@ -221,7 +221,7 @@ ManifestEntry* getManifestEntry(char* displayName, char* userName) {
     if (currEntry != NULL)
         ESP_LOGI(TAG, "Successfully retrieved manifest entry");
     else
-        ESP_LOGI(TAG, "Failed to retrieve manifest entry. Not found");
+        ESP_LOGE(TAG, "Failed to retrieve manifest entry. Not found");
     */
     
     return currEntry;
@@ -273,6 +273,20 @@ int removeManifestEntry(char* displayName, char* userName) {
         }
     };
 
-    // ESP_LOGI(TAG, "Failed to remove manifest entry");
+    // ESP_LOGE(TAG, "Failed to remove manifest entry");
     return MANIFEST_FAILURE;
+}
+
+int wipeStorageData() {
+    while(content->head != NULL) {
+        char path[256] = {'\0'};
+        strcat(path, "/sdcard/");
+        strcat(path, content->head->displayName);
+        remove(path);
+        ManifestEntry* tmp = content->head;
+        content->head = content->head->next;
+        free(tmp);
+    }
+    ESP_LOGI(TAG, "Successfully wiped SD storage data");
+    return MANIFEST_SUCCESS;
 }

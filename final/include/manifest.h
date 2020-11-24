@@ -29,5 +29,6 @@ int addManifestEntry(char* displayName, char* login, char* url);
 ManifestEntry* getManifestEntry(char* displayName, char* userName);
 int removeManifestEntry(char* displayName, char* userName);
 int deallocateManifest();
+int wipeStorageData();
 
 #endif
