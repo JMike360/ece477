@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO.Ports;
 
+// RSA algorithm reference:
+// https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.rsacryptoserviceprovider?view=net-5.0
+
 namespace SkeletonKeyGUIFinal
 {
     public partial class Form3 : Form
@@ -17,6 +20,8 @@ namespace SkeletonKeyGUIFinal
         int commMode = -1;
         String[] ports;
         SerialPort port;
+        RSAParameters my_rsa;
+        RSAParameters client_rsa;
 
         public Form3()
         {
@@ -115,7 +120,6 @@ namespace SkeletonKeyGUIFinal
             button1.Text = "Disconnect";
             enableControls();
 
-            // start of Andrew's addiion
             byte[] endCodeByte = Encoding.ASCII.GetBytes("\n");
             byte[] startCodeByte = {Convert.ToByte('#'), Convert.ToByte(0xa)};
 
@@ -128,9 +132,9 @@ namespace SkeletonKeyGUIFinal
             }
             else if (str == "0") {
                 MessageBox.Show("Bluetooth connection established");
+                rsaKeyExchange();
             }
             commMode = Int32.Parse(str);
-            // end of Andrew's addiion
         }
         private void disconnectFromESP()
         {
@@ -138,6 +142,34 @@ namespace SkeletonKeyGUIFinal
             port.Close();
             button1.Text = "Connect";
             disableControls();
+        }
+        private void rsaKeyExchange() {
+            // step 1. GUI connect to ESP32 via unknown COM port
+            // step 2. ESP32 informs GUI that COM port was for Bluetooth
+            // step 3. ESP32 sends public key to GUI
+            // step 4. GUI sends public key to ESP32
+
+            // receive RSA public key from ESP32
+            UnicodeEncoding ByteConverter = new UnicodeEncoding();
+            client_rsa = new RSAParameters();
+            client_rsa.Exponent = ByteConverter.GetBytes(port.ReadLine());
+            client_rsa.Modulus = ByteConverter.GetBytes(port.ReadLine());
+
+            // generate and sent RSA public key to ESP32
+            RSACryptoServiceProvider rsa_provider = new RSACryptoServiceProvider();
+            my_rsa = rsa_provider.ExportParameters(true);
+            // public exponent:     8 bytes
+            // public modulus:      512 bytes
+            // two divider chars:   2 bytes
+            // total send length:    522 bytes
+            int send_len = 522;
+            byte[] byteToSend = {Convert.ToByte('#'), Convert.ToByte(0xb), send_len};
+            byte[] sepBYTE = Encoding.ASCII.GetBytes("\n");
+            byteToSend = Combine(bytesToSend, my_rsa.Exponent);
+            byteToSend = Combine(bytesToSend, sepByte);
+            byteToSend = Combine(byteToSend, my_rsa.Modulus);
+            byteToSend = Combine(byteToSend, sepByte);
+            port.Write(byteToSend, 0, send_len);
         }
 
         private void button4_Click(object sender, EventArgs e)

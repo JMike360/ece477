@@ -70,7 +70,6 @@ namespace SkeletonKeyGUIFinal
             button1.Text = "Disconnect";
             enableControls();
 
-            // start of Andrew's addiion
             byte[] endCodeByte = Encoding.ASCII.GetBytes("\n");
             byte[] startCodeByte = {Convert.ToByte('#'), Convert.ToByte(0xa)};
 
@@ -85,7 +84,6 @@ namespace SkeletonKeyGUIFinal
                 MessageBox.Show("Bluetooth connection established");
             }
             commMode = Int32.Parse(str);
-            // end of Andrew's addiion
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)

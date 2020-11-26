@@ -26,12 +26,13 @@ https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.rsapara
 static mbedtls_rsa_context my_rsa;
 static mbedtls_rsa_context client_rsa;
 
+static int client_rsa_received = 0;
+
 typedef struct {
     uint64_t public_exp;
     char divider;
     uint64_t public_mod[64];
     char end;
-    char nullterm;
 } rsa_pub_info;
 
 static int myrand(void *rng_state, unsigned char *output, size_t len) {
@@ -73,6 +74,15 @@ int my_rsa_init() {
     return RSA_SUCCESS;
 }
 
+int my_rsa_key_send() {
+    rsa_pub_info key_to_send = {.divider = '\n', .end = '\n'};
+    key_to_send.public_exp = *my_rsa.E.p;
+    memcpy(key_to_send.public_mod, my_rsa.N.p, 64 * sizeof(mbedtls_mpi_uint));
+    btSendData((uint8_t*)&key_to_send, 0, sizeof(key_to_send));
+    ESP_LOGI(TAG, "Successfully sent RSA key pair");
+    return RSA_SUCCESS;
+}
+
 int my_rsa_key_recv(uint8_t* data) {
     rsa_pub_info key_to_recv;
     memcpy(&key_to_recv, data, sizeof(key_to_recv));
@@ -88,23 +98,18 @@ int my_rsa_key_recv(uint8_t* data) {
     memcpy(client_rsa.N.p, key_to_recv.public_mod, 64 * sizeof(mbedtls_mpi_uint));
 
     client_rsa.len = KEYSIZE / 8;
+    client_rsa_received = 1;
 
     ESP_LOGI(TAG, "Successfully received RSA key pair");
-    return my_rsa_key_send();
-}
-
-int my_rsa_key_send() {
-    rsa_pub_info key_to_send = {.divider = '\n', .end = '\n', .nullterm = '\0'};
-    key_to_send.public_exp = *my_rsa.E.p;
-    memcpy(key_to_send.public_mod, my_rsa.N.p, 64 * sizeof(mbedtls_mpi_uint));
-    btSendData((uint8_t*)&key_to_send, 0, sizeof(key_to_send));
-    ESP_LOGI(TAG, "Successfully sent RSA key pair");
     return RSA_SUCCESS;
 }
 
 int my_rsa_encrypt(uint8_t* plaintext, uint8_t** ciphertext) {
+    if (client_rsa_received == 0)
+        return RSA_FAILURE;
+        
     *ciphertext = calloc(KEYSIZE / 8, sizeof(**ciphertext));
-    if (mbedtls_rsa_public(&my_rsa, plaintext, *ciphertext) != 0) {
+    if (mbedtls_rsa_public(&client_rsa, plaintext, *ciphertext) != 0) {
         ESP_LOGE(TAG, "Failed to encrypt from %s", plaintext);
         return RSA_FAILURE;
     }
