@@ -14,6 +14,7 @@ namespace SkeletonKeyGUIFinal
     public partial class Form3 : Form
     {
         bool isConnected = false;
+        int commMode = -1;
         String[] ports;
         SerialPort port;
 
@@ -113,6 +114,23 @@ namespace SkeletonKeyGUIFinal
             port.Open();
             button1.Text = "Disconnect";
             enableControls();
+
+            // start of Andrew's addiion
+            byte[] endCodeByte = Encoding.ASCII.GetBytes("\n");
+            byte[] startCodeByte = {Convert.ToByte('#'), Convert.ToByte(0xa)};
+
+            byte[] bytesToSend = Combine(startCodeByte, endCodeByte);
+
+            port.Write(bytesToSend, 0, 3);
+            string str = port.ReadLine();
+            if (str == "1") {
+                MessageBox.Show("UART connection established");
+            }
+            else if (str == "0") {
+                MessageBox.Show("Bluetooth connection established");
+            }
+            commMode = Int32.Parse(str);
+            // end of Andrew's addiion
         }
         private void disconnectFromESP()
         {

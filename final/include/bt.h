@@ -6,6 +6,6 @@
 void btInit();
 void btRegister();
 void btSetPairing();
-void btSendData(uint8_t* data);
+void btSendData(uint8_t* data, int encryptMsg, int len);
 
 #endif

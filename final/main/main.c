@@ -92,7 +92,7 @@ void app_main(void) {
             ESP_LOGE(TAG, "Fingerprint enrollment failed");
     }
 
-        if (readManifestToMemory() == MANIFEST_FAILURE)
+    if (readManifestToMemory() == MANIFEST_FAILURE)
         return;
 
     uint8_t* data = (uint8_t*) malloc(BUF_SIZE_MAIN);

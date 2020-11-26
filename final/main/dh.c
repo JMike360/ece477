@@ -26,7 +26,6 @@ int main(){
 void diff_hellman_send(double public_key_to_send, double private_val) {
     int publicVal = (int)pow(public_key_to_send, private_val) % COMMON_NUM;
     char toSend[3] = {(publicVal & 0xff00) >> 8, (publicVal & 0x00ff) >> 0, '\n'};
-    btSendData(toSend);
 }
 
 int diff_hellman_recv(double exchanged_key, double private_val) {
