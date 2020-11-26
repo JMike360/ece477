@@ -155,7 +155,7 @@ namespace SkeletonKeyGUIFinal
 
                 byte[] FinalBytes = Combine(StoreFingerprint, endBYTE);
 
-                port.Write(FinalBytes, 0, 4);
+                port.Write(FinalBytes, 0, 3);
                 MessageBox.Show("Please Scan Fingerprint");
 
                 string str = port.ReadLine();
