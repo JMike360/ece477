@@ -3,6 +3,9 @@
 
 #include <stdint.h>
 
+#define ENCRYPT_OFF 0
+#define ENCRYPT_ON 1
+
 void btInit();
 void btRegister();
 void btSetPairing();

@@ -18,5 +18,6 @@
         "functional": "c",
         "valarray": "c",
         "random": "c"
-    }
+    },
+    "idf.adapterTargetName": "esp32"
 }

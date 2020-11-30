@@ -40,7 +40,7 @@ int cmd_request_entries(int mode) {
     if (mode == UART_MODE)
         uart_write_bytes(UART_NUM_0, buffer, filesize);
     else if (mode == BT_MODE)
-        btSendData((uint8_t*) buffer, 1, filesize);
+        btSendData((uint8_t*) buffer, ENCRYPT_ON, filesize);
     free(buffer);
     fclose(fp);
     ESP_LOGI(TAG, "Successfully requested manifest entry");
@@ -84,7 +84,7 @@ int cmd_request_credential(char* displayName, char* username, int mode) {
     if (mode == UART_MODE)
         uart_write_bytes(UART_NUM_0, plaintext, decryptedLen+2);
     else if (mode == BT_MODE)
-        btSendData((uint8_t*) plaintext, 1, decryptedLen+2);
+        btSendData((uint8_t*) plaintext, ENCRYPT_ON, decryptedLen+2);
         
     free(buffer);
     free(plaintext);
@@ -276,7 +276,7 @@ void doCMD(uint8_t* data, int mode) {
                 toSend[0] = '0';
                 toSend[1] = '\n';
                 if (mode == BT_MODE)
-                    btSendData((uint8_t*) toSend, 1, 2);
+                    btSendData((uint8_t*) toSend, ENCRYPT_ON, 2);
                 else if (mode == UART_MODE)
                     uart_write_bytes(UART_NUM_0, toSend, 2);
             }
@@ -291,7 +291,7 @@ void doCMD(uint8_t* data, int mode) {
             toSend[0] = returnStatus + '0';
             toSend[1] = '\n';
             if (mode == BT_MODE)
-                btSendData((uint8_t*) toSend, 1, 2);
+                btSendData((uint8_t*) toSend, ENCRYPT_ON, 2);
             else if (mode == UART_MODE)
                 uart_write_bytes(UART_NUM_0, toSend, 2);
             break;
@@ -299,7 +299,7 @@ void doCMD(uint8_t* data, int mode) {
             toSend[0] = mode;
             toSend[1] = '\n';
             if (mode == BT_MODE)
-                btSendData((uint8_t*) toSend, 1, 2);
+                btSendData((uint8_t*) toSend, ENCRYPT_ON, 2);
             else if (mode == UART_MODE)
                 uart_write_bytes(UART_NUM_0, toSend, 2);
             break;

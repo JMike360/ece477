@@ -18,17 +18,6 @@
 #define BUF_SIZE_MAIN (1024)
 #define TAG "MAIN"
 
-/**************************************************
- * ledInit
- * Initialize GPIO pin for LEDs using GPIO_GREEN and
- * GPIO_RED and set them to output mode
- * 
- * input:
- * void
- * 
- * output:
- * void
-**************************************************/
 void ledInit(void) {
     gpio_pad_select_gpio(GPIO_GREEN);
     gpio_pad_select_gpio(GPIO_RED);
@@ -37,18 +26,6 @@ void ledInit(void) {
     ESP_LOGI(TAG, "Successfully initialized LED GPIO");
 }
 
-/**************************************************
- * _clearDataBuffer
- * Read UART or Bluetooth messages depending on mode
- * and obtains the command string. This function stays
- * in an infinite loop until the terminate command is given.
- * 
- * input:
- * uint8_t* - buffer for storing message
- * 
- * output:
- * void
-**************************************************/
 void readUARTCMD(uint8_t* data) {
     int i = 0;
     do {
@@ -60,17 +37,6 @@ void readUARTCMD(uint8_t* data) {
     doCMD(data, UART_MODE);
 }
 
-/**************************************************
- * app_main
- * Initialize SPI, GPIO, SD card, manifest and prepare
- * device for listening to incoming UART commands.
- * 
- * input:
- * void
- * 
- * output:
- * void
-**************************************************/
 void app_main(void) {
     sdspiInit();
     mountSD();
