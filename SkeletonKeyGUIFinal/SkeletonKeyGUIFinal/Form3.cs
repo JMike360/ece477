@@ -127,15 +127,22 @@ namespace SkeletonKeyGUIFinal
             byte[] bytesToSend = Combine(startCodeByte, endCodeByte);
 
             port.Write(bytesToSend, 0, 3);
-            string str = port.ReadLine();
-            if (str == "1") {
+            string recvStr = port.ReadLine();
+            byte[] receivedByte = Encoding.ASCII.GetBytes(recvStr);
+            if (receivedByte[0] == 1)
+            {
                 MessageBox.Show("UART connection established");
             }
-            else if (str == "0") {
+            else if (receivedByte[0] == 0)
+            {
                 MessageBox.Show("Bluetooth connection established");
                 rsaKeyExchange();
             }
-            commMode = Int32.Parse(str);
+            else
+            {
+                MessageBox.Show("Unknown commMode " + Convert.ToString(receivedByte[0]) + " detected");
+            }
+            commMode = Convert.ToInt16(receivedByte[0]);
         }
         private void disconnectFromESP()
         {
@@ -177,7 +184,8 @@ namespace SkeletonKeyGUIFinal
         private void button4_Click(object sender, EventArgs e)
         {
             //Clear fingerprint and Deivce
-            DialogResult dialogResult = MessageBox.Show("Sure", "This will clear the device. Do you wish to countinue", MessageBoxButtons.YesNo);
+            
+            DialogResult dialogResult = MessageBox.Show("Sure", "This will clear the device. Do you wish to continue", MessageBoxButtons.YesNo);
             if (dialogResult == DialogResult.Yes)
             {
                 string end = "\n";
