@@ -53,8 +53,6 @@ void app_main(void) {
     sleep(2);
     ESP_LOGI(TAG, "All initialization complete");
 
-    while(getConnected() == 0);
-
     while (checkFingerEnrolled() == 0) {
         if (enrollFinger(0) == -1)
             ESP_LOGE(TAG, "Fingerprint enrollment failed");

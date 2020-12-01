@@ -12,14 +12,9 @@
 #define TAG "CMD"
 
 static int running = 1;
-static int connected = 0;
 
 int getRunning() {
     return running;
-}
-
-int getConnected() {
-    return connected;
 }
 
 int cmd_led_red(int status) {
@@ -206,8 +201,8 @@ int cmd_store_fingerprint() {
 }
 
 int cmd_delete_fingerprint() {
-    //if (authenticateFinger() == 0)
-    //    return CMD_FAILURE;
+    if (authenticateFinger() == 0)
+        return CMD_FAILURE;
 
     if (clearFingerprintData() == -1)
         return CMD_FAILURE;
@@ -303,7 +298,6 @@ void doCMD(uint8_t* data, int mode) {
                 uart_write_bytes(UART_NUM_0, toSend, 2);
             break;
         case CMD_QUERY_COMM_MODE:
-            connected = 1;
             toSend[0] = mode;
             toSend[1] = '\n';
             if (mode == BT_MODE) {
