@@ -198,16 +198,16 @@ namespace SkeletonKeyGUIFinal
                 byte[] FinalBytes = Combine(StoreFingerprint, endBYTE);
 
                 port.Write(FinalBytes, 0, 3);
-                MessageBox.Show("Please Scan Fingerprint");
+                MessageBox.Show("In order to reset the device, a new master fingeprint must be enrolled.\nPlease Scan Fingerprint");
 
                 string str = port.ReadLine();
                 if (str == "1")
                 {
                     MessageBox.Show("Device Clear Success. Please Restart Device and Scan New Fingerprint when Device Lights Green");
                 }
-                else if (str == "0")
+                else
                 {
-                    MessageBox.Show("Device Clear Failure");
+                    MessageBox.Show("Device Clear Failure\nReceived code: " + str);
                 }
 
             }
