@@ -97,7 +97,6 @@ static void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
         ESP_LOGI(SPP_TAG, "ESP_SPP_SRV_OPEN_EVT");
         deviceHandle=param->srv_open.handle; //储存这个句柄
         ESP_LOGI(SPP_TAG, "handle:%d\n",deviceHandle);
-        my_rsa_key_send();
         break;
     default:
         break;

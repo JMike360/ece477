@@ -259,6 +259,8 @@ void doCMD(uint8_t* data, int mode) {
         case CMD_POWER_OFF:
             running = 0;
             break;
+        case CMD_QUERY_COMM_MODE:
+            break;
         case CMD_RSA_KEY_EXCHANGE:
             my_rsa_key_recv(&data[3]);
             break;
@@ -298,8 +300,10 @@ void doCMD(uint8_t* data, int mode) {
         case CMD_QUERY_COMM_MODE:
             toSend[0] = mode;
             toSend[1] = '\n';
-            if (mode == BT_MODE)
-                btSendData((uint8_t*) toSend, ENCRYPT_ON, 2);
+            if (mode == BT_MODE) {
+                btSendData((uint8_t*) toSend, ENCRYPT_OFF, 2);
+                my_rsa_key_send();
+            }
             else if (mode == UART_MODE)
                 uart_write_bytes(UART_NUM_0, toSend, 2);
             break;
