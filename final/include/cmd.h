@@ -28,7 +28,6 @@
 
 void doCMD(uint8_t* data, int mode);
 int getRunning();
-int getConnected();
 int cmd_led_red(int status);
 int cmd_led_green(int status);
 int cmd_request_entries(int mode);
