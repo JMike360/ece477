@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO.Ports;
+using System.Security.Cryptography;
 
 // RSA algorithm reference:
 // https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.rsacryptoserviceprovider?view=net-5.0
@@ -163,13 +164,14 @@ namespace SkeletonKeyGUIFinal
             // two divider chars:   2 bytes
             // total send length:    522 bytes
             int send_len = 522;
-            byte[] byteToSend = {Convert.ToByte('#'), Convert.ToByte(0xb), send_len};
-            byte[] sepBYTE = Encoding.ASCII.GetBytes("\n");
-            byteToSend = Combine(bytesToSend, my_rsa.Exponent);
-            byteToSend = Combine(bytesToSend, sepByte);
+            byte[] byteToSend = {Convert.ToByte('#'), Convert.ToByte(0xb), Convert.ToByte(send_len)};
+            byte[] sepByte = Encoding.ASCII.GetBytes("\n");
+            byteToSend = Combine(byteToSend, my_rsa.Exponent);
+            byteToSend = Combine(byteToSend, sepByte);
             byteToSend = Combine(byteToSend, my_rsa.Modulus);
             byteToSend = Combine(byteToSend, sepByte);
             port.Write(byteToSend, 0, send_len);
+            // port.ReadLine(); //read rsa param from ESP32
         }
 
         private void button4_Click(object sender, EventArgs e)

@@ -18,6 +18,7 @@ namespace SkeletonKeyGUIFinal
         bool isConnected = false;
         String[] ports;
         SerialPort port;
+        int commMode = -1;
 
         public Form7()
         {
