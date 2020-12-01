@@ -130,10 +130,9 @@ namespace SkeletonKeyGUIFinal
 
             client_rsa = new RSAParameters();
             client_rsa.Exponent = Encoding.ASCII.GetBytes(port.ReadLine());
-
             MessageBox.Show("received pub exp: " + Convert.ToString(BitConverter.ToInt64(client_rsa.Exponent, 0)));
-            client_rsa.Modulus = Encoding.ASCII.GetBytes(port.ReadLine());
 
+            client_rsa.Modulus = Encoding.ASCII.GetBytes(port.ReadLine());
             MessageBox.Show("received pub mod");
 
             // generate and send RSA public key to ESP32
