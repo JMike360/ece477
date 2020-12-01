@@ -194,6 +194,8 @@ int wipeStorageData() {
         content->head = content->head->next;
         free(tmp);
     }
+    // wipe content of MANIFEST file
+    writeManifestToFile();
     ESP_LOGI(TAG, "Successfully wiped SD storage data");
     return MANIFEST_SUCCESS;
 }

@@ -204,8 +204,10 @@ int cmd_delete_fingerprint() {
     if (authenticateFinger() == 0)
         return CMD_FAILURE;
 
-    if (clearFingerprintData() == -1)
+    if (clearFingerprintData() == -1) {
+        ESP_LOGE(TAG, "Failed to clear fingerprint data");
         return CMD_FAILURE;
+    }
     
     if (wipeStorageData() == MANIFEST_FAILURE)
         return MANIFEST_FAILURE;

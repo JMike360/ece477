@@ -48,7 +48,7 @@ void app_main(void) {
     
     uart_begin(UART_NUM_0);
     uart_begin(UART_NUM_2);
-    my_rsa_init();
+    // my_rsa_init();
 
     sleep(2);
     ESP_LOGI(TAG, "All initialization complete");
@@ -60,6 +60,9 @@ void app_main(void) {
 
     if (readManifestToMemory() == MANIFEST_FAILURE)
         return;
+
+    cmd_delete_fingerprint();
+    while(1);
 
     uint8_t* data = (uint8_t*) malloc(BUF_SIZE_MAIN);
     while(getRunning()) {
