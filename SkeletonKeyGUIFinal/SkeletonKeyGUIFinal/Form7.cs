@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO.Ports;
-
+using System.Security.Cryptography;
 
 namespace SkeletonKeyGUIFinal
 {
@@ -19,6 +19,8 @@ namespace SkeletonKeyGUIFinal
         String[] ports;
         SerialPort port;
         int commMode = -1;
+        RSAParameters my_rsa;
+        RSAParameters client_rsa;
 
         public Form7()
         {
@@ -79,20 +81,24 @@ namespace SkeletonKeyGUIFinal
             button1.Text = "Disconnect";
             enableControls();
 
-            byte[] endCodeByte = Encoding.ASCII.GetBytes("\n");
-            byte[] startCodeByte = {Convert.ToByte('#'), Convert.ToByte(0xa)};
-
-            byte[] bytesToSend = Combine(startCodeByte, endCodeByte);
+            byte[] bytesToSend = {Convert.ToByte('#'), Convert.ToByte(0xa), Convert.ToByte('\n')};
 
             port.Write(bytesToSend, 0, 3);
-            string str = port.ReadLine();
-            if (str == "1") {
+            
+            port.DiscardInBuffer();
+            string recvStr = port.ReadLine();
+            byte[] receivedByte = Encoding.ASCII.GetBytes(recvStr);
+            if (receivedByte[0] == 1) {
                 MessageBox.Show("UART connection established");
             }
-            else if (str == "0") {
+            else if (receivedByte[0] == 0) {
                 MessageBox.Show("Bluetooth connection established");
+                rsaKeyExchange();
             }
-            commMode = Int32.Parse(str);
+            else {
+                MessageBox.Show("Unknown commMode " + Convert.ToString(receivedByte[0]) + " detected");
+            }
+            commMode = Convert.ToInt16(receivedByte[0]);
         }
         private void disconnectFromESP()
         {
@@ -101,6 +107,46 @@ namespace SkeletonKeyGUIFinal
             button1.Text = "Connect";
             disableControls();
             resetDefaults();
+        }
+
+        private void rsaKeyExchange() {
+            MessageBox.Show("attempting key exchange");
+            // step 1. GUI connect to ESP32 via unknown COM port
+            // step 2. ESP32 informs GUI that COM port was for Bluetooth
+            // step 3. ESP32 sends public key to GUI
+            // step 4. GUI sends public key to ESP32
+
+            // receive RSA public key from ESP32
+            // UnicodeEncoding ByteConverter = new UnicodeEncoding();
+            // string toread = "";
+            // toread += port.ReadLine() + "\n";
+            // toread += port.ReadLine() + "\n";
+            // Byte[] toprint = Encoding.ASCII.GetBytes(toread);
+            // string toPrinttext = "";
+            // for(int i=0; i < toprint.Length; i++) {
+            //     toPrinttext += Convert.ToString(toprint[i]) + ", ";
+            // }
+            // MessageBox.Show(toPrinttext);
+
+            client_rsa = new RSAParameters();
+            client_rsa.Exponent = Encoding.ASCII.GetBytes(port.ReadLine());
+
+            MessageBox.Show("received pub exp: " + Convert.ToString(BitConverter.ToInt64(client_rsa.Exponent, 0)));
+            client_rsa.Modulus = Encoding.ASCII.GetBytes(port.ReadLine());
+
+            MessageBox.Show("received pub mod");
+
+            // generate and send RSA public key to ESP32
+            RSACryptoServiceProvider rsa_provider = new RSACryptoServiceProvider();
+            my_rsa = rsa_provider.ExportParameters(true);
+            byte[] byteToSend = {Convert.ToByte('#'), Convert.ToByte(0xb)};
+            byte[] sepByte = Encoding.ASCII.GetBytes("\n");
+            byteToSend = Combine(byteToSend, my_rsa.Exponent);
+            byteToSend = Combine(byteToSend, sepByte);
+            byteToSend = Combine(byteToSend, my_rsa.Modulus);
+            byteToSend = Combine(byteToSend, sepByte);
+            MessageBox.Show("sending pub key");
+            port.Write(byteToSend, 0, byteToSend.Length);
         }
 
         private void button7_Click(object sender, EventArgs e)
