@@ -201,8 +201,8 @@ int cmd_store_fingerprint() {
 }
 
 int cmd_delete_fingerprint() {
-    if (authenticateFinger() == 0)
-        return CMD_FAILURE;
+    //if (authenticateFinger() == 0)
+    //    return CMD_FAILURE;
 
     if (clearFingerprintData() == -1)
         return CMD_FAILURE;
