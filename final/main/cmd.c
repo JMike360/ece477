@@ -216,9 +216,17 @@ int cmd_delete_fingerprint() {
     return CMD_SUCCESS;
 }
 
-void doCMD(uint8_t* data, int mode) {
+void doCMD(uint8_t* recvData, int mode) {
     int returnStatus = 0;
     char *displayName, *username, *url, *pw;
+
+    uint8_t* data = NULL;
+    // decrypt msg if bluetooth and key has been exchanged
+    if (mode == BT_MODE && isKeyReceived())
+        my_rsa_decrypt(recvData, &data);
+    else
+        data = recvData;
+
     switch (data[1]) {
         case CMD_LED_RED:
             returnStatus = cmd_led_red(data[3]);

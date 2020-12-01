@@ -35,6 +35,10 @@ typedef struct {
     char end;
 } rsa_pub_info;
 
+int isKeyReceived() {
+    return client_rsa_received;
+}
+
 static int myrand(void *rng_state, unsigned char *output, size_t len) {
     size_t olen;
     return mbedtls_hardware_poll(rng_state, output, len, &olen);
@@ -78,7 +82,7 @@ int my_rsa_key_send() {
     rsa_pub_info key_to_send = {.divider = '\n', .end = '\n'};
     key_to_send.public_exp = *my_rsa.E.p;
     memcpy(key_to_send.public_mod, my_rsa.N.p, 64 * sizeof(mbedtls_mpi_uint));
-    btSendData((uint8_t*)&key_to_send, 0, sizeof(key_to_send));
+    btSendData((uint8_t*)&key_to_send, ENCRYPT_OFF, sizeof(key_to_send));
     ESP_LOGI(TAG, "Successfully sent RSA key pair");
     return RSA_SUCCESS;
 }

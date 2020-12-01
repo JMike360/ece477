@@ -9,6 +9,7 @@
 #define RSA_FAILURE 0
 
 int my_rsa_init();
+int isKeyReceived();
 int my_rsa_key_send();
 int my_rsa_key_recv(uint8_t* data);
 int my_rsa_encrypt(uint8_t* plaintext, uint8_t** ciphertext);
