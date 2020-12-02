@@ -496,7 +496,6 @@ int recvSearchLibraryAck(){
     sensor_packet* expected = createPacket(PKT_PID_ACK, 0x0007, pkt->data, pkt->checksum);
     if(!isEqual(pkt, expected)){
         if(response == 0x09){
-            ESP_LOGI(TAG, "No match found.");
         }
         else{
             ESP_LOGI(TAG, "Error - received packet does not match expected format");
@@ -613,7 +612,7 @@ int sendCheckMatchPacket(){
 int recvCheckMatchAck(){
     sensor_packet* pkt = recvPacketFromByteStream(14);
     if(pkt == NULL){
-        printf("Error: null packet received\n");
+        ESP_LOGE(TAG, "Error: null packet received\n");
         return -1;
     }
     printPacket(pkt);
@@ -861,59 +860,55 @@ int enrollFinger(int templateID){
 //returns 1 if finger matches, 0 otherwise
 // allow 3 tries
 int authenticateFinger(){ 
-    uart_begin(UART_NUM_2);
-    
-    sendHandshakePacket();
-    int hsResp = recvHandshakeAck();
-    if(hsResp != 0){
-        #ifdef _DEBUG
-        ESP_LOGI(TAG, "Handshake failed...\n");
-        #endif
-        return 0;
-    }
+    int tries = 0;
+    int retStatus = 0;
+    while ((tries++ < 3) && (retStatus == 0)) {
+        uart_begin(UART_NUM_2);
+        
+        sendHandshakePacket();
+        int hsResp = recvHandshakeAck();
+        if(hsResp != 0){
+            ESP_LOGE(TAG, "Handshake failed...\n");
+            retStatus = 0;
+        }
 
-    captureImage(1000);
-    sendGenerateFileFromImgPacket(0x01);
-    int genFileResp1 = recvGenerateFileFromImgAck();
-    if(genFileResp1 != 0){
-        #ifdef _DEBUG
-        ESP_LOGI(TAG, "Failed to generate charFile for buffer 1...\n");
-        #endif
-        return 0;
-    }
+        captureImage(1000);
+        sendGenerateFileFromImgPacket(0x01);
+        int genFileResp1 = recvGenerateFileFromImgAck();
+        if(genFileResp1 != 0){
+            ESP_LOGE(TAG, "Failed to generate charFile for buffer 1...\n");
+            retStatus = 0;
+        }
 
-    sendLoadTemplatePacket(0x02, 0x0000);
-    int loadResp = recvLoadTemplateAck();
-    if(loadResp != 0){
-        ESP_LOGI(TAG, "Failed to load template to buffer 2...0\n");
-        return 0;
-    }
+        sendLoadTemplatePacket(0x02, 0x0000);
+        int loadResp = recvLoadTemplateAck();
+        if(loadResp != 0){
+            ESP_LOGE(TAG, "Failed to load template to buffer 2...0\n");
+            retStatus = 0;
+        }
 
-    sendCheckMatchPacket();
-    int matchResp = recvCheckMatchAck();
-    if(matchResp == 0){
-        printf("Match found\n");
+        sendCheckMatchPacket();
+        int matchResp = recvCheckMatchAck();
+        if(matchResp == 0){
+            //turn off led
+            sendTurnLedOffPacket();
+            int ledResp = recvTurnLedOffAck();
+            if(ledResp != 0){
+                ESP_LOGE(TAG, "Failed to turn off led...");
+            }
+            ESP_LOGI(TAG, "Successfully authenticated fingerprint");
+            retStatus = 1;
+        }
+
+
         //turn off led
         sendTurnLedOffPacket();
         int ledResp = recvTurnLedOffAck();
         if(ledResp != 0){
-            #ifdef _DEBUG
-            printf("Failed to turn off led...\n");
-            #endif
+            ESP_LOGE(TAG, "Failed to turn off led...");
         }
-        return 1;
     }
-
-
-        //turn off led
-    sendTurnLedOffPacket();
-    int ledResp = recvTurnLedOffAck();
-    if(ledResp != 0){
-        #ifdef _DEBUG
-        ESP_LOGI("Failed to turn off led...\n");
-        #endif
-    }
-    return 0;
+    return retStatus;
 }
 
 //Params: uint8_t** key is the pointer to a uint8_t* to which digest data will be assigned (can be NULL, must be free()'d later)
@@ -943,9 +938,9 @@ int getCryptoKey(uint8_t** key, int* keySize){
         return -1;
     }
 
-    for(int i = 0; i < 10; i++) {
-        ESP_LOGI("debug", "charfile[%d] = %d", i, charFile[i]);
-    }
+    // for(int i = 0; i < 10; i++) {
+    //     ESP_LOGI("debug", "charfile[%d] = %d", i, charFile[i]);
+    // }
 
     size_t inSize = sizeof(uint8_t)*size;
     int result = getHashedCryptoKey(charFile, inSize, key, keySize);

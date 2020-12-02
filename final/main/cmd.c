@@ -160,9 +160,9 @@ int cmd_store_credential(char* displayName, char* username, char* url, char* pw)
         return CMD_FAILURE;
     }
 
-    for(int i = 0; i < keysize; i++) {
-        ESP_LOGI("store cred", "key[%d] = %02x", i, key[i]);
-    }
+    // for(int i = 0; i < keysize; i++) {
+    //     ESP_LOGI("store cred", "key[%d] = %02x", i, key[i]);
+    // }
     
     addManifestEntry(displayName, username, url);
     char path[256] = {'\0'};
@@ -188,8 +188,10 @@ int cmd_delete_credential(char* displayName, char* userName) {
     if (authenticateFinger() == 0)
         return CMD_FAILURE;
 
-    if(!removeManifestEntry(displayName, userName))
+    if(!removeManifestEntry(displayName, userName)) {
+        ESP_LOGE(TAG, "Failed to delete credential for %s", displayName);
         return CMD_FAILURE;
+    }
     char path[256] = {'\0'};
     strcat(path, "/sdcard/");
     strcat(path, displayName);

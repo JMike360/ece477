@@ -270,12 +270,12 @@ int removeManifestEntry(char* displayName, char* userName) {
                 content->tail = prevEntry;
             free(currEntry);
             content->numEntry -= 1;
-            // ESP_LOGI(TAG, "Successfully removed manifest entry");
+            ESP_LOGI(TAG, "Successfully removed manifest entry");
             return MANIFEST_SUCCESS;
         }
     };
 
-    // ESP_LOGE(TAG, "Failed to remove manifest entry");
+    ESP_LOGE(TAG, "Failed to remove manifest entry");
     return MANIFEST_FAILURE;
 }
 
