@@ -1,0 +1,13 @@
+# Target labels
+ bootloader
+# Source files and their labels
+/home/andrew-gan/Documents/git/ece477/final/build/CMakeFiles/bootloader
+/home/andrew-gan/Documents/git/ece477/final/build/CMakeFiles/bootloader.rule
+/home/andrew-gan/Documents/git/ece477/final/build/CMakeFiles/bootloader-complete.rule
+/home/andrew-gan/Documents/git/ece477/final/build/bootloader-prefix/src/bootloader-stamp/bootloader-install.rule
+/home/andrew-gan/Documents/git/ece477/final/build/bootloader-prefix/src/bootloader-stamp/bootloader-mkdir.rule
+/home/andrew-gan/Documents/git/ece477/final/build/bootloader-prefix/src/bootloader-stamp/bootloader-download.rule
+/home/andrew-gan/Documents/git/ece477/final/build/bootloader-prefix/src/bootloader-stamp/bootloader-update.rule
+/home/andrew-gan/Documents/git/ece477/final/build/bootloader-prefix/src/bootloader-stamp/bootloader-patch.rule
+/home/andrew-gan/Documents/git/ece477/final/build/bootloader-prefix/src/bootloader-stamp/bootloader-configure.rule
+/home/andrew-gan/Documents/git/ece477/final/build/bootloader-prefix/src/bootloader-stamp/bootloader-build.rule
