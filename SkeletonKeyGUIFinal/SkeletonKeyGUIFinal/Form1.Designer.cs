@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.panelSideMenu = new System.Windows.Forms.Panel();
             this.buttonHelp = new System.Windows.Forms.Button();
@@ -43,16 +44,19 @@
             this.buttonUser = new System.Windows.Forms.Button();
             this.Logo = new System.Windows.Forms.Panel();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
-            this.panelChildForm = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.panelChildForm = new System.Windows.Forms.Panel();
+            this.label1 = new System.Windows.Forms.Label();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.label2 = new System.Windows.Forms.Label();
             this.panelSideMenu.SuspendLayout();
             this.panelPassManagerSubMenu.SuspendLayout();
             this.panelConnectSkelKeySubMenu.SuspendLayout();
             this.panelUserSubmenu.SuspendLayout();
             this.Logo.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
-            this.panelChildForm.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.panelChildForm.SuspendLayout();
             this.SuspendLayout();
             // 
             // panelSideMenu
@@ -269,16 +273,6 @@
             this.pictureBox2.TabIndex = 0;
             this.pictureBox2.TabStop = false;
             // 
-            // panelChildForm
-            // 
-            this.panelChildForm.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(30)))), ((int)(((byte)(35)))));
-            this.panelChildForm.Controls.Add(this.pictureBox1);
-            this.panelChildForm.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelChildForm.Location = new System.Drawing.Point(333, 0);
-            this.panelChildForm.Name = "panelChildForm";
-            this.panelChildForm.Size = new System.Drawing.Size(952, 776);
-            this.panelChildForm.TabIndex = 1;
-            // 
             // pictureBox1
             // 
             this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
@@ -288,6 +282,45 @@
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
+            // 
+            // panelChildForm
+            // 
+            this.panelChildForm.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(30)))), ((int)(((byte)(35)))));
+            this.panelChildForm.Controls.Add(this.label2);
+            this.panelChildForm.Controls.Add(this.label1);
+            this.panelChildForm.Controls.Add(this.pictureBox1);
+            this.panelChildForm.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelChildForm.Location = new System.Drawing.Point(333, 0);
+            this.panelChildForm.Name = "panelChildForm";
+            this.panelChildForm.Size = new System.Drawing.Size(952, 776);
+            this.panelChildForm.TabIndex = 1;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.ForeColor = System.Drawing.SystemColors.ControlLight;
+            this.label1.Location = new System.Drawing.Point(204, 606);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(541, 17);
+            this.label1.TabIndex = 1;
+            this.label1.Text = "On First Start Up, If Device Is Lit Green then The Device is not Resistered to a " +
+    "User .";
+            this.label1.Click += new System.EventHandler(this.label1_Click_1);
+            // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(61, 4);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.ForeColor = System.Drawing.SystemColors.Control;
+            this.label2.Location = new System.Drawing.Point(236, 634);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(461, 17);
+            this.label2.TabIndex = 2;
+            this.label2.Text = " To Register User to Device, scan new Fingerprint until no longer green.";
             // 
             // Form1
             // 
@@ -306,8 +339,9 @@
             this.panelUserSubmenu.ResumeLayout(false);
             this.Logo.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
-            this.panelChildForm.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.panelChildForm.ResumeLayout(false);
+            this.panelChildForm.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -327,9 +361,12 @@
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button buttonUser;
         private System.Windows.Forms.Panel Logo;
-        private System.Windows.Forms.Panel panelChildForm;
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.Panel panelChildForm;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.Label label2;
     }
 }
 
