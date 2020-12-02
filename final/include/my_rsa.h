@@ -3,11 +3,17 @@
 
 #include <stdint.h>
 
-#define RSA_SEND_LEN (4096 / 8)
+#define KEYSIZE 2048
 
-void my_rsa_init();
-void my_rsa_encrypt(uint8_t* plaintext, uint8_t* ciphertext);
-void my_rsa_decrypt(uint8_t* ciphertext, uint8_t* plaintext);
-void my_rsa_deinit();
+#define RSA_SUCCESS 1
+#define RSA_FAILURE 0
+
+int my_rsa_init();
+int isKeyReceived();
+int my_rsa_key_send();
+int my_rsa_key_recv(uint8_t* data);
+int my_rsa_encrypt(uint8_t* plaintext, uint8_t** ciphertext);
+int my_rsa_decrypt(uint8_t* ciphertext, uint8_t** plaintext);
+int my_rsa_deinit();
 
 #endif

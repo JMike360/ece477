@@ -82,7 +82,7 @@ void app_main(void) {
     
     uart_begin(UART_NUM_0);
     uart_begin(UART_NUM_2);
-    // my_rsa_init();
+    my_rsa_init();
 
     sleep(2);
     ESP_LOGI(TAG, "All initialization complete");
