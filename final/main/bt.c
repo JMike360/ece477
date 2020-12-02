@@ -49,8 +49,12 @@ void btSendData(uint8_t* data, int encryptMsg, int len) {
         uint8_t* encrypted_data = NULL;
         if (my_rsa_encrypt(data, &encrypted_data) == RSA_FAILURE)
             return;
-        esp_spp_write(deviceHandle, KEYSIZE / 8, encrypted_data);
+        uint8_t* bufferToSend = malloc(KEYSIZE / 8 + 1);
+        memcpy(bufferToSend, encrypted_data, 256);
+        bufferToSend[KEYSIZE / 8] = '\n';
+        esp_spp_write(deviceHandle, KEYSIZE / 8 + 1, bufferToSend);
         free(encrypted_data);
+        free(bufferToSend);
     }
     else
         esp_spp_write(deviceHandle, len, data);

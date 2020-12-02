@@ -77,14 +77,14 @@ int cmd_request_credential(char* displayName, char* username, int mode) {
     char* plaintext = NULL;
     fread(buffer, sizeof(char), filesize, fp);
     my_aes_decrypt((uint8_t*)buffer, key, (uint8_t**)&plaintext);
-    int decryptedLen = strlen(plaintext);
-    plaintext[decryptedLen] = '\n';
-    plaintext[decryptedLen+1] = '\0';
 
-    if (mode == UART_MODE)
-        uart_write_bytes(UART_NUM_0, plaintext, decryptedLen+2);
+    if (mode == UART_MODE) {
+        plaintext[strlen(plaintext)] = '\n';
+        plaintext[strlen(plaintext)] = '\0';
+        uart_write_bytes(UART_NUM_0, plaintext, strlen(plaintext));
+    }
     else if (mode == BT_MODE)
-        btSendData((uint8_t*) plaintext, ENCRYPT_ON, decryptedLen+2);
+        btSendData((uint8_t*) plaintext, ENCRYPT_ON, strlen(plaintext));
         
     free(buffer);
     free(plaintext);
@@ -288,7 +288,7 @@ void doCMD(uint8_t* recvData, int mode) {
                 toSend[0] = '0';
                 toSend[1] = '\n';
                 if (mode == BT_MODE)
-                    btSendData((uint8_t*) toSend, ENCRYPT_ON, 2);
+                    btSendData((uint8_t*) toSend, ENCRYPT_ON, 1);
                 else if (mode == UART_MODE)
                     uart_write_bytes(UART_NUM_0, toSend, 2);
             }
@@ -303,7 +303,7 @@ void doCMD(uint8_t* recvData, int mode) {
             toSend[0] = returnStatus + '0';
             toSend[1] = '\n';
             if (mode == BT_MODE)
-                btSendData((uint8_t*) toSend, ENCRYPT_ON, 2);
+                btSendData((uint8_t*) toSend, ENCRYPT_ON, 1);
             else if (mode == UART_MODE)
                 uart_write_bytes(UART_NUM_0, toSend, 2);
             break;
@@ -311,7 +311,7 @@ void doCMD(uint8_t* recvData, int mode) {
             toSend[0] = mode;
             toSend[1] = '\n';
             if (mode == BT_MODE) {
-                btSendData((uint8_t*) toSend, ENCRYPT_OFF, 2);
+                btSendData((uint8_t*) toSend, ENCRYPT_OFF, 1);
                 my_rsa_key_send();
             }
             else if (mode == UART_MODE)
