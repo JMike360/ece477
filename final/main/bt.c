@@ -43,6 +43,7 @@ static uint32_t deviceHandle=0;
 
 void btSendData(uint8_t* data, int len) {
     // uint8_t* encrypted_data = NULL;
+    // if (isKeyReceived())
     // my_rsa_encrypt(data, encrypted_data);
 
     if(deviceHandle!=0){
