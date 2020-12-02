@@ -31,7 +31,7 @@ static int client_rsa_received = 0;
 typedef struct {
     uint64_t public_exp;
     char divider;
-    uint64_t public_mod[64];
+    uint64_t public_mod[RSA_KEYLEN_IN_BITS / 64];
     char end;
 } rsa_pub_info;
 
@@ -44,8 +44,7 @@ static int myrand(void *rng_state, unsigned char *output, size_t len) {
     return mbedtls_hardware_poll(rng_state, output, len, &olen);
 }
 
-void mbedtls_mpi_printf(const char *name, const mbedtls_mpi *X)
-{
+void mbedtls_mpi_printf(const char *name, const mbedtls_mpi *X) {
     static char buf[2048];
     size_t n;
     memset(buf, 0, sizeof(buf));
@@ -59,30 +58,30 @@ void mbedtls_mpi_printf(const char *name, const mbedtls_mpi *X)
 
 int my_rsa_init() {
     mbedtls_rsa_init(&my_rsa, MBEDTLS_RSA_PRIVATE, 0);
-    int err = mbedtls_rsa_gen_key(&my_rsa, myrand, NULL, KEYSIZE, 65537);
+    int err = mbedtls_rsa_gen_key(&my_rsa, myrand, NULL, RSA_KEYLEN_IN_BITS, 65537);
     if (err != 0) {
         ESP_LOGE(TAG, "Failed to initialize RSA due to error: %x", err);
         return RSA_FAILURE;
     }
 
-    if ((int)my_rsa.len * 8 != KEYSIZE) {
-        ESP_LOGE(TAG, "Incorrect N generated: Expected %d got %d", KEYSIZE, (int)my_rsa.len * 8);
+    if ((int)my_rsa.len * 8 != RSA_KEYLEN_IN_BITS) {
+        ESP_LOGE(TAG, "Incorrect N generated: Expected %d got %d", RSA_KEYLEN_IN_BITS, (int)my_rsa.len * 8);
         return RSA_FAILURE;
     }
 
     int rsa_priv_len = (int)my_rsa.D.n * sizeof(mbedtls_mpi_uint) * 8;
-    if ((int)my_rsa.D.n * sizeof(mbedtls_mpi_uint) * 8 != KEYSIZE)
-        ESP_LOGE(TAG, "Incorrect private exponent length generated: Expected %d got %d", KEYSIZE, rsa_priv_len);
+    if ((int)my_rsa.D.n * sizeof(mbedtls_mpi_uint) * 8 != RSA_KEYLEN_IN_BITS)
+        ESP_LOGE(TAG, "Incorrect private exponent length generated: Expected %d got %d", RSA_KEYLEN_IN_BITS, rsa_priv_len);
 
     ESP_LOGI(TAG, "Successfully initialized RSA context");
     return RSA_SUCCESS;
 }
 
 int my_rsa_key_send() {
-    rsa_pub_info key_to_send = {.divider = '\n', .end = '\n'};
+    rsa_pub_info key_to_send = {.public_exp = 0, .divider = '\n', .public_mod = {0}, .end = '\n'};
     key_to_send.public_exp = *my_rsa.E.p;
-    memcpy(key_to_send.public_mod, my_rsa.N.p, 64 * sizeof(mbedtls_mpi_uint));
-    btSendData((uint8_t*)&key_to_send, ENCRYPT_OFF, sizeof(key_to_send));
+    memcpy(key_to_send.public_mod, my_rsa.N.p, my_rsa.N.n * sizeof(mbedtls_mpi_uint));
+    btSendData((uint8_t*)&key_to_send, sizeof(key_to_send));
     ESP_LOGI(TAG, "Successfully sent RSA key pair");
     return RSA_SUCCESS;
 }
@@ -90,18 +89,20 @@ int my_rsa_key_send() {
 int my_rsa_key_recv(uint8_t* data) {
     rsa_pub_info key_to_recv;
     memcpy(&key_to_recv, data, sizeof(key_to_recv));
+    if (key_to_recv.divider != '\n' || key_to_recv.end != '\n')
+        return RSA_FAILURE;
 
     client_rsa.E.n = 1;
     client_rsa.E.s = 1;
-    client_rsa.E.p = calloc(client_rsa.E.n, sizeof(*(client_rsa.E.p)));
+    client_rsa.E.p = calloc(client_rsa.E.n, sizeof(mbedtls_mpi_uint));
     *client_rsa.E.p = key_to_recv.public_exp;
 
-    client_rsa.N.n = KEYSIZE / 32;
+    client_rsa.N.n = RSA_KEYLEN_IN_BYTES / sizeof(mbedtls_mpi_uint);
     client_rsa.N.s = 1;
-    client_rsa.N.p = calloc(client_rsa.N.n, sizeof(*(client_rsa.N.p)));
-    memcpy(client_rsa.N.p, key_to_recv.public_mod, 64 * sizeof(mbedtls_mpi_uint));
+    client_rsa.N.p = calloc(client_rsa.N.n, sizeof(mbedtls_mpi_uint));
+    memcpy(client_rsa.N.p, key_to_recv.public_mod, client_rsa.N.n * sizeof(mbedtls_mpi_uint));
 
-    client_rsa.len = KEYSIZE / 8;
+    client_rsa.len = RSA_KEYLEN_IN_BYTES;
     client_rsa_received = 1;
 
     ESP_LOGI(TAG, "Successfully received RSA key pair");
@@ -112,7 +113,7 @@ int my_rsa_encrypt(uint8_t* plaintext, uint8_t** ciphertext) {
     if (client_rsa_received == 0)
         return RSA_FAILURE;
         
-    *ciphertext = calloc(KEYSIZE / 8, sizeof(**ciphertext));
+    *ciphertext = calloc(RSA_KEYLEN_IN_BYTES, sizeof(**ciphertext));
     if (mbedtls_rsa_public(&client_rsa, plaintext, *ciphertext) != 0) {
         ESP_LOGE(TAG, "Failed to encrypt from %s", plaintext);
         return RSA_FAILURE;
@@ -122,7 +123,7 @@ int my_rsa_encrypt(uint8_t* plaintext, uint8_t** ciphertext) {
 }
 
 int my_rsa_decrypt(uint8_t* ciphertext, uint8_t** plaintext) {
-    *plaintext = calloc(KEYSIZE / 8, sizeof(**plaintext));
+    *plaintext = calloc(RSA_KEYLEN_IN_BYTES, sizeof(**plaintext));
     if (mbedtls_rsa_private(&my_rsa, NULL, NULL, ciphertext, *plaintext) != 0) {
         ESP_LOGE(TAG, "Failed to decrypt to %s", *plaintext);
         return RSA_FAILURE;

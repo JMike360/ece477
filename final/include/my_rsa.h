@@ -3,7 +3,8 @@
 
 #include <stdint.h>
 
-#define KEYSIZE 2048
+#define RSA_KEYLEN_IN_BITS (2048)
+#define RSA_KEYLEN_IN_BYTES (RSA_KEYLEN_IN_BITS / 8)
 
 #define RSA_SUCCESS 1
 #define RSA_FAILURE 0
