@@ -22,7 +22,7 @@
 #include "esp_spp_api.h"
 #include "../include/bt.h"
 #include "../include/cmd.h"
-#include "../include/my_rsa.h"
+// #include "../include/my_rsa.h"
 
 #include "time.h"
 #include "sys/time.h"
@@ -41,23 +41,13 @@ static const esp_spp_role_t role_slave = ESP_SPP_ROLE_SLAVE;
 
 static uint32_t deviceHandle=0;
 
-void btSendData(uint8_t* data, int encryptMsg, int len) {
-    if (deviceHandle == 0)
-        return;
+void btSendData(uint8_t* data, int len) {
+    // uint8_t* encrypted_data = NULL;
+    // my_rsa_encrypt(data, encrypted_data);
 
-    if (encryptMsg) {
-        uint8_t* encrypted_data = NULL;
-        if (my_rsa_encrypt(data, &encrypted_data) == RSA_FAILURE)
-            return;
-        uint8_t* bufferToSend = malloc(KEYSIZE / 8 + 1);
-        memcpy(bufferToSend, encrypted_data, 256);
-        bufferToSend[KEYSIZE / 8] = '\n';
-        esp_spp_write(deviceHandle, KEYSIZE / 8 + 1, bufferToSend);
-        free(encrypted_data);
-        free(bufferToSend);
+    if(deviceHandle!=0){
+        esp_spp_write(deviceHandle, len/*RSA_SEND_LEN*/, data/*encrypted_data*/);   
     }
-    else
-        esp_spp_write(deviceHandle, len, data);
 }
 
 static void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
@@ -84,6 +74,7 @@ static void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
         break;
     case ESP_SPP_CL_INIT_EVT:
         ESP_LOGI(SPP_TAG, "ESP_SPP_CL_INIT_EVT");
+        // my_rsa_key_exchange();
         break;
     case ESP_SPP_DATA_IND_EVT:
         ESP_LOGI(SPP_TAG, "ESP_SPP_DATA_IND_EVT len=%d handle=%d",

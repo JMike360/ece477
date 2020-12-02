@@ -16,16 +16,6 @@ namespace SkeletonKeyGUIFinal
         bool isConnected = false;
         String[] ports;
         SerialPort port;
-        int commMode = -1;
-
-        public static byte[] Combine(byte[] first, byte[] second)
-        {
-            byte[] bytes = new byte[first.Length + second.Length];
-            Buffer.BlockCopy(first, 0, bytes, 0, first.Length);
-            Buffer.BlockCopy(second, 0, bytes, first.Length, second.Length);
-            return bytes;
-        }
-
         public Form6()
         {
             InitializeComponent();
@@ -79,21 +69,6 @@ namespace SkeletonKeyGUIFinal
             port.Open();
             button1.Text = "Disconnect";
             enableControls();
-
-            byte[] endCodeByte = Encoding.ASCII.GetBytes("\n");
-            byte[] startCodeByte = {Convert.ToByte('#'), Convert.ToByte(0xa)};
-
-            byte[] bytesToSend = Combine(startCodeByte, endCodeByte);
-
-            port.Write(bytesToSend, 0, 3);
-            string str = port.ReadLine();
-            if (str == "1") {
-                MessageBox.Show("UART connection established");
-            }
-            else if (str == "0") {
-                MessageBox.Show("Bluetooth connection established");
-            }
-            commMode = Int32.Parse(str);
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)

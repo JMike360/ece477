@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO.Ports;
-using System.Security.Cryptography;
+
 
 namespace SkeletonKeyGUIFinal
 {
@@ -18,9 +18,6 @@ namespace SkeletonKeyGUIFinal
         bool isConnected = false;
         String[] ports;
         SerialPort port;
-        int commMode = -1;
-        RSAParameters my_rsa;
-        RSAParameters client_rsa;
 
         public Form7()
         {
@@ -80,25 +77,6 @@ namespace SkeletonKeyGUIFinal
             port.Open();
             button1.Text = "Disconnect";
             enableControls();
-
-            byte[] bytesToSend = {Convert.ToByte('#'), Convert.ToByte(0xa), Convert.ToByte('\n')};
-
-            port.Write(bytesToSend, 0, 3);
-            
-            port.DiscardInBuffer();
-            string recvStr = port.ReadLine();
-            byte[] receivedByte = Encoding.ASCII.GetBytes(recvStr);
-            if (receivedByte[0] == 1) {
-                MessageBox.Show("UART connection established");
-            }
-            else if (receivedByte[0] == 0) {
-                MessageBox.Show("Bluetooth connection established");
-                rsaKeyExchange();
-            }
-            else {
-                MessageBox.Show("Unknown commMode " + Convert.ToString(receivedByte[0]) + " detected");
-            }
-            commMode = Convert.ToInt16(receivedByte[0]);
         }
         private void disconnectFromESP()
         {
@@ -107,45 +85,6 @@ namespace SkeletonKeyGUIFinal
             button1.Text = "Connect";
             disableControls();
             resetDefaults();
-        }
-
-        private void rsaKeyExchange() {
-            MessageBox.Show("attempting key exchange");
-            // step 1. GUI connect to ESP32 via unknown COM port
-            // step 2. ESP32 informs GUI that COM port was for Bluetooth
-            // step 3. ESP32 sends public key to GUI
-            // step 4. GUI sends public key to ESP32
-
-            // receive RSA public key from ESP32
-            // UnicodeEncoding ByteConverter = new UnicodeEncoding();
-            // string toread = "";
-            // toread += port.ReadLine() + "\n";
-            // toread += port.ReadLine() + "\n";
-            // Byte[] toprint = Encoding.ASCII.GetBytes(toread);
-            // string toPrinttext = "";
-            // for(int i=0; i < toprint.Length; i++) {
-            //     toPrinttext += Convert.ToString(toprint[i]) + ", ";
-            // }
-            // MessageBox.Show(toPrinttext);
-
-            client_rsa = new RSAParameters();
-            client_rsa.Exponent = Encoding.ASCII.GetBytes(port.ReadLine());
-            MessageBox.Show("received pub exp: " + Convert.ToString(BitConverter.ToInt64(client_rsa.Exponent, 0)));
-
-            client_rsa.Modulus = Encoding.ASCII.GetBytes(port.ReadLine());
-            MessageBox.Show("received pub mod");
-
-            // generate and send RSA public key to ESP32
-            RSACryptoServiceProvider rsa_provider = new RSACryptoServiceProvider();
-            my_rsa = rsa_provider.ExportParameters(true);
-            byte[] byteToSend = {Convert.ToByte('#'), Convert.ToByte(0xb)};
-            byte[] sepByte = Encoding.ASCII.GetBytes("\n");
-            byteToSend = Combine(byteToSend, my_rsa.Exponent);
-            byteToSend = Combine(byteToSend, sepByte);
-            byteToSend = Combine(byteToSend, my_rsa.Modulus);
-            byteToSend = Combine(byteToSend, sepByte);
-            MessageBox.Show("sending pub key");
-            port.Write(byteToSend, 0, byteToSend.Length);
         }
 
         private void button7_Click(object sender, EventArgs e)
@@ -233,11 +172,7 @@ namespace SkeletonKeyGUIFinal
             port.Read(byteBuffer, 0, intBuffer);
 
             string str = System.Text.Encoding.Default.GetString(byteBuffer);
-            if(str == null)
-            {
-                MessageBox.Show("There are no Current Entries");
-            }
-            textBox1.Text = str;
+            MessageBox.Show(str);
         }
 
 
@@ -249,7 +184,7 @@ namespace SkeletonKeyGUIFinal
             return bytes;
         }
 
-        private async void button4_Click(object sender, EventArgs e)
+        private void button4_Click(object sender, EventArgs e)
         {
             if (isConnected)
             {
@@ -262,8 +197,6 @@ namespace SkeletonKeyGUIFinal
                 byte[] MSGByte = Encoding.ASCII.GetBytes(MSG);
                 byte[] endBYTE = Encoding.ASCII.GetBytes(end);
                 byte MSGsizeByte = Convert.ToByte(MSGsize);
-
-                byte Endbyte = Convert.ToByte('\n');
 
                 char startCode = '#';
                 byte startCodeByte = Convert.ToByte(startCode);
@@ -278,20 +211,24 @@ namespace SkeletonKeyGUIFinal
                 {
                     port.Write(FinalBytes, 0, MSGsize + 4);
                     MessageBox.Show("Please Scan Fingerprint");
-                    
-                    string str = port.ReadLine(); 
 
-                    if (str == "1")
+                    System.Threading.Thread.Sleep(5000);
+                    //The ESP32 sends back the request.
+                    int intBuffer;
+                    intBuffer = port.BytesToRead;
+                    byte[] byteBuffer = new byte[intBuffer];
+                    port.Read(byteBuffer, 0, intBuffer);
+
+                    string str = System.Text.Encoding.Default.GetString(byteBuffer); 
+
+                    if (str == "1\n")
                     {
                         MessageBox.Show("Credential Stored");
-                        textBox1.Clear();
                     }
-                    else if (str== "0")
+                    else
                     {
                         MessageBox.Show("Operation Failure");
-                        textBox1.Text = str;
                     }
-
                 }
                 else
                 {
@@ -324,22 +261,27 @@ namespace SkeletonKeyGUIFinal
                 int freq = MSG.Split(',').Length - 1;
                 if (freq == 2)
                 {
-
                     port.Write(FinalBytes, 0, MSGsize + 4);
-                    MessageBox.Show("Please Scan Fingerprint");
+                    MessageBox.Show("Scan Fingerprint Please");
 
-                    string str = port.ReadLine();
-                    if (str == "0")
+                    System.Threading.Thread.Sleep(5000); // ESP32 wait time
+
+
+                    //The ESP32 sends back the request.
+                    int intBuffer;
+                    intBuffer = port.BytesToRead;
+                    byte[] byteBuffer = new byte[intBuffer];
+                    port.Read(byteBuffer, 0, intBuffer);
+
+                    string str = System.Text.Encoding.Default.GetString(byteBuffer);
+                    if (str != "0\n")
                     {
-                        MessageBox.Show("Operation Failure");
-                        textBox1.Clear();
+                        MessageBox.Show("Operation Success");
                     }
                     else
                     {
-                        MessageBox.Show("Operation Success");
-                        textBox1.Text = str;
+                        MessageBox.Show("Operation Failure");
                     }
-
 
                 }
                 else
@@ -397,7 +339,6 @@ namespace SkeletonKeyGUIFinal
 
         private void button7_Click_1(object sender, EventArgs e)
         {
-            port.Close();
             this.Close();
         }
 
@@ -426,19 +367,24 @@ namespace SkeletonKeyGUIFinal
             if (freq == 2)
             {
                 port.Write(FinalBytes, 0, MSGsize + 4);
-                MessageBox.Show("Please Scan Fingerprint");
+                MessageBox.Show("Scan Fingerprint Please");
 
-                string str = port.ReadLine();
+                System.Threading.Thread.Sleep(5000);
 
-                if (str == "1")
+                //The ESP32 sends back the request.
+                int intBuffer;
+                intBuffer = port.BytesToRead;
+                byte[] byteBuffer = new byte[intBuffer];
+                port.Read(byteBuffer, 0, intBuffer);
+
+                string str = System.Text.Encoding.Default.GetString(byteBuffer);
+                if (str == "1\n")
                 {
-                    MessageBox.Show("Credential Stored");
-                    textBox1.Clear();
+                    MessageBox.Show("Operation Success");
                 }
-                else if (str == "0")
+                else if (str == "0\n")
                 {
                     MessageBox.Show("Operation Failure");
-                    textBox1.Clear();
                 }
             }
             else
@@ -469,31 +415,31 @@ namespace SkeletonKeyGUIFinal
             int freq = MSG.Split(',').Length - 1;
             if (freq == 3)
             {
-                    port.Write(FinalBytes, 0, MSGsize + 4);
-                    MessageBox.Show("Please Scan Fingerprint");
+                port.Write(FinalBytes, 0, MSGsize + 4);
+                MessageBox.Show("Scan Fingerprint Please");
 
-                    string str = port.ReadLine();
+                System.Threading.Thread.Sleep(5000);
 
-                    if (str == "1")
-                    {
-                        MessageBox.Show("Credential Stored");
-                        textBox1.Clear();
-                    }
-                    else if (str == "0")
-                    {
-                        MessageBox.Show("Operation Failure");
-                        textBox1.Clear();
-                    }
+                //The ESP32 sends back the request.
+                int intBuffer;
+                intBuffer = port.BytesToRead;
+                byte[] byteBuffer = new byte[intBuffer];
+                port.Read(byteBuffer, 0, intBuffer);
+
+                string str = System.Text.Encoding.Default.GetString(byteBuffer);
+                if (str == "1\n")
+                {
+                    MessageBox.Show("Operation Success");
+                }
+                else if (str == "0\n")
+                {
+                    MessageBox.Show("Operation Failure");
+                }
             }
             else
             {
                 MessageBox.Show("Incorrect Format. Try Again.");
             }
-        }
-
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-
         }
     }
 }

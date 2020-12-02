@@ -23,8 +23,6 @@
 #define CMD_DELETE_FINGERPRINT          0x7
 #define CMD_MODIFY_CREDENTIAL           0x8
 #define CMD_POWER_OFF                   0x9
-#define CMD_QUERY_COMM_MODE             0xa
-#define CMD_RSA_KEY_EXCHANGE            0xb
 
 void doCMD(uint8_t* data, int mode);
 int getRunning();

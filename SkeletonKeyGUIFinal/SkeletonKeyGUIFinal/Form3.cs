@@ -8,21 +8,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO.Ports;
-using System.Security.Cryptography;
-
-// RSA algorithm reference:
-// https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.rsacryptoserviceprovider?view=net-5.0
 
 namespace SkeletonKeyGUIFinal
 {
     public partial class Form3 : Form
     {
         bool isConnected = false;
-        int commMode = -1;
         String[] ports;
         SerialPort port;
-        RSAParameters my_rsa;
-        RSAParameters client_rsa;
 
         public Form3()
         {
@@ -44,17 +37,18 @@ namespace SkeletonKeyGUIFinal
 
         private void enableControls()
         {
+            button5.Enabled = true;
             button4.Enabled = true;
         }
 
         private void disableControls()
         {
+            button5.Enabled = false;
             button4.Enabled = false;
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            port.Close();
             this.Close();
         }
 
@@ -120,29 +114,6 @@ namespace SkeletonKeyGUIFinal
             port.Open();
             button1.Text = "Disconnect";
             enableControls();
-
-            byte[] endCodeByte = Encoding.ASCII.GetBytes("\n");
-            byte[] startCodeByte = {Convert.ToByte('#'), Convert.ToByte(0xa)};
-
-            byte[] bytesToSend = Combine(startCodeByte, endCodeByte);
-
-            port.Write(bytesToSend, 0, 3);
-            string recvStr = port.ReadLine();
-            byte[] receivedByte = Encoding.ASCII.GetBytes(recvStr);
-            if (receivedByte[0] == 1)
-            {
-                MessageBox.Show("UART connection established");
-            }
-            else if (receivedByte[0] == 0)
-            {
-                MessageBox.Show("Bluetooth connection established");
-                rsaKeyExchange();
-            }
-            else
-            {
-                MessageBox.Show("Unknown commMode " + Convert.ToString(receivedByte[0]) + " detected");
-            }
-            commMode = Convert.ToInt16(receivedByte[0]);
         }
         private void disconnectFromESP()
         {
@@ -151,41 +122,10 @@ namespace SkeletonKeyGUIFinal
             button1.Text = "Connect";
             disableControls();
         }
-        private void rsaKeyExchange() {
-            // step 1. GUI connect to ESP32 via unknown COM port
-            // step 2. ESP32 informs GUI that COM port was for Bluetooth
-            // step 3. ESP32 sends public key to GUI
-            // step 4. GUI sends public key to ESP32
-
-            // receive RSA public key from ESP32
-            UnicodeEncoding ByteConverter = new UnicodeEncoding();
-            client_rsa = new RSAParameters();
-            client_rsa.Exponent = ByteConverter.GetBytes(port.ReadLine());
-            client_rsa.Modulus = ByteConverter.GetBytes(port.ReadLine());
-
-            // generate and sent RSA public key to ESP32
-            RSACryptoServiceProvider rsa_provider = new RSACryptoServiceProvider();
-            my_rsa = rsa_provider.ExportParameters(true);
-            // public exponent:     8 bytes
-            // public modulus:      512 bytes
-            // two divider chars:   2 bytes
-            // total send length:    522 bytes
-            int send_len = 522;
-            byte[] byteToSend = {Convert.ToByte('#'), Convert.ToByte(0xb), Convert.ToByte(send_len)};
-            byte[] sepByte = Encoding.ASCII.GetBytes("\n");
-            byteToSend = Combine(byteToSend, my_rsa.Exponent);
-            byteToSend = Combine(byteToSend, sepByte);
-            byteToSend = Combine(byteToSend, my_rsa.Modulus);
-            byteToSend = Combine(byteToSend, sepByte);
-            port.Write(byteToSend, 0, send_len);
-            // port.ReadLine(); //read rsa param from ESP32
-        }
 
         private void button4_Click(object sender, EventArgs e)
         {
-            //Clear fingerprint and Deivce
-            
-            DialogResult dialogResult = MessageBox.Show("Sure", "This will clear the device. Do you wish to continue", MessageBoxButtons.YesNo);
+            DialogResult dialogResult = MessageBox.Show("Sure", "This will clear the device. Do you wish to countinue", MessageBoxButtons.YesNo);
             if (dialogResult == DialogResult.Yes)
             {
                 string end = "\n";
@@ -196,20 +136,27 @@ namespace SkeletonKeyGUIFinal
                 byte[] StoreFingerprint = { startCodeByte, 0x07 };
 
                 byte[] FinalBytes = Combine(StoreFingerprint, endBYTE);
+                port.Write(FinalBytes, 0, 4);
 
-                port.Write(FinalBytes, 0, 3);
-                MessageBox.Show("In order to reset the device, a new master fingeprint must be enrolled.\nPlease Scan Fingerprint");
+                MessageBox.Show("Please Scan Fingerprint");
 
-                string str = port.ReadLine();
-                if (str == "1")
+                System.Threading.Thread.Sleep(5000);
+
+                int intBuffer;
+                intBuffer = port.BytesToRead;
+                byte[] byteBuffer = new byte[intBuffer];
+                port.Read(byteBuffer, 0, intBuffer);
+
+                string str = System.Text.Encoding.Default.GetString(byteBuffer);
+
+                if (str == "1\n")
                 {
-                    MessageBox.Show("Device Clear Success. Please Restart Device and Scan New Fingerprint when Device Lights Green");
+                    MessageBox.Show("Device Clear Success");
                 }
                 else
                 {
-                    MessageBox.Show("Device Clear Failure\nReceived code: " + str);
+                    MessageBox.Show("Device Clear Failure");
                 }
-
             }
             else if (dialogResult == DialogResult.No)
             {

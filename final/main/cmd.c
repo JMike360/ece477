@@ -5,7 +5,6 @@
 #include "../include/bt.h"
 #include "../include/my_aes.h"
 #include "../include/fingerprint.h"
-#include "../include/my_rsa.h"
 
 // one function per command
 
@@ -37,10 +36,12 @@ int cmd_request_entries(int mode) {
     fseek(fp, 0, SEEK_SET);
     char* buffer = calloc(filesize, sizeof(char));
     fread(buffer, sizeof(char), filesize, fp);
+    if (filesize == 0)
+        return CMD_SUCCESS;
     if (mode == UART_MODE)
         uart_write_bytes(UART_NUM_0, buffer, filesize);
     else if (mode == BT_MODE)
-        btSendData((uint8_t*) buffer, ENCRYPT_ON, filesize);
+        btSendData((uint8_t*) buffer, filesize);
     free(buffer);
     fclose(fp);
     ESP_LOGI(TAG, "Successfully requested manifest entry");
@@ -53,10 +54,21 @@ int cmd_request_credential(char* displayName, char* username, int mode) {
         return CMD_FAILURE;
     }
 
+    for(int i = 0; i < strlen(displayName); i++) {
+        ESP_LOGI("displayname", "disp[%d] = %c", i, displayName[i]);
+    }
+    for(int i = 0; i < strlen(username); i++) {
+        ESP_LOGI("username", "user[%d] = %c", i, username[i]);
+    }
+
     uint8_t* key = NULL;
     int keysize = 0;
     if (getCryptoKey(&key, &keysize) == -1)
         return CMD_FAILURE;
+    
+     for(int i = 0; i < keysize; i++) {
+        ESP_LOGI("request cred", "key[%d] = %02x", i, key[i]);
+    }
 
     if (getManifestEntry(displayName, username) == NULL) {
         ESP_LOGE(TAG, "Failed to request credential. Entry not found");
@@ -77,14 +89,13 @@ int cmd_request_credential(char* displayName, char* username, int mode) {
     char* plaintext = NULL;
     fread(buffer, sizeof(char), filesize, fp);
     my_aes_decrypt((uint8_t*)buffer, key, (uint8_t**)&plaintext);
+    int decryptedLen = strlen(plaintext);
+    plaintext[decryptedLen] = '\n';
 
-    if (mode == UART_MODE) {
-        plaintext[strlen(plaintext)] = '\n';
-        plaintext[strlen(plaintext)] = '\0';
-        uart_write_bytes(UART_NUM_0, plaintext, strlen(plaintext));
-    }
+    if (mode == UART_MODE)
+        uart_write_bytes(UART_NUM_0, plaintext, decryptedLen+1);
     else if (mode == BT_MODE)
-        btSendData((uint8_t*) plaintext, ENCRYPT_ON, strlen(plaintext));
+        btSendData((uint8_t*) plaintext, decryptedLen+1);
         
     free(buffer);
     free(plaintext);
@@ -148,6 +159,10 @@ int cmd_store_credential(char* displayName, char* username, char* url, char* pw)
         ESP_LOGE(TAG, "Failed to stored credential for %s. Failed to hash AES key", displayName);
         return CMD_FAILURE;
     }
+
+    for(int i = 0; i < keysize; i++) {
+        ESP_LOGI("store cred", "key[%d] = %02x", i, key[i]);
+    }
     
     addManifestEntry(displayName, username, url);
     char path[256] = {'\0'};
@@ -204,10 +219,8 @@ int cmd_delete_fingerprint() {
     if (authenticateFinger() == 0)
         return CMD_FAILURE;
 
-    if (clearFingerprintData() == -1) {
-        ESP_LOGE(TAG, "Failed to clear fingerprint data");
+    if (clearFingerprintData() == -1)
         return CMD_FAILURE;
-    }
     
     if (wipeStorageData() == MANIFEST_FAILURE)
         return MANIFEST_FAILURE;
@@ -216,17 +229,9 @@ int cmd_delete_fingerprint() {
     return CMD_SUCCESS;
 }
 
-void doCMD(uint8_t* recvData, int mode) {
+void doCMD(uint8_t* data, int mode) {
     int returnStatus = 0;
     char *displayName, *username, *url, *pw;
-
-    uint8_t* data = NULL;
-    // decrypt msg if bluetooth and key has been exchanged
-    if (mode == BT_MODE && isKeyReceived())
-        my_rsa_decrypt(recvData, &data);
-    else
-        data = recvData;
-
     switch (data[1]) {
         case CMD_LED_RED:
             returnStatus = cmd_led_red(data[3]);
@@ -258,7 +263,7 @@ void doCMD(uint8_t* recvData, int mode) {
             returnStatus = cmd_delete_credential(displayName, username);
             break;
         case CMD_DELETE_FINGERPRINT:
-            cmd_delete_fingerprint();
+            returnStatus = cmd_delete_fingerprint();
             break;
         case CMD_MODIFY_CREDENTIAL:
             displayName = strtok((char*) &data[3], ",");
@@ -268,11 +273,6 @@ void doCMD(uint8_t* recvData, int mode) {
             break;
         case CMD_POWER_OFF:
             running = 0;
-            break;
-        case CMD_QUERY_COMM_MODE:
-            break;
-        case CMD_RSA_KEY_EXCHANGE:
-            my_rsa_key_recv(&data[3]);
             break;
         default:
             ESP_LOGE(TAG, "Unrecognized command received: %x", data[1]);
@@ -288,7 +288,7 @@ void doCMD(uint8_t* recvData, int mode) {
                 toSend[0] = '0';
                 toSend[1] = '\n';
                 if (mode == BT_MODE)
-                    btSendData((uint8_t*) toSend, ENCRYPT_ON, 1);
+                    btSendData((uint8_t*) toSend, 2);
                 else if (mode == UART_MODE)
                     uart_write_bytes(UART_NUM_0, toSend, 2);
             }
@@ -303,19 +303,8 @@ void doCMD(uint8_t* recvData, int mode) {
             toSend[0] = returnStatus + '0';
             toSend[1] = '\n';
             if (mode == BT_MODE)
-                btSendData((uint8_t*) toSend, ENCRYPT_ON, 1);
+                btSendData((uint8_t*) toSend, 2);
             else if (mode == UART_MODE)
                 uart_write_bytes(UART_NUM_0, toSend, 2);
-            break;
-        case CMD_QUERY_COMM_MODE:
-            toSend[0] = mode;
-            toSend[1] = '\n';
-            if (mode == BT_MODE) {
-                btSendData((uint8_t*) toSend, ENCRYPT_OFF, 1);
-                my_rsa_key_send();
-            }
-            else if (mode == UART_MODE)
-                uart_write_bytes(UART_NUM_0, toSend, 2);
-            break;
     }
 }

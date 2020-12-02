@@ -2,6 +2,7 @@
 #include "../include/fingerprint.h"
 
 #define TAG "FINGERPRINT"
+#define PAGEID (0x0000)
 
 sensor_packet* createPacket(uint8_t pid, uint16_t length, uint8_t* data, uint16_t checksum){
     sensor_packet* pkt = malloc(sizeof(sensor_packet));
@@ -609,29 +610,32 @@ int sendCheckMatchPacket(){
     return result;
 }
 
-int recvCkeckMatchAck(){
+int recvCheckMatchAck(){
     sensor_packet* pkt = recvPacketFromByteStream(14);
     if(pkt == NULL){
-        ESP_LOGI(TAG, "Error: null packet received");
+        printf("Error: null packet received\n");
         return -1;
     }
     printPacket(pkt);
 
     uint8_t response = pkt->data[0];
     processResponse(response);
-    uint8_t data[] = { 0x00 }; 
-    uint16_t checksum = 0x000A;
-    sensor_packet* expected = createPacket(PKT_PID_ACK, 0x0003, data, checksum);
+    sensor_packet* expected = createPacket(PKT_PID_ACK, 0x0005, pkt->data, pkt->checksum);
     if(!isEqual(pkt, expected)){
-        if(response == 0x11){
-            ESP_LOGI(TAG, "Failed to clear fingerprint library.");
+        if(response == 0x08){
+            ESP_LOGI(TAG, "Buffers 1 and 2 do not match.\n");
         }
         else{
-            ESP_LOGI(TAG, "Error - received packet does not match expected format");
+            ESP_LOGI(TAG, "Error - received packet does not match expected format\n");
         }
        response = -1;
+       freePacket(expected);
+       freePacket(pkt);
+       return response;
     }
-
+    uint16_t matchScore = (((uint16_t)pkt->data[1]) << 8) + ((uint16_t)pkt->data[2]);
+    ESP_LOGI(TAG, "Buffers 1 and 2 match with match score: %d\n", matchScore);
+    
     freePacket(expected); 
     freePacket(pkt);
     return response;
@@ -785,7 +789,7 @@ int recvTurnLedOffAck(){
 
 //returns 1 if enrolled fingerprint template is found, 0 otherwise
 int checkFingerEnrolled(){
-    sendLoadTemplatePacket(0x01, 0x00); //attempt to load template 0 to buffer 1
+    sendLoadTemplatePacket(0x01, PAGEID); //attempt to load template 0 to buffer 1
     int resp = recvLoadTemplateAck();
     
     //turn off led
@@ -835,8 +839,7 @@ int enrollFinger(int templateID){
         return -1;
     }
 
-    uint16_t pageID = (uint16_t)templateID;
-    sendStoreTemplatePacket(0x01, pageID);
+    sendStoreTemplatePacket(0x01, PAGEID);
     int storResp = recvStoreTemplateAck();
     if(storResp != 0){
         ESP_LOGE(TAG, "Failed to store template...");
@@ -857,49 +860,71 @@ int enrollFinger(int templateID){
 
 //returns 1 if finger matches, 0 otherwise
 // allow 3 tries
-int authenticateFinger(){
-    int numtry = 0;
-    int libSrchResp = 0;
-    do {
-        sendHandshakePacket();
-        int hsResp = recvHandshakeAck();
-        if(hsResp != 0){
-            ESP_LOGE(TAG, "Handshake failed...");
-        }
+int authenticateFinger(){ 
+    uart_begin(UART_NUM_2);
+    
+    sendHandshakePacket();
+    int hsResp = recvHandshakeAck();
+    if(hsResp != 0){
+        #ifdef _DEBUG
+        ESP_LOGI(TAG, "Handshake failed...\n");
+        #endif
+        return 0;
+    }
 
-        captureImage(1000);
-        sendGenerateFileFromImgPacket(0x01);
-        int genFileResp1 = recvGenerateFileFromImgAck();
-        if(genFileResp1 != 0){
-            ESP_LOGE(TAG, "Failed to generate charFile for buffer 1... resp = %d", genFileResp1);
-        }
+    captureImage(1000);
+    sendGenerateFileFromImgPacket(0x01);
+    int genFileResp1 = recvGenerateFileFromImgAck();
+    if(genFileResp1 != 0){
+        #ifdef _DEBUG
+        ESP_LOGI(TAG, "Failed to generate charFile for buffer 1...\n");
+        #endif
+        return 0;
+    }
 
-        sendSearchLibraryPacket(0x01, 0x0000, 0x0005);
-        libSrchResp = recvSearchLibraryAck();
-        if(libSrchResp == 0){
-            ESP_LOGI(TAG, "Fingerprint authentication successful");
-        }
+    sendLoadTemplatePacket(0x02, 0x0000);
+    int loadResp = recvLoadTemplateAck();
+    if(loadResp != 0){
+        ESP_LOGI(TAG, "Failed to load template to buffer 2...0\n");
+        return 0;
+    }
 
+    sendCheckMatchPacket();
+    int matchResp = recvCheckMatchAck();
+    if(matchResp == 0){
+        printf("Match found\n");
         //turn off led
         sendTurnLedOffPacket();
         int ledResp = recvTurnLedOffAck();
         if(ledResp != 0){
-            ESP_LOGE(TAG, "Failed to turn off led...");
+            #ifdef _DEBUG
+            printf("Failed to turn off led...\n");
+            #endif
         }
-    } while (libSrchResp != 0 && ++numtry < 3);
+        return 1;
+    }
 
-    return libSrchResp == 0 ? 1 : 0;
+
+        //turn off led
+    sendTurnLedOffPacket();
+    int ledResp = recvTurnLedOffAck();
+    if(ledResp != 0){
+        #ifdef _DEBUG
+        ESP_LOGI("Failed to turn off led...\n");
+        #endif
+    }
+    return 0;
 }
 
 //Params: uint8_t** key is the pointer to a uint8_t* to which digest data will be assigned (can be NULL, must be free()'d later)
                                                //        int* keySize is a pointer whose referenced value will be assigned the digest size
                                                //returns 0 for success, -1 otherwise
 int getCryptoKey(uint8_t** key, int* keySize){
-    uint8_t bufferID = 0x01;
-    uint8_t pageID = 0x00;
+    uint8_t bufferID = 0x02;
 
-    sendLoadTemplatePacket(bufferID, pageID);
-    recvLoadTemplateAck();
+    sendLoadTemplatePacket(bufferID, PAGEID);
+    if (recvLoadTemplateAck() == -1)
+        return -1;
     
     sendUploadFilePacket(bufferID);
     uint8_t* charFile = NULL;
@@ -916,6 +941,10 @@ int getCryptoKey(uint8_t** key, int* keySize){
         ESP_LOGE(TAG, "Char file failed to populate, aborting test...");
         #endif
         return -1;
+    }
+
+    for(int i = 0; i < 10; i++) {
+        ESP_LOGI("debug", "charfile[%d] = %d", i, charFile[i]);
     }
 
     size_t inSize = sizeof(uint8_t)*size;
