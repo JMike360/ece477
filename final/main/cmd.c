@@ -320,5 +320,8 @@ void doCMD(uint8_t* data, int mode) {
             else if (mode == UART_MODE)
                 uart_write_bytes(UART_NUM_0, toSend, 2);
             break;
+        case CMD_RSA_KEY_EXCHANGE:
+            my_rsa_key_recv(&Data[2]);
+            break;
     }
 }

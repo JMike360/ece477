@@ -115,6 +115,14 @@ int my_rsa_key_recv(uint8_t* data) {
     client_rsa_received = 1;
 
     ESP_LOGI(TAG, "Successfully received RSA key pair");
+
+    uint8_t* buf = (uint8_t*)(&key_to_recv);
+    ESP_LOGI(TAG, "-----------------------");
+    for(int i = 0; i < sizeof(key_to_recv); i+= 8) {
+        ESP_LOGI(TAG, "%02x %02x %02x %02x %02x %02x %02x %02x", buf[i], buf[i+1], buf[i+2], buf[i+3], buf[i+4], buf[i+5], buf[i+6], buf[i+7]);
+    }
+    ESP_LOGI(TAG, "-----------------------");
+
     return RSA_SUCCESS;
 }
 
