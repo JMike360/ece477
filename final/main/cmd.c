@@ -249,6 +249,8 @@ void doCMD(uint8_t* data, int mode) {
         my_rsa_decrypt(data, &data_to_use);
     else 
         data_to_use = data;
+    
+    char toSend[2];
 
     switch (data_to_use[1]) {
         case CMD_LED_RED:
@@ -313,8 +315,6 @@ void doCMD(uint8_t* data, int mode) {
             ESP_LOGE(TAG, "Unrecognized command received: %x", data_to_use[1]);
             returnStatus = 0;
     }
-
-    char toSend[2];
 
     switch (data_to_use[1]) {
         case CMD_REQUEST_CREDENTIAL:
