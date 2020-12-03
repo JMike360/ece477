@@ -321,7 +321,7 @@ void doCMD(uint8_t* data, int mode) {
                 uart_write_bytes(UART_NUM_0, toSend, 2);
             break;
         case CMD_RSA_KEY_EXCHANGE:
-            my_rsa_key_recv(&Data[2]);
+            my_rsa_key_recv(&data[2]);
             break;
     }
 }
