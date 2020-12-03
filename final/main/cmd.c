@@ -49,7 +49,8 @@ int cmd_request_entries(int mode) {
         uart_write_bytes(UART_NUM_0, buffer, filesize);
     else if (mode == BT_MODE)
         btSendData((uint8_t*) buffer, filesize);
-    free(buffer);
+    if (buffer != NULL)
+        free(buffer);
     fclose(fp);
     ESP_LOGI(TAG, "Successfully requested manifest entry");
     return CMD_SUCCESS;
@@ -298,6 +299,16 @@ void doCMD(uint8_t* data, int mode) {
             resetKeyExchange();
             free(data_to_use);
             break;
+        case CMD_QUERY_COMM_MODE:
+            toSend[0] = mode;
+            toSend[1] = '\n';
+            if (mode == BT_MODE) {
+                btSendData((uint8_t*) toSend, 2);
+                my_rsa_key_send();
+            }
+            else if (mode == UART_MODE)
+                uart_write_bytes(UART_NUM_0, toSend, 2);
+            break;
         default:
             ESP_LOGE(TAG, "Unrecognized command received: %x", data_to_use[1]);
             returnStatus = 0;
@@ -328,16 +339,6 @@ void doCMD(uint8_t* data, int mode) {
             toSend[1] = '\n';
             if (mode == BT_MODE)
                 btSendData((uint8_t*) toSend, 2);
-            else if (mode == UART_MODE)
-                uart_write_bytes(UART_NUM_0, toSend, 2);
-            break;
-        case CMD_QUERY_COMM_MODE:
-            toSend[0] = mode;
-            toSend[1] = '\n';
-            if (mode == BT_MODE) {
-                btSendData((uint8_t*) toSend, 2);
-                my_rsa_key_send();
-            }
             else if (mode == UART_MODE)
                 uart_write_bytes(UART_NUM_0, toSend, 2);
             break;

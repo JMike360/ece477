@@ -121,6 +121,7 @@ int my_rsa_key_recv(uint8_t* data) {
 }
 
 int my_rsa_encrypt(uint8_t* plaintext, uint8_t** ciphertext) {
+    ESP_LOGI(TAG, "Attempting to encrypted from %s", plaintext);
     if (key_exchange_complete == 0) {
         ESP_LOGE(TAG, "Failed to encrypt, client public key not received");
         return RSA_FAILURE;
@@ -136,6 +137,7 @@ int my_rsa_encrypt(uint8_t* plaintext, uint8_t** ciphertext) {
 }
 
 int my_rsa_decrypt(uint8_t* ciphertext, uint8_t** plaintext) {
+    ESP_LOGI(TAG, "Attempting to decrypt from %s", plaintext);
     if (key_exchange_complete == 0) {
         ESP_LOGE(TAG, "Failed to decrypt, client public key not received");
         return RSA_FAILURE;

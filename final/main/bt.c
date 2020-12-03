@@ -42,6 +42,7 @@ static const esp_spp_role_t role_slave = ESP_SPP_ROLE_SLAVE;
 static uint32_t deviceHandle=0;
 
 void btSendData(uint8_t* data, int len) {
+    ESP_LOGI(TAG, "Attempting to send data");
     uint8_t* data_to_send = NULL;
     int len_to_send = 0;
 
@@ -58,10 +59,12 @@ void btSendData(uint8_t* data, int len) {
     if(deviceHandle!=0)
         esp_spp_write(deviceHandle, len_to_send, data_to_send);
     else
-        ESP_LOGE(TAG, "Unable to send data because no prior pairing was made");
+        ESP_LOGE(TAG, "Unable to send data because no pairing was made");
 
     if (isKeyExchanged())
         free(data_to_send);
+    
+    ESP_LOGI(TAG, "Successfully sent data of len: %d", len);
 }
 
 static void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
