@@ -98,8 +98,10 @@ int my_rsa_key_send() {
 int my_rsa_key_recv(uint8_t* data) {
     rsa_pub_info key_to_recv;
     memcpy(&key_to_recv, data, sizeof(key_to_recv));
-    if (key_to_recv.divider != '\n' || key_to_recv.end != '\n')
+    if (key_to_recv.divider != '\n' || key_to_recv.end != '\n'){
+        ESP_LOGE(TAG, "Invalid divider characters detected");    
         return RSA_FAILURE;
+    }
 
     client_rsa.E.n = 1;
     client_rsa.E.s = 1;

@@ -277,6 +277,8 @@ void doCMD(uint8_t* data, int mode) {
         case CMD_POWER_OFF:
             running = 0;
             break;
+        case CMD_RSA_KEY_EXCHANGE:
+            break;
         default:
             ESP_LOGE(TAG, "Unrecognized command received: %x", data[1]);
             returnStatus = 0;
