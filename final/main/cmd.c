@@ -247,7 +247,7 @@ void doCMD(uint8_t* data, int mode) {
     uint8_t* data_to_use = NULL;
     if (isKeyExchanged())
         my_rsa_decrypt(data, &data_to_use);
-    else 
+    else
         data_to_use = data;
     
     char toSend[2];
@@ -344,6 +344,6 @@ void doCMD(uint8_t* data, int mode) {
             break;
     }
 
-    if (isKeyExchanged())
+    if (data != data_to_use)
         free(data_to_use);
 }
