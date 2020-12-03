@@ -56,6 +56,7 @@ int my_rsa_init() {
         ESP_LOGE(TAG, "Failed to initialize RSA due to error: %x", err);
         return RSA_FAILURE;
     }
+    mbedtls_rsa_set_padding(&my_rsa, MBEDTLS_RSA_PKCS_V15, 0);
 
     if ((int)my_rsa.len * 8 != RSA_KEYLEN_IN_BITS) {
         ESP_LOGE(TAG, "Incorrect N generated: Expected %d got %d", RSA_KEYLEN_IN_BITS, (int)my_rsa.len * 8);
@@ -128,7 +129,7 @@ int my_rsa_encrypt(uint8_t* plaintext, uint8_t** ciphertext) {
     }
         
     *ciphertext = calloc(RSA_KEYLEN_IN_BYTES, sizeof(**ciphertext));
-    if (mbedtls_rsa_public(&client_rsa, plaintext, *ciphertext) != 0) {
+    if (mbedtls_rsa_rsaes_pkcs1_v15_encrypt(&client_rsa, myrand, NULL, MBEDTLS_RSA_PUBLIC, strlen((char*)plaintext), plaintext, *ciphertext) != 0) {
         ESP_LOGE(TAG, "Failed to encrypt from %s", plaintext);
         return RSA_FAILURE;
     }
@@ -144,7 +145,8 @@ int my_rsa_decrypt(uint8_t* ciphertext, uint8_t** plaintext) {
     }
 
     *plaintext = calloc(RSA_KEYLEN_IN_BYTES, sizeof(**plaintext));
-    if (mbedtls_rsa_private(&my_rsa, NULL, NULL, ciphertext, *plaintext) != 0) {
+    size_t outlen = 0;
+    if (mbedtls_rsa_rsaes_pkcs1_v15_decrypt(&my_rsa, myrand, NULL, MBEDTLS_RSA_PRIVATE, &outlen, ciphertext, *plaintext, RSA_KEYLEN_IN_BYTES) != 0) {
         ESP_LOGE(TAG, "Failed to decrypt to %s", *plaintext);
         return RSA_FAILURE;
     }
