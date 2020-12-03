@@ -146,8 +146,9 @@ int my_rsa_decrypt(uint8_t* ciphertext, uint8_t** plaintext) {
 
     *plaintext = calloc(RSA_KEYLEN_IN_BYTES, sizeof(**plaintext));
     size_t outlen = 0;
-    if (mbedtls_rsa_rsaes_pkcs1_v15_decrypt(&my_rsa, myrand, NULL, MBEDTLS_RSA_PRIVATE, &outlen, ciphertext, *plaintext, RSA_KEYLEN_IN_BYTES) != 0) {
-        ESP_LOGE(TAG, "Failed to decrypt to %s", *plaintext);
+    int ret = mbedtls_rsa_rsaes_pkcs1_v15_decrypt(&my_rsa, myrand, NULL, MBEDTLS_RSA_PRIVATE, &outlen, ciphertext, *plaintext, RSA_KEYLEN_IN_BYTES);
+    if (ret != 0) {
+        ESP_LOGE(TAG, "Failed to decrypt due to 0x%x", ret);
         return RSA_FAILURE;
     }
     ESP_LOGI(TAG, "Successfully decrypted to %s", *plaintext);
