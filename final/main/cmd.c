@@ -235,23 +235,31 @@ int cmd_delete_fingerprint() {
 void doCMD(uint8_t* data, int mode) {
     int returnStatus = 0;
     char *displayName, *username, *url, *pw;
-    switch (data[1]) {
+
+    // check if BT requires decryption
+    uint8_t* data_to_use = NULL;
+    if (isKeyExchanged())
+        my_rsa_decrypt(data, &data_to_use);
+    else 
+        data_to_use = data;
+
+    switch (data_to_use[1]) {
         case CMD_LED_RED:
-            returnStatus = cmd_led_red(data[3]);
+            returnStatus = cmd_led_red(data_to_use[3]);
             break;
         case CMD_LED_GREEN:
-            returnStatus = cmd_led_green(data[3]);
+            returnStatus = cmd_led_green(data_to_use[3]);
             break;
         case CMD_REQUEST_ENTRIES:
             returnStatus = cmd_request_entries(mode);
             break;
         case CMD_REQUEST_CREDENTIAL:
-            displayName = strtok((char*) &data[3], ",");
+            displayName = strtok((char*) &data_to_use[3], ",");
             username = strtok(NULL, ",");
             returnStatus = cmd_request_credential(displayName, username, mode);
             break;
         case CMD_STORE_CREDENTIAL:
-            displayName = strtok((char*) &data[3], ",");
+            displayName = strtok((char*) &data_to_use[3], ",");
             username = strtok(NULL, ",");
             url = strtok(NULL, ",");
             pw = strtok(NULL, ",");
@@ -261,7 +269,7 @@ void doCMD(uint8_t* data, int mode) {
             cmd_store_fingerprint();
             break;
         case CMD_DELETE_CREDENTIAL:
-            displayName = strtok((char*) &data[3], ",");
+            displayName = strtok((char*) &data_to_use[3], ",");
             username = strtok(NULL, ",");
             returnStatus = cmd_delete_credential(displayName, username);
             break;
@@ -269,7 +277,7 @@ void doCMD(uint8_t* data, int mode) {
             returnStatus = cmd_delete_fingerprint();
             break;
         case CMD_MODIFY_CREDENTIAL:
-            displayName = strtok((char*) &data[3], ",");
+            displayName = strtok((char*) &data_to_use[3], ",");
             username = strtok(NULL, ",");
             pw = strtok(NULL, ",");
             returnStatus = cmd_modify_credential(displayName, username, pw);
@@ -278,15 +286,20 @@ void doCMD(uint8_t* data, int mode) {
             running = 0;
             break;
         case CMD_RSA_KEY_EXCHANGE:
+            my_rsa_key_recv(&data_to_use[2]);
+            break;
+        case CMD_BT_DISCONNECT:
+            resetKeyExchange();
+            free(data_to_use);
             break;
         default:
-            ESP_LOGE(TAG, "Unrecognized command received: %x", data[1]);
+            ESP_LOGE(TAG, "Unrecognized command received: %x", data_to_use[1]);
             returnStatus = 0;
     }
 
     char toSend[2];
 
-    switch (data[1]) {
+    switch (data_to_use[1]) {
         case CMD_REQUEST_CREDENTIAL:
         case CMD_REQUEST_ENTRIES:
             if (returnStatus == CMD_FAILURE) {
@@ -322,8 +335,8 @@ void doCMD(uint8_t* data, int mode) {
             else if (mode == UART_MODE)
                 uart_write_bytes(UART_NUM_0, toSend, 2);
             break;
-        case CMD_RSA_KEY_EXCHANGE:
-            my_rsa_key_recv(&data[2]);
-            break;
     }
+
+    if (isKeyExchanged())
+        free(data_to_use);
 }

@@ -26,7 +26,7 @@ https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.rsapara
 static mbedtls_rsa_context my_rsa;
 static mbedtls_rsa_context client_rsa;
 
-static int client_rsa_received = 0;
+static int key_exchange_complete = 0;
 
 #pragma pack(1)
 typedef struct {
@@ -36,25 +36,17 @@ typedef struct {
     char end;
 } rsa_pub_info;
 
-int isKeyReceived() {
-    return client_rsa_received;
+int isKeyExchanged() {
+    return key_exchange_complete;
+}
+
+void resetKeyExchange() {
+    key_exchange_complete = 0;
 }
 
 static int myrand(void *rng_state, unsigned char *output, size_t len) {
     size_t olen;
     return mbedtls_hardware_poll(rng_state, output, len, &olen);
-}
-
-void mbedtls_mpi_printf(const char *name, const mbedtls_mpi *X) {
-    static char buf[2048];
-    size_t n;
-    memset(buf, 0, sizeof(buf));
-    mbedtls_mpi_write_string(X, 16, buf, sizeof(buf)-1, &n);
-    if(n) {
-        printf("%s = (s=%d) 0x%s\n", name, X->s, buf);
-    } else {
-        printf("%s = TOOLONG\n", name);
-    }
 }
 
 int my_rsa_init() {
@@ -114,7 +106,7 @@ int my_rsa_key_recv(uint8_t* data) {
     memcpy(client_rsa.N.p, key_to_recv.public_mod, client_rsa.N.n * sizeof(mbedtls_mpi_uint));
 
     client_rsa.len = RSA_KEYLEN_IN_BYTES;
-    client_rsa_received = 1;
+    key_exchange_complete = 1;
 
     ESP_LOGI(TAG, "Successfully received RSA key pair");
 
@@ -129,8 +121,10 @@ int my_rsa_key_recv(uint8_t* data) {
 }
 
 int my_rsa_encrypt(uint8_t* plaintext, uint8_t** ciphertext) {
-    if (client_rsa_received == 0)
+    if (key_exchange_complete == 0) {
+        ESP_LOGE(TAG, "Failed to encrypt, client public key not received");
         return RSA_FAILURE;
+    }
         
     *ciphertext = calloc(RSA_KEYLEN_IN_BYTES, sizeof(**ciphertext));
     if (mbedtls_rsa_public(&client_rsa, plaintext, *ciphertext) != 0) {
@@ -142,6 +136,11 @@ int my_rsa_encrypt(uint8_t* plaintext, uint8_t** ciphertext) {
 }
 
 int my_rsa_decrypt(uint8_t* ciphertext, uint8_t** plaintext) {
+    if (key_exchange_complete == 0) {
+        ESP_LOGE(TAG, "Failed to decrypt, client public key not received");
+        return RSA_FAILURE;
+    }
+
     *plaintext = calloc(RSA_KEYLEN_IN_BYTES, sizeof(**plaintext));
     if (mbedtls_rsa_private(&my_rsa, NULL, NULL, ciphertext, *plaintext) != 0) {
         ESP_LOGE(TAG, "Failed to decrypt to %s", *plaintext);
