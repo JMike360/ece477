@@ -28,6 +28,7 @@ static mbedtls_rsa_context client_rsa;
 
 static int client_rsa_received = 0;
 
+#pragma pack(1)
 typedef struct {
     uint64_t public_exp;
     char divider;
