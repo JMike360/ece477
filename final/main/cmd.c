@@ -35,10 +35,16 @@ int cmd_request_entries(int mode) {
     fseek(fp, 0, SEEK_END);
     size_t filesize = ftell(fp);
     fseek(fp, 0, SEEK_SET);
-    char* buffer = calloc(filesize, sizeof(char));
-    fread(buffer, sizeof(char), filesize, fp);
-    if (filesize == 0)
-        return CMD_SUCCESS;
+    char* buffer = NULL;
+    if (filesize != 0) {
+        buffer = calloc(filesize, sizeof(char));
+        fread(buffer, sizeof(char), filesize, fp);
+    }
+    else {
+        buffer = calloc(1, sizeof(char));
+        buffer[0] = '\0';
+        filesize = 1;
+    }
     if (mode == UART_MODE)
         uart_write_bytes(UART_NUM_0, buffer, filesize);
     else if (mode == BT_MODE)
