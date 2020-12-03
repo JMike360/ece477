@@ -28,12 +28,13 @@ static mbedtls_rsa_context client_rsa;
 
 static int client_rsa_received = 0;
 
+#pragma pack(1)
 typedef struct {
-    uint64_t public_exp;
-    char divider;
-    uint64_t public_mod[RSA_KEYLEN_IN_BITS / 64];
-    char end;
-} rsa_pub_info;
+    uint64_t public_exp;                            // 8 bytes
+    char divider;                                   // 1 byte
+    uint64_t public_mod[RSA_KEYLEN_IN_BITS / 64];   // 256 bytes
+    char end;                                       // 1 byte
+} rsa_pub_info;                                     // 266 bytes
 
 int isKeyReceived() {
     return client_rsa_received;

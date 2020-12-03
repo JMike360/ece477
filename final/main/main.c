@@ -95,14 +95,12 @@ void app_main(void) {
     if (readManifestToMemory() == MANIFEST_FAILURE)
         return;
 
-    // uint8_t* data = (uint8_t*) malloc(BUF_SIZE_MAIN);
-    // while(getRunning()) {
-    //     memset(data, 0, BUF_SIZE_MAIN);
-    //     readUARTCMD(data);
-    // }
-    // free(data);
-
-    my_rsa_key_send();
+    uint8_t* data = (uint8_t*) malloc(BUF_SIZE_MAIN);
+    while(getRunning()) {
+        memset(data, 0, BUF_SIZE_MAIN);
+        readUARTCMD(data);
+    }
+    free(data);
 
     if (writeManifestToFile() == MANIFEST_FAILURE)
         return;
