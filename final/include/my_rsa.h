@@ -18,4 +18,6 @@ int my_rsa_encrypt(uint8_t* plaintext, uint8_t** ciphertext);
 int my_rsa_decrypt(uint8_t* ciphertext, uint8_t** plaintext);
 int my_rsa_deinit();
 
+void testRSA();
+
 #endif

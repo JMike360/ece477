@@ -167,10 +167,6 @@ int cmd_store_credential(char* displayName, char* username, char* url, char* pw)
         ESP_LOGE(TAG, "Failed to stored credential for %s. Failed to hash AES key", displayName);
         return CMD_FAILURE;
     }
-
-    // for(int i = 0; i < keysize; i++) {
-    //     ESP_LOGI("store cred", "key[%d] = %02x", i, key[i]);
-    // }
     
     addManifestEntry(displayName, username, url);
     char path[256] = {'\0'};
@@ -245,8 +241,11 @@ void doCMD(uint8_t* data, int mode) {
 
     // check if BT requires decryption
     uint8_t* data_to_use = NULL;
-    if (isKeyExchanged())
-        my_rsa_decrypt(data, &data_to_use);
+    if (isKeyExchanged()) {
+        if (my_rsa_decrypt(data, &data_to_use) == RSA_FAILURE) {
+            return;
+        }
+    }
     else
         data_to_use = data;
     

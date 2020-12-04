@@ -102,8 +102,6 @@ void app_main(void) {
     }
     free(data);
 
-    //my_rsa_key_send();
-
     if (writeManifestToFile() == MANIFEST_FAILURE)
         return;
     if (deallocateManifest() == MANIFEST_FAILURE)

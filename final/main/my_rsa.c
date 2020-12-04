@@ -107,6 +107,8 @@ int my_rsa_key_recv(uint8_t* data) {
     memcpy(client_rsa.N.p, key_to_recv.public_mod, client_rsa.N.n * sizeof(mbedtls_mpi_uint));
 
     client_rsa.len = RSA_KEYLEN_IN_BYTES;
+    mbedtls_rsa_set_padding(&client_rsa, MBEDTLS_RSA_PKCS_V15, 0);
+
     key_exchange_complete = 1;
 
     ESP_LOGI(TAG, "Successfully received RSA key pair");
@@ -122,15 +124,16 @@ int my_rsa_key_recv(uint8_t* data) {
 }
 
 int my_rsa_encrypt(uint8_t* plaintext, uint8_t** ciphertext) {
-    ESP_LOGI(TAG, "Attempting to encrypted from %s", plaintext);
+    ESP_LOGI(TAG, "Attempting to encrypt from %s", plaintext);
     if (key_exchange_complete == 0) {
         ESP_LOGE(TAG, "Failed to encrypt, client public key not received");
         return RSA_FAILURE;
     }
         
     *ciphertext = calloc(RSA_KEYLEN_IN_BYTES, sizeof(**ciphertext));
-    if (mbedtls_rsa_rsaes_pkcs1_v15_encrypt(&client_rsa, myrand, NULL, MBEDTLS_RSA_PUBLIC, strlen((char*)plaintext), plaintext, *ciphertext) != 0) {
-        ESP_LOGE(TAG, "Failed to encrypt from %s", plaintext);
+    int ret = mbedtls_rsa_rsaes_pkcs1_v15_encrypt(&client_rsa, myrand, NULL, MBEDTLS_RSA_PUBLIC, strlen((char*)plaintext), plaintext, *ciphertext);
+    if (ret != 0) {
+        ESP_LOGE(TAG, "Failed to encrypt from %s due to -0x%x", plaintext, ~ret + 1);
         return RSA_FAILURE;
     }
     ESP_LOGI(TAG, "Successfully encrypted from %s", plaintext);
@@ -148,7 +151,7 @@ int my_rsa_decrypt(uint8_t* ciphertext, uint8_t** plaintext) {
     size_t outlen = 0;
     int ret = mbedtls_rsa_rsaes_pkcs1_v15_decrypt(&my_rsa, myrand, NULL, MBEDTLS_RSA_PRIVATE, &outlen, ciphertext, *plaintext, RSA_KEYLEN_IN_BYTES);
     if (ret != 0) {
-        ESP_LOGE(TAG, "Failed to decrypt due to 0x%x", ret);
+        ESP_LOGE(TAG, "Failed to decrypt due to -0x%x", ~ret + 1);
         return RSA_FAILURE;
     }
     ESP_LOGI(TAG, "Successfully decrypted to %s", *plaintext);
@@ -161,3 +164,15 @@ int my_rsa_deinit() {
     ESP_LOGI(TAG, "Successfully uninitialized RSA context");
     return RSA_SUCCESS;
 }
+
+// void testRSA() {
+//     rsa_pub_info key_to_send = {.public_exp = 0, .divider = '\n', .public_mod = {0}, .end = '\n'};
+//     key_to_send.public_exp = *my_rsa.E.p;
+//     memcpy(key_to_send.public_mod, my_rsa.N.p, my_rsa.N.n * sizeof(mbedtls_mpi_uint));
+
+//     my_rsa_key_recv((uint8_t*)&key_to_send);
+//     uint8_t data[3] = {'#', 0x2, '\n'};
+//     uint8_t* cipher = NULL;
+//     my_rsa_encrypt(data, &cipher);
+//     doCMD(cipher, BT_MODE);
+// }
