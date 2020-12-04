@@ -64,7 +64,7 @@ void btSendData(uint8_t* data, int len) {
     if (isKeyExchanged())
         free(data_to_send);
     
-    ESP_LOGI(TAG, "Successfully sent data of len: %d", len);
+    ESP_LOGI(TAG, "Successfully sent data of len: %d", len_to_send);
 }
 
 static void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
