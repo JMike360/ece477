@@ -17,7 +17,12 @@
         "streambuf": "c",
         "functional": "c",
         "valarray": "c",
-        "random": "c",
-        "my_rsa.h": "c"
-    }
+        "random": "c"
+    },
+    "idf.espIdfPathWin": "d:\\JMike\\Documents\\GitHub_Repositories\\ece477\\espidf_update\\esp-idf",
+    "idf.toolsPathWin": "D:\\JMike\\Documents\\GitHub_Repositories\\ece477\\.espressif",
+    "idf.pythonBinPathWin": "D:\\JMike\\Documents\\GitHub_Repositories\\ece477\\.espressif\\python_env\\idf4.3_py3.8_env\\Scripts\\python.exe",
+    "idf.customExtraPaths": "D:\\JMike\\Documents\\GitHub_Repositories\\ece477\\.espressif\\python_env\\idf4.3_py3.8_env\\Scripts;C:\\Python38;D:\\JMike\\Documents\\GitHub_Repositories\\ece477\\.espressif\\tools\\xtensa-esp32-elf\\esp-2020r3-8.4.0\\xtensa-esp32-elf\\bin;D:\\JMike\\Documents\\GitHub_Repositories\\ece477\\.espressif\\tools\\xtensa-esp32s2-elf\\esp-2020r3-8.4.0\\xtensa-esp32s2-elf\\bin;D:\\JMike\\Documents\\GitHub_Repositories\\ece477\\.espressif\\tools\\xtensa-esp32s3-elf\\esp-2020r3-8.4.0\\xtensa-esp32s3-elf\\bin;D:\\JMike\\Documents\\GitHub_Repositories\\ece477\\.espressif\\tools\\esp32ulp-elf\\2.28.51-esp-20191205\\esp32ulp-elf-binutils\\bin;D:\\JMike\\Documents\\GitHub_Repositories\\ece477\\.espressif\\tools\\esp32s2ulp-elf\\2.28.51-esp-20191205\\esp32s2ulp-elf-binutils\\bin;D:\\JMike\\Documents\\GitHub_Repositories\\ece477\\.espressif\\tools\\cmake\\3.16.4\\bin;D:\\JMike\\Documents\\GitHub_Repositories\\ece477\\.espressif\\tools\\openocd-esp32\\v0.10.0-esp32-20200709\\openocd-esp32\\bin;D:\\JMike\\Documents\\GitHub_Repositories\\ece477\\.espressif\\tools\\ninja\\1.10.0;D:\\JMike\\Documents\\GitHub_Repositories\\ece477\\.espressif\\tools\\idf-exe\\1.0.1;D:\\JMike\\Documents\\GitHub_Repositories\\ece477\\.espressif\\tools\\ccache\\3.7;D:\\JMike\\Documents\\GitHub_Repositories\\ece477\\.espressif\\tools\\dfu-util\\0.9\\dfu-util-0.9-win64",
+    "idf.customExtraVars": "{\"OPENOCD_SCRIPTS\":\"D:\\\\JMike\\\\Documents\\\\GitHub_Repositories\\\\ece477\\\\.espressif\\\\tools\\\\openocd-esp32\\\\v0.10.0-esp32-20200709/openocd-esp32/share/openocd/scripts\",\"IDF_CCACHE_ENABLE\":\"1\"}",
+    "idf.portWin": "COM11"
 }

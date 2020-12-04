@@ -121,6 +121,7 @@ int my_rsa_key_recv(uint8_t* data) {
 
     client_rsa.len = RSA_KEYLEN_IN_BYTES;
     
+    //mbedtls_rsa_init(&client_rsa, MBEDTLS_RSA_PKCS_V15, 0);
     mbedtls_rsa_set_padding(&client_rsa, MBEDTLS_RSA_PKCS_V15, 0);
     if (mbedtls_rsa_complete(&client_rsa) != 0)
         ESP_LOGE(TAG, "Unable to complete client_rsa");
@@ -147,6 +148,12 @@ int my_rsa_encrypt(uint8_t* plaintext, uint8_t** ciphertext) {
         
     *ciphertext = calloc(RSA_KEYLEN_IN_BYTES, sizeof(**ciphertext));
     int ret = mbedtls_rsa_rsaes_pkcs1_v15_encrypt(&client_rsa, myrand, NULL, MBEDTLS_RSA_PUBLIC, strlen((char*)plaintext), plaintext, *ciphertext);
+    uint8_t* buf = *ciphertext;
+    ESP_LOGI(TAG, "Ciphertext after encryption:");
+    for(int i = 0; i < (256); i+= 16) {
+        ESP_LOGI(TAG, "%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x", buf[i], buf[i+1], buf[i+2], buf[i+3], buf[i+4], buf[i+5], buf[i+6], buf[i+7],
+                                                                                                         buf[i+8], buf[i+9], buf[i+10], buf[i+11], buf[i+12], buf[i+13], buf[i+14], buf[i+15]);
+    }
     if (ret != 0) {
         ESP_LOGE(TAG, "Failed to encrypt from %s due to -0x%x", plaintext, ~ret + 1);
         return RSA_FAILURE;
