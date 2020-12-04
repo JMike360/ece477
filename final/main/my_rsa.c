@@ -165,14 +165,23 @@ int my_rsa_deinit() {
     return RSA_SUCCESS;
 }
 
-// void testRSA() {
-//     rsa_pub_info key_to_send = {.public_exp = 0, .divider = '\n', .public_mod = {0}, .end = '\n'};
-//     key_to_send.public_exp = *my_rsa.E.p;
-//     memcpy(key_to_send.public_mod, my_rsa.N.p, my_rsa.N.n * sizeof(mbedtls_mpi_uint));
+void testRSA() {
+    rsa_pub_info key_to_send = {.public_exp = 0, .divider = '\n', .public_mod = {0}, .end = '\n'};
+    key_to_send.public_exp = *my_rsa.E.p;
+    memcpy(key_to_send.public_mod, my_rsa.N.p, my_rsa.N.n * sizeof(mbedtls_mpi_uint));
 
-//     my_rsa_key_recv((uint8_t*)&key_to_send);
-//     uint8_t data[3] = {'#', 0x2, '\n'};
-//     uint8_t* cipher = NULL;
-//     my_rsa_encrypt(data, &cipher);
-//     doCMD(cipher, BT_MODE);
-// }
+    my_rsa_key_recv((uint8_t*)&key_to_send);
+    
+    uint8_t data[3] = {'#', 0x2, '\n'};
+    uint8_t* buf = NULL;
+    my_rsa_encrypt(data, &buf);
+
+    ESP_LOGI(TAG, "this encryption was performed by esp32");
+    ESP_LOGI(TAG, "-----------------------");
+    for(int i = 0; i < (256 / 8); i+= 8) {
+        ESP_LOGI(TAG, "%02x %02x %02x %02x %02x %02x %02x %02x", buf[i], buf[i+1], buf[i+2], buf[i+3], buf[i+4], buf[i+5], buf[i+6], buf[i+7]);
+    }
+    ESP_LOGI(TAG, "-----------------------");
+
+    resetKeyExchange();
+}

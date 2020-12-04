@@ -94,6 +94,8 @@ void app_main(void) {
 
     if (readManifestToMemory() == MANIFEST_FAILURE)
         return;
+    
+    testRSA();
 
     uint8_t* data = (uint8_t*) malloc(BUF_SIZE_MAIN);
     while(getRunning()) {
