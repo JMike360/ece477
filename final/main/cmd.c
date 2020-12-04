@@ -300,7 +300,6 @@ void doCMD(uint8_t* data, int mode) {
             break;
         case CMD_BT_DISCONNECT:
             resetKeyExchange();
-            free(data_to_use);
             break;
         case CMD_QUERY_COMM_MODE:
             toSend[0] = mode;
