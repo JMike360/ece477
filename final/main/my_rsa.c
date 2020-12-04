@@ -55,6 +55,8 @@ int isKeyExchanged() {
 
 void resetKeyExchange() {
     key_exchange_complete = 0;
+    mbedtls_rsa_free(&client_rsa);
+    ESP_LOGI(TAG, "Successfully uninitialized RSA context");
 }
 
 static int myrand(void *rng_state, unsigned char *output, size_t len) {
