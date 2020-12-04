@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO.Ports;
-
+using System.Security.Cryptography;
 
 namespace SkeletonKeyGUIFinal
 {
@@ -17,7 +17,8 @@ namespace SkeletonKeyGUIFinal
         
         bool isConnected = false;
         String[] ports;
-        SerialPort port;
+        CryptoPort port;
+        int commMode = -1;
 
         public Form7()
         {
@@ -35,7 +36,6 @@ namespace SkeletonKeyGUIFinal
             */
 
             ports = SerialPort.GetPortNames();
-
             foreach (string port in ports)
             {
                 comboBox1.Items.Add(port);
@@ -73,10 +73,34 @@ namespace SkeletonKeyGUIFinal
         {
             isConnected = true;
             string selectedPort = comboBox1.GetItemText(comboBox1.SelectedItem); //Command
-            port = new SerialPort(selectedPort, 115200, Parity.None, 8, StopBits.One); // important contection waht buard rate esp32 needs etc.
+            SerialPort sPort = new SerialPort(selectedPort, 115200, Parity.None, 8, StopBits.One); // important contection waht buard rate esp32 needs etc.
+            port = new CryptoPort(sPort);
             port.Open();
             button1.Text = "Disconnect";
             enableControls();
+
+            byte[] bytesToSend = { Convert.ToByte('#'), Convert.ToByte(0xa), Convert.ToByte('\n') };
+
+            port.Write(bytesToSend, 0, 3);
+
+            port.DiscardInBuffer();
+            string recvStr = port.ReadLine();
+            byte[] receivedByte = Encoding.ASCII.GetBytes(recvStr);
+            if (receivedByte[0] == 1)
+            {
+                MessageBox.Show("UART connection established");
+                port.setBluetoothMode(false);
+            }
+            else if (receivedByte[0] == 0)
+            {
+                port.setBluetoothMode(true);
+                MessageBox.Show("Bluetooth connection established");      
+            }
+            else
+            {
+                MessageBox.Show("Unknown commMode " + Convert.ToString(receivedByte[0]) + " detected");
+            }
+            commMode = Convert.ToInt16(receivedByte[0]);
         }
         private void disconnectFromESP()
         {
@@ -149,7 +173,7 @@ namespace SkeletonKeyGUIFinal
         private void button6_Click(object sender, EventArgs e)
         {
             //Request entries  { startCodeByte, 0x02, 0x0000, endCodeByte};
-            string MSG = textBox1.Text; 
+            string MSG = (textBox1.Text).Trim(); 
             string end = "\n";
             int MSGsize = MSG.Length;
             byte[] MSGByte = Encoding.ASCII.GetBytes(MSG);
@@ -172,7 +196,7 @@ namespace SkeletonKeyGUIFinal
             port.Read(byteBuffer, 0, intBuffer);
 
             string str = System.Text.Encoding.Default.GetString(byteBuffer);
-            if(str == null)
+            if(String.IsNullOrWhiteSpace(str))
             {
                 MessageBox.Show("There are no Current Entries");
             }
@@ -195,7 +219,7 @@ namespace SkeletonKeyGUIFinal
                 //Store Credential	    { startCodeByte, 0x04, MsgSize, [DisplayName,UserName,url,Password,], endCodeByte}; 
                 //Facebook,Rodri405@purdue.edu,www.facebook.com,Boomer1950!,
 
-                string MSG = textBox1.Text;
+                string MSG = (textBox1.Text).Trim();
                 string end = "\n";
                 int MSGsize = MSG.Length;
                 byte[] MSGByte = Encoding.ASCII.GetBytes(MSG);
@@ -246,7 +270,7 @@ namespace SkeletonKeyGUIFinal
             {
                 //Request Credential   { startCodeByte, 0x03, DisplayName size, displayName, endCodeByte};
                 //Facebook,Rodri405@purdue.edu,
-                string MSG = textBox1.Text;
+                string MSG = (textBox1.Text).Trim();
                 string end = "\n";
                 int MSGsize = MSG.Length;
                 byte[] MSGByte = Encoding.ASCII.GetBytes(MSG);
@@ -344,7 +368,7 @@ namespace SkeletonKeyGUIFinal
         {
             //Delete
             //Facebook,Rodri405@purdue.edu,
-            string MSG = textBox1.Text;
+            string MSG = (textBox1.Text).Trim();
             string end = "\n";
             int MSGsize = MSG.Length;
             byte[] MSGByte = Encoding.ASCII.GetBytes(MSG);
@@ -390,7 +414,7 @@ namespace SkeletonKeyGUIFinal
         {
             //Modify
             //Facebook,Rodri405@purdue.edu,newpassword,
-            string MSG = textBox1.Text;
+            string MSG = (textBox1.Text).Trim();
             string end = "\n";
             int MSGsize = MSG.Length;
             byte[] MSGByte = Encoding.ASCII.GetBytes(MSG);

@@ -15,7 +15,9 @@ namespace SkeletonKeyGUIFinal
     {
         bool isConnected = false;
         String[] ports;
-        SerialPort port;
+        CryptoPort port;
+        int commMode = -1;
+
 
         public Form3()
         {
@@ -109,10 +111,34 @@ namespace SkeletonKeyGUIFinal
         {
             isConnected = true;
             string selectedPort = comboBox1.GetItemText(comboBox1.SelectedItem); //Command
-            port = new SerialPort(selectedPort, 115200, Parity.None, 8, StopBits.One); // important contection waht buard rate esp32 needs etc.
+            SerialPort sPort = new SerialPort(selectedPort, 115200, Parity.None, 8, StopBits.One); // important contection waht buard rate esp32 needs etc.
+            port = new CryptoPort(sPort);
             port.Open();
             button1.Text = "Disconnect";
             enableControls();
+
+            byte[] bytesToSend = { Convert.ToByte('#'), Convert.ToByte(0xa), Convert.ToByte('\n') };
+
+            port.Write(bytesToSend, 0, 3);
+
+            port.DiscardInBuffer();
+            string recvStr = port.ReadLine();
+            byte[] receivedByte = Encoding.ASCII.GetBytes(recvStr);
+            if (receivedByte[0] == 1)
+            {
+                MessageBox.Show("UART connection established");
+                port.setBluetoothMode(false);
+            }
+            else if (receivedByte[0] == 0)
+            {
+                MessageBox.Show("Bluetooth connection established");
+                port.setBluetoothMode(true);
+            }
+            else
+            {
+                MessageBox.Show("Unknown commMode " + Convert.ToString(receivedByte[0]) + " detected");
+            }
+            commMode = Convert.ToInt16(receivedByte[0]);
         }
         private void disconnectFromESP()
         {
