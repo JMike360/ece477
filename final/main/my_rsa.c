@@ -178,8 +178,9 @@ void testRSA() {
 
     ESP_LOGI(TAG, "this encryption was performed by esp32");
     ESP_LOGI(TAG, "-----------------------");
-    for(int i = 0; i < (256 / 8); i+= 8) {
-        ESP_LOGI(TAG, "%02x %02x %02x %02x %02x %02x %02x %02x", buf[i], buf[i+1], buf[i+2], buf[i+3], buf[i+4], buf[i+5], buf[i+6], buf[i+7]);
+    for(int i = 0; i < (256); i+= 16) {
+        ESP_LOGI(TAG, "%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x", buf[i], buf[i+1], buf[i+2], buf[i+3], buf[i+4], buf[i+5], buf[i+6], buf[i+7],
+                                                                                                         buf[i+8], buf[i+9], buf[i+10], buf[i+11], buf[i+12], buf[i+13], buf[i+14], buf[i+15]);
     }
     ESP_LOGI(TAG, "-----------------------");
 
