@@ -48,7 +48,7 @@ int cmd_request_entries(int mode) {
     if (mode == UART_MODE)
         uart_write_bytes(UART_NUM_0, buffer, filesize);
     else if (mode == BT_MODE)
-        btSendData((uint8_t*) buffer, filesize);
+        btSendData((uint8_t*) buffer, filesize+1);
     if (buffer != NULL)
         free(buffer);
     fclose(fp);
