@@ -172,7 +172,7 @@ void testRSA() {
 
     my_rsa_key_recv((uint8_t*)&key_to_send);
     
-    uint8_t data[3] = {'#', 0x2, '\n'};
+    uint8_t data[3] = {'#', '#', '\0'};
     uint8_t* buf = NULL;
     my_rsa_encrypt(data, &buf);
 
