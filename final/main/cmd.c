@@ -184,6 +184,7 @@ int cmd_store_credential(char* displayName, char* username, char* url, char* pw)
     free(key);
     free(encryptedText);
     fclose(fp);
+    writeManifestToFile();
     ESP_LOGI(TAG, "Successfully stored credential for %s", displayName);
     return CMD_SUCCESS;
 }
