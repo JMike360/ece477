@@ -201,6 +201,7 @@ int cmd_delete_credential(char* displayName, char* userName) {
     strcat(path, "/sdcard/");
     strcat(path, displayName);
     remove(path);
+    writeManifestToFile();
     ESP_LOGI(TAG, "Successfully deleted credential for %s", displayName);
     return CMD_SUCCESS;
 }

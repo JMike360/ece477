@@ -107,7 +107,10 @@ int my_rsa_key_recv(uint8_t* data) {
     memcpy(client_rsa.N.p, key_to_recv.public_mod, client_rsa.N.n * sizeof(mbedtls_mpi_uint));
 
     client_rsa.len = RSA_KEYLEN_IN_BYTES;
+    
     mbedtls_rsa_set_padding(&client_rsa, MBEDTLS_RSA_PKCS_V15, 0);
+    if (mbedtls_rsa_complete(&client_rsa) != 0)
+        ESP_LOGE(TAG, "Unable to complete client_rsa");
 
     key_exchange_complete = 1;
 
