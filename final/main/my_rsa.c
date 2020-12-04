@@ -36,6 +36,19 @@ typedef struct {
     char end;
 } rsa_pub_info;
 
+static void mbedtls_mpi_printf(const char *name, const mbedtls_mpi *X)
+{
+    static char buf[2048];
+    size_t n;
+    memset(buf, 0, sizeof(buf));
+    mbedtls_mpi_write_string(X, 16, buf, sizeof(buf)-1, &n);
+    if(n) {
+        printf("%s = (s=%d) 0x%s\n", name, X->s, buf);
+    } else {
+        printf("%s = TOOLONG\n", name);
+    }
+}
+
 int isKeyExchanged() {
     return key_exchange_complete;
 }
@@ -116,12 +129,8 @@ int my_rsa_key_recv(uint8_t* data) {
 
     ESP_LOGI(TAG, "Successfully received RSA key pair");
 
-    uint8_t* buf = (uint8_t*)(&key_to_recv);
-    ESP_LOGI(TAG, "-----------------------");
-    for(int i = 0; i < sizeof(key_to_recv); i+= 8) {
-        ESP_LOGI(TAG, "%02x %02x %02x %02x %02x %02x %02x %02x", buf[i], buf[i+1], buf[i+2], buf[i+3], buf[i+4], buf[i+5], buf[i+6], buf[i+7]);
-    }
-    ESP_LOGI(TAG, "-----------------------");
+    mbedtls_mpi_printf("initial received public exp", &(client_rsa.E));
+    mbedtls_mpi_printf("initial received public mod", &(client_rsa.N));
 
     return RSA_SUCCESS;
 }
@@ -132,6 +141,9 @@ int my_rsa_encrypt(uint8_t* plaintext, uint8_t** ciphertext) {
         ESP_LOGE(TAG, "Failed to encrypt, client public key not received");
         return RSA_FAILURE;
     }
+
+    mbedtls_mpi_printf("before enc received public exp", &(client_rsa.E));
+    mbedtls_mpi_printf("before enc received public mod", &(client_rsa.N));
         
     *ciphertext = calloc(RSA_KEYLEN_IN_BYTES, sizeof(**ciphertext));
     int ret = mbedtls_rsa_rsaes_pkcs1_v15_encrypt(&client_rsa, myrand, NULL, MBEDTLS_RSA_PUBLIC, strlen((char*)plaintext), plaintext, *ciphertext);
@@ -169,15 +181,13 @@ int my_rsa_deinit() {
 }
 
 void testRSA() {
-    rsa_pub_info key_to_send = {.public_exp = 0, .divider = '\n', .public_mod = {0}, .end = '\n'};
-    key_to_send.public_exp = *my_rsa.E.p;
-    memcpy(key_to_send.public_mod, my_rsa.N.p, my_rsa.N.n * sizeof(mbedtls_mpi_uint));
+    uint8_t key_to_send[266] = {0x01};
 
     my_rsa_key_recv((uint8_t*)&key_to_send);
     
-    uint8_t data[3] = {'#', '#', '\0'};
+    char* data = "why is it not working :(";
     uint8_t* buf = NULL;
-    my_rsa_encrypt(data, &buf);
+    my_rsa_encrypt((uint8_t*)data, &buf);
 
     ESP_LOGI(TAG, "this encryption was performed by esp32");
     ESP_LOGI(TAG, "-----------------------");
@@ -186,6 +196,10 @@ void testRSA() {
                                                                                                          buf[i+8], buf[i+9], buf[i+10], buf[i+11], buf[i+12], buf[i+13], buf[i+14], buf[i+15]);
     }
     ESP_LOGI(TAG, "-----------------------");
+
+    uint8_t* decrypted = NULL;
+    my_rsa_decrypt(buf, &decrypted);
+    ESP_LOGI(TAG, "Decypted to %s", decrypted);
 
     resetKeyExchange();
 }
