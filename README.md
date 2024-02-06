@@ -3,7 +3,7 @@
 Purdue ECE senior design project of team 8 for Fall 2020  
   
 ## Team members
-John Michael Bolinder (Team leader)  
+John Michael Bolinder (Team leader, software engineer, systems engineer)  
 Ethan Rodriguez (Systems engineer, secondary software engineer)  
 Jiahui Zhu (Software engineer, secondary hardware engineer)  
 Andrew Gan (Hardware engineer, secondary systems engineer)  
