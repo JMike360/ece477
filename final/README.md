@@ -1,5 +1,2 @@
-# Blink Example
+# ESP32 Embedded Software for management of at-rest AES encryption/decryption and in-flight RSA encryption/decryption
 
-Starts a FreeRTOS task to blink an LED
-
-See the README.md file in the upper level 'examples' directory for more information about examples.
