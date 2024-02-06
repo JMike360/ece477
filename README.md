@@ -7,6 +7,9 @@ John Michael Bolinder (Team leader, software engineer, systems engineer)
 Ethan Rodriguez (Systems engineer, secondary software engineer)  
 Jiahui Zhu (Software engineer, secondary hardware engineer)  
 Andrew Gan (Hardware engineer, secondary systems engineer)  
+
+## Overview
+Skeleton Key is a convenient, fully-featured password management solution, completely client-side with no dependence on a cloud service provider or network connection. The device utilizes an ESP32 microcontroller and onboard peripherals to manage encrypted-at-rest password storage, fingerprint-based authentication for easy and secure access to passwords, and interfaces with a client desktop app to wirelessly retrieve passwords via bluetooth or retrieve passwords through a wired USB connection. Passwords transmitted by USB or Bluetooth are encrypted in-flight, and the desktop application provides easy access to passwords on the target user device.
   
 ## Tools used
 USB URT module  
